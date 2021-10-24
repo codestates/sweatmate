@@ -6,7 +6,7 @@
   },
   "extends": ["eslint:recommended", "standard", "plugin:prettier/recommended"],
   "parserOptions": {
-    "ecmaVersion": 13
+    "ecmaVersion": 12
   },
   "rules": {
     "no-console": "off",
