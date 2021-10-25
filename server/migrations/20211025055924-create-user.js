@@ -29,11 +29,11 @@ module.exports = {
       },
       age: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: true,
       },
       gender: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       nickname: {
         type: Sequelize.STRING,
