@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import PropTypes from "prop-types";
 import UserThumbnail from "./UserThumbnail";
 import { ReactComponent as Marker } from "../assets/textmarker.svg";
 
@@ -75,38 +76,8 @@ const InfoFooter = styled(InfoHeader)`
     margin-right: 0.4rem;
   }
 `;
-const GathCard = () => {
+const GathCard = ({ gathering }) => {
   const timeName = { morning: "오전", afternoon: "오후", evening: "저녁" };
-  /* props로 들어올 모임 정보 */
-  const gathering = {
-    gatheringId: 12,
-    title: "농구 함 때려볼 용산러들~!",
-    description: "용산에서 즐기면서 농구하는 사람들 한 판 같이 합시다~",
-    creator: {
-      id: "uuid",
-      nickname: "농구에 미친 사람",
-      image: "",
-    },
-    areaName: "용산구",
-    placeName: "이촌한강공원 농구대",
-    latitude: 33.450701,
-    longitude: 126.570667,
-    date: "2021-10-27",
-    time: "evening",
-    timeDescription: "19시",
-    totalNum: 4,
-    currentNum: 2,
-    sportName: "농구",
-    sportEmoji: "🏀",
-    done: false,
-    users: [
-      {
-        id: "uuid",
-        nickname: "농구킹",
-        image: "imageUrl",
-      },
-    ],
-  };
 
   return (
     <CardContainer>
@@ -140,6 +111,38 @@ const GathCard = () => {
       </InfoFooter>
     </CardContainer>
   );
+};
+
+GathCard.propTypes = {
+  gathering: PropTypes.exact({
+    gatheringId: PropTypes.number,
+    title: PropTypes.string,
+    description: PropTypes.string,
+    creator: PropTypes.exact({
+      id: PropTypes.string,
+      nickname: PropTypes.string,
+      image: PropTypes.string,
+    }),
+    areaName: PropTypes.string,
+    placeName: PropTypes.string,
+    latitude: PropTypes.number,
+    longitude: PropTypes.number,
+    date: PropTypes.string,
+    time: PropTypes.string,
+    timeDescription: PropTypes.string,
+    totalNum: PropTypes.number,
+    currentNum: PropTypes.number,
+    sportName: PropTypes.string,
+    sportEmoji: PropTypes.string,
+    done: PropTypes.bool,
+    users: PropTypes.arrayOf(
+      PropTypes.exact({
+        id: PropTypes.string,
+        nickname: PropTypes.string,
+        image: PropTypes.string,
+      })
+    ),
+  }).isRequired,
 };
 
 export default GathCard;
