@@ -17,6 +17,7 @@
     "react-scripts": "4.0.3",
     "redux": "^4.1.1",
     "styled-components": "^5.3.3",
+    "styled-media-query": "^2.1.2",
     "styled-normalize": "^8.0.7",
     "web-vitals": "^1.1.2"
   },
