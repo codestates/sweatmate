@@ -26,4 +26,7 @@ module.exports = {
     password: required("DB_PASSWORD"),
     port: required("DB_PORT"),
   },
+  cors: {
+    allowedOrigin: required("CORS_ALLOW_ORIGIN"),
+  },
 };
