@@ -111,6 +111,7 @@ const GlobalStyle = createGlobalStyle`
     --color-gray: #969699;
     --color-lightgray: #DCDCDD;
     --color-white: #FFFFFF;
+    --color-shadow: #1D1D2140;
   }
 `;
 

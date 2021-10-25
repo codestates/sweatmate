@@ -1,7 +1,12 @@
 import React from "react";
+import GathCard from "../components/GathCard";
 
 const Home = () => {
-  return <div>Home</div>;
+  return (
+    <div>
+      <GathCard />
+    </div>
+  );
 };
 
 export default Home;
