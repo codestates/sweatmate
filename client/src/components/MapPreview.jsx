@@ -10,7 +10,7 @@ const MapContainer = styled.div`
   border-radius: 1rem;
 `;
 
-const Map = ({ sportName, place, latitude, longitude }) => {
+const MapPreview = ({ sportName, place, latitude, longitude }) => {
   useEffect(() => {
     axios
       .get(`https://dapi.kakao.com/v2/local/search/keyword.json?query=${place}`, {
@@ -69,18 +69,18 @@ const Map = ({ sportName, place, latitude, longitude }) => {
   );
 };
 
-Map.defaultProps = {
+MapPreview.defaultProps = {
   sportName: "soccer",
   place: "이촌한강공원",
   latitude: 126.970526590861,
   longitude: 37.5172404421072,
 };
 
-Map.propTypes = {
+MapPreview.propTypes = {
   sportName: PropTypes.string.isRequired,
   place: PropTypes.string.isRequired,
   latitude: PropTypes.number.isRequired,
   longitude: PropTypes.number.isRequired,
 };
 
-export default Map;
+export default MapPreview;
