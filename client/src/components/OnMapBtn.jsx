@@ -1,9 +1,9 @@
 import React from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
+import media from "styled-media-query";
 
 const ButtonContainer = styled(Link)`
-  width: fit-content;
   padding: 0.6rem 1.2rem;
   display: flex;
   align-items: center;
@@ -14,7 +14,14 @@ const ButtonContainer = styled(Link)`
   :hover {
     opacity: 0.8;
   }
-  margin-top: 1rem;
+  ${media.greaterThan("small")`
+    width: fit-content;
+  `};
+  ${media.lessThan("small")`
+    width: 100%;
+    max-width: 380px;
+    min-width: 280px;
+  `};
 `;
 
 const Icon = styled.div`
