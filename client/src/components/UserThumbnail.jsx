@@ -27,7 +27,7 @@ const BlankImage = styled(Blank)`
 
 const UserThumbnail = ({ size, user }) => {
   return (
-    <ThumbnailContainer size={size} to={`/mypage/${user.id}`}>
+    <ThumbnailContainer size={size} to={`/users/${user.id}`}>
       {user.image ? <Image url={user.image} /> : <BlankImage />}
     </ThumbnailContainer>
   );
