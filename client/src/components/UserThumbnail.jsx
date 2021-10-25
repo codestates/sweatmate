@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { ReactComponent as Blank } from "../assets/defaultProfile.svg";
 
+/* 주의! 부모 컴포넌트의 display 속성이 flex일 때만 제대로 동작함 */
 const ThumbnailContainer = styled(Link)`
   width: ${(props) => props.size}rem;
   height: ${(props) => props.size}rem;
@@ -20,9 +21,8 @@ const Image = styled.div`
 `;
 
 const BlankImage = styled(Blank)`
-  margin-bottom: 10%;
   width: 100%;
-  height: 120%;
+  height: 100%;
 `;
 
 const UserThumbnail = ({ size, user }) => {
@@ -35,9 +35,8 @@ const UserThumbnail = ({ size, user }) => {
 
 UserThumbnail.propTypes = {
   size: PropTypes.number.isRequired,
-  user: PropTypes.exact({
+  user: PropTypes.shape({
     id: PropTypes.string,
-    nickname: PropTypes.string,
     image: PropTypes.string,
   }).isRequired,
 };
