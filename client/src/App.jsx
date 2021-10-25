@@ -18,7 +18,7 @@ const App = () => {
         <Route path="/home" component={Home} />
         <Route path="/chat/:id" component={Chat} />
         <Route path="/schedule" component={Schedule} />
-        <Route path="/mypage" component={Mypage} />
+        <Route path="/users/:id" component={Mypage} />
         <Route path="/map" component={Map} />
         <Redirect from="*" to="/" />
       </Switch>
