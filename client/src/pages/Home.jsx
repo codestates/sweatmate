@@ -1,5 +1,6 @@
 import React from "react";
 import GathCard from "../components/GathCard";
+import Btn from "../components/Btn";
 
 const Home = () => {
   /* 모임 정보 Dummy */
@@ -36,6 +37,7 @@ const Home = () => {
   return (
     <div>
       <GathCard gathering={gathering} />
+      <Btn value="버튼버튼버튼" />
     </div>
   );
 };
