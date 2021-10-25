@@ -1,11 +1,12 @@
 import { createGlobalStyle } from "styled-components";
+import media from "styled-media-query";
 import { normalize } from "styled-normalize";
 
 const GlobalStyle = createGlobalStyle`
   ${normalize}
   
   /* HTML elements */
-
+  
   *,
   :after,
   :before {
@@ -14,10 +15,15 @@ const GlobalStyle = createGlobalStyle`
     line-height: var(---lineHeight-normal);
   }
 
-  body {
+  html {
+    font-size: var(--fontSize-root--big);
     font-family: var(--fontFamily);
     color: var(--color-black);
     background-color: var(--color-white);
+    
+    ${media.lessThan("medium")`
+      font-size: var(--fontSize-root--small);
+    `}
   }
 
   button, input, textarea {
@@ -40,6 +46,11 @@ const GlobalStyle = createGlobalStyle`
     color: inherit;
     text-decoration: none;
     outline: none;
+  }
+
+  ul {
+    padding: 0;
+    list-style: none;
   }
 
   /* CSS Custom Properties Definitions */
@@ -83,7 +94,8 @@ const GlobalStyle = createGlobalStyle`
 
   :root {
     --fontFamily: Interop-Medium, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-    --fontSize-root: 16px;
+    --fontSize-root--big: 16px;
+    --fontSize-root--small: 14px;
     --lineHeight-normal: 1;
     --lineHeight-loose: 1.25;
     --lineHeight-relaxed: 1.5;
