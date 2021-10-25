@@ -5,6 +5,8 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const { sequelize } = require("./models");
 const config = require("./config");
+const mongoose = require("mongoose");
+const mongooseConnect = require("./schemas");
 const {
   port,
   cors: { allowedOrigin },
@@ -44,6 +46,7 @@ app.use((err, req, res, next) => {
 
 app.listen(config.port, async () => {
   console.log(`🚀 Listening on PORT: ${config.port}`);
+  mongooseConnect();
   try {
     await sequelize.authenticate();
     console.log("Connection has been established successfully.");
