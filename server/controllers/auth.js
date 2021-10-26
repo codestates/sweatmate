@@ -81,5 +81,10 @@ module.exports = {
     const { id, image, nickname } = foundUserByEmail.dataValues;
     return res.status(200).json({ id, image, nickname });
   },
-  me: async (req, res) => {},
+  me: async (req, res) => {
+    const { userId, type } = res.locals;
+    const userInfo = await userFindOne({ id: userId });
+    const { id, image, nickname } = userInfo;
+    res.status(200).json({ id, image, nickname });
+  },
 };

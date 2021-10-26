@@ -7,18 +7,18 @@ module.exports = {
   isAuth: async (req, res, next) => {
     const accessToken = req.cookies.jwt;
     if (!accessToken) {
-      return res.status(202).json(AUTH_ERROR);
+      return res.status(403).json(AUTH_ERROR);
     }
 
     const decoded = verifyAccessToken(accessToken);
     if (!decoded) {
       clearCookie(res);
-      return res.status(202).json(AUTH_ERROR);
+      return res.status(403).json(AUTH_ERROR);
     }
     const foundUser = await userFindOne({ id: decoded.id });
     if (!foundUser) {
       clearCookie(res);
-      return res.status(202).json(AUTH_ERROR);
+      return res.status(403).json(AUTH_ERROR);
     }
     res.locals.userId = foundUser.dataValues.id;
     res.locals.token = accessToken;
