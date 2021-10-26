@@ -1,8 +1,8 @@
 import React from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
-import UserThumbnail from "./UserThumbnail";
-import { ReactComponent as Marker } from "../assets/textmarker.svg";
+import UserProfile from "./UserProfile";
+import { FaMapMarkerAlt } from "react-icons/fa";
 
 const CardContainer = styled.div`
   border-radius: 1rem;
@@ -21,6 +21,9 @@ const CardContainer = styled.div`
     margin: 0 0.4rem;
     overflow: hidden;
   }
+  .text {
+    padding-top: 0.1em;
+  }
 `;
 
 const InfoHeader = styled.div`
@@ -32,8 +35,9 @@ const InfoHeader = styled.div`
   align-items: center;
   justify-content: space-between;
   > * {
+    height: 100%;
     display: flex;
-    align-items: center;
+    align-items: baseline;
   }
 `;
 
@@ -60,22 +64,22 @@ const InfoBody = styled.div`
     > * {
       display: flex;
       align-items: center;
-      .marker {
-        margin-bottom: 0.12rem;
-        margin-right: 0.2rem;
+      #marker {
+        padding-right: 0.2rem;
       }
     }
   }
 `;
 
-const InfoFooter = styled(InfoHeader)`
-  justify-content: center;
+const InfoFooter = styled.div`
+  width: 100%;
+  color: var(--color-gray);
+  display: flex;
   align-items: center;
+  justify-content: center;
   margin-bottom: 0;
-  > *:first-of-type {
-    margin-right: 0.4rem;
-  }
 `;
+
 const GathCard = ({ gathering }) => {
   const timeName = { morning: "오전", afternoon: "오후", evening: "저녁" };
 
@@ -83,31 +87,32 @@ const GathCard = ({ gathering }) => {
     <CardContainer>
       <InfoHeader>
         <div>
-          <div>{`${gathering.date.split("-")[1]}월 ${gathering.date.split("-")[2]}일`}</div>
+          <div className="text">{`${gathering.date.split("-")[1]}월 ${
+            gathering.date.split("-")[2]
+          }일`}</div>
           <div className="divider">|</div>
-          <div>{timeName[gathering.time]}</div>
+          <div className="text">{timeName[gathering.time]}</div>
         </div>
         <div>
-          <div>{`${gathering.currentNum}명 모집 중`}</div>
+          <div className="text">{`${gathering.currentNum}명 모집 중`}</div>
           <div className="divider">|</div>
-          <div>{`총 ${gathering.totalNum}명`}</div>
+          <div className="text">{`총 ${gathering.totalNum}명`}</div>
         </div>
       </InfoHeader>
       <InfoBody>
         <div id="icon">{gathering.sportEmoji}</div>
         <div id="title">{gathering.title}</div>
         <div id="location">
-          <div>{gathering.areaName}</div>
+          <div className="text">{gathering.areaName}</div>
           <div className="divider">|</div>
           <div>
-            <Marker className="marker" fill="#969699" width="9" />
-            {gathering.placeName}
+            <FaMapMarkerAlt id="marker" />
+            <div className="text">{gathering.placeName}</div>
           </div>
         </div>
       </InfoBody>
       <InfoFooter>
-        <UserThumbnail size={1} user={gathering.creator} />
-        <div>{gathering.creator.nickname}</div>
+        <UserProfile size={0.8} user={gathering.creator} isDisabled />
       </InfoFooter>
     </CardContainer>
   );
