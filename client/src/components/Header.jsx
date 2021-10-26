@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 import React, { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import styled, { css } from "styled-components";
@@ -159,10 +157,6 @@ const MobileUserContainer = styled.div`
   `};
 `;
 
-const MobileNickname = styled.span`
-  margin-left: 1rem;
-`;
-
 const MobileNavBtn = styled.button`
   display: flex;
   align-items: center;
@@ -249,10 +243,6 @@ const UserBtn = styled.button`
   ${media.lessThan("medium")`
     display: none;
   `};
-`;
-
-const Nickname = styled.span`
-  margin-left: 0.5rem;
 `;
 
 const MobileHamburgerBtn = styled.button`
