@@ -25,7 +25,6 @@ const StyledHeader = styled.header`
   top: 0;
   width: 100%;
   border-bottom: 1px solid var(--color-lightgray);
-  z-index: 10;
 
   ${media.lessThan("medium")`
     padding: 1rem;
