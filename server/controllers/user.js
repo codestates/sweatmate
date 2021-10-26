@@ -1,9 +1,11 @@
 const { userFindOne, findSportsOfUser } = require("./functions/sequelize");
-
+const { clearCookie } = require("./functions/token");
 module.exports = {
   getUerInfo: async (req, res) => {
     const { userId, type } = res.locals;
-    console.log(userId, type);
+    if (userId !== req.params.userId) {
+      return res.status(403).json({ message: "You don't have permission" });
+    }
     try {
       const userInfo = await userFindOne({ id: userId }, [
         "id",
@@ -29,5 +31,18 @@ module.exports = {
       console.log(err);
       res.status(500).send("에러났어요");
     }
+  },
+  removeUserInfo: async (req, res) => {
+    const { userId, type } = res.locals;
+    if (userId !== req.params.userId) {
+      return res.status(403).json({ message: "User don't have permission" });
+    }
+    const userInfo = await userFindOne({ id: userId });
+    if (!userInfo) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    await userInfo.destroy();
+    clearCookie(res, token);
+    return res.status(200).json({ message: "User deleted" });
   },
 };
