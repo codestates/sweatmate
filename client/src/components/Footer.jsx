@@ -1,12 +1,7 @@
-/* eslint-disable */
-
 import React from "react";
 import styled from "styled-components";
 import media from "styled-media-query";
 import { VscGithub, VscRepo, VscGithubAlt } from "react-icons/vsc";
-import { DiGithubFull } from "react-icons/di";
-import { FaGithubSquare } from "react-icons/fa";
-import { RiGithubLine } from "react-icons/ri";
 
 const StyledFooter = styled.footer`
   padding: 4rem 2rem;
@@ -21,20 +16,16 @@ const StyledFooter = styled.footer`
 const Container = styled.div`
   display: flex;
   margin-bottom: 3rem;
+  gap: 3rem;
 
   ${media.lessThan("medium")`
     flex-direction:column;
+    gap: 2rem;
   `}
 `;
 
 const Wrapper = styled.div`
   flex: 1;
-
-  ${media.lessThan("medium")`
-    :not(:last-child){
-      margin-bottom: 2rem;
-    }
-  `}
 `;
 
 const Heading = styled.h4`
@@ -47,7 +38,10 @@ const Heading = styled.h4`
   `}
 `;
 
-const Paragraph = styled.p``;
+const Paragraph = styled.p`
+  word-break: keep-all;
+  line-height: var(--lineHeight-relaxed);
+`;
 
 const Items = styled.ul``;
 
@@ -58,11 +52,10 @@ const Item = styled.li`
 `;
 
 const Link = styled.a`
-  display: flex;
-  align-items: center;
   text-decoration: underline;
 
   svg {
+    vertical-align: text-bottom;
     font-size: 1.25rem;
     margin-right: 0.5rem;
   }
