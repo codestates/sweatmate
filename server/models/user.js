@@ -58,6 +58,14 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
         defaultValue: "local",
       },
+      authKey: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+      authStatus: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: 0,
+      },
     },
     {
       sequelize,
