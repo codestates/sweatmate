@@ -13,7 +13,7 @@ function required(key, defaultValue = undefined) {
 module.exports = {
   jwt: {
     secretKey: required("ACCESS_SECRET"),
-    // expiresInSec: parseInt(required("JWT_EXPIRES_SEC", 86400)),
+    expiresInSec: parseInt(required("JWT_EXPIRES_SEC", 10800)),
   },
   bcrypt: {
     saltRounds: parseInt(required("BCRYPT_SALT_ROUNDS", 12), 10),

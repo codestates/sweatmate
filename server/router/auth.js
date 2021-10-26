@@ -1,12 +1,9 @@
 const express = require("express");
 const router = express.Router();
+const { checkNickname, checkEmail } = require("../controllers/auth");
 
-router.get("/nickname/:nickname", (_, res) => {
-  res.status(200).send("닉네임 체크 라우터");
-});
-router.get("/email/:email", (_, res) => {
-  res.status(200).send("이메일 체크 라우터");
-});
+router.get("/nickname/:nickname", checkNickname);
+router.get("/email/:email", checkEmail);
 router.get("/me", (_, res) => {
   res.status(200).send("로그인 체크 라우터");
 });
