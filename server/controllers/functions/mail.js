@@ -4,7 +4,7 @@ const mailSender = {
     var transporter = nodemailer.createTransport({
       service: "gmail",
       prot: 587,
-      host: "smtp.gmlail.com",
+      host: "smtp.gmail.com",
       secure: false,
       requireTLS: true,
       auth: {

@@ -3,11 +3,10 @@ const { v4: uuid } = require("uuid");
 const { userFindOne, createUser } = require("./functions/sequelize");
 const { sendGmail } = require("./functions/mail");
 const { DBERROR } = require("./functions/utility");
-const { generateAccessToken, setCookie } = require("./functions/token");
+const { generateAccessToken, setCookie, clearCookie } = require("./functions/token");
 const {
   bcrypt: { saltRounds },
 } = require("../config");
-const user = require("../models/user");
 const emailForm = require("../views/emailFormat");
 
 module.exports = {
@@ -36,7 +35,7 @@ module.exports = {
         const userInfo = await userFindOne({ authKey });
         if (!userInfo.dataValues.authStatus) {
           await userInfo.destroy();
-          console.log(abc.dataValues, "유저 정보가 삭제되었습니다.");
+          console.log(userInfo.dataValues, "유저 정보가 삭제되었습니다.");
         }
       }, 60 * 60 * 1000);
 

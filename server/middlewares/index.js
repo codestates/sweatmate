@@ -1,6 +1,6 @@
 const { verifyAccessToken, clearCookie } = require("../controllers/functions/token");
 const { userFindOne } = require("../controllers/functions/sequelize");
-
+const { DBERROR } = require("../controllers/functions/utility");
 const AUTH_ERROR = { message: "Authentication Error" };
 
 module.exports = {
@@ -21,6 +21,7 @@ module.exports = {
       return res.status(403).json(AUTH_ERROR);
     }
     res.locals.userId = foundUser.dataValues.id;
+    res.locals.type = foundUser.dataValues.type;
     res.locals.token = accessToken;
     return next();
   },

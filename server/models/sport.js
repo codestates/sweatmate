@@ -28,6 +28,10 @@ module.exports = (sequelize, DataTypes) => {
         type: Sequelize.STRING,
         allowNull: false,
       },
+      sportEngName: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
     },
     {
       sequelize,
