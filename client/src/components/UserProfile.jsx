@@ -85,6 +85,8 @@ const Image = styled.div`
 const DefaultImage = styled(DefaultProfile)`
   width: 100%;
   height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
 `;
 
 const BackgroundLink = styled(Link)`
