@@ -75,51 +75,55 @@ const Footer = () => {
     <StyledFooter>
       <Container>
         <Wrapper>
-          <Heading>About this place</Heading>
-          <Paragraph>blah blah</Paragraph>
+          <Heading>소개</Heading>
+          <Paragraph>
+            Sweatmate(스웻메이트)는 함께 운동할 사람을 찾고 싶지만 동호회에 가입하기는 부담스러운
+            사람들을 위한 매칭 플랫폼입니다. 운동 종류, 지역, 운동, 날짜와 시간대에 따라 함께 운동할
+            사람을 간편하게 찾을 수 있습니다.
+          </Paragraph>
         </Wrapper>
         <Wrapper>
-          <Heading>Source</Heading>
+          <Heading>자료</Heading>
           <Items>
             <Item>
               <Link href="https://github.com/codestates/sweatmate" target="_blank">
                 <VscGithub />
-                View source on GitHub
+                레포지토리
               </Link>
             </Item>
             <Item>
               <Link href="https://github.com/codestates/sweatmate/wiki" target="_blank">
                 <VscRepo />
-                View wiki on GitHub
+                위키
               </Link>
             </Item>
           </Items>
         </Wrapper>
         <Wrapper>
-          <Heading>Members</Heading>
+          <Heading>멤버</Heading>
           <Items>
             <Item>
               <Link href="https://github.com/ssumniee" target="_blank">
                 <VscGithubAlt />
-                ssumniee
+                김수민
               </Link>
             </Item>
             <Item>
               <Link href="https://github.com/Yun-KC" target="_blank">
                 <VscGithubAlt />
-                Yun-KC
+                윤정길
               </Link>
             </Item>
             <Item>
               <Link href="https://github.com/heegu0311" target="_blank">
                 <VscGithubAlt />
-                heegu0311
+                윤희구
               </Link>
             </Item>
             <Item>
               <Link href="https://github.com/Unuuuuu" target="_blank">
                 <VscGithubAlt />
-                Unuuuuu
+                지윤우
               </Link>
             </Item>
           </Items>
