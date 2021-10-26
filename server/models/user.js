@@ -4,7 +4,7 @@ module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     static associate(models) {
       models.User.belongsTo(models.Area, {
-        foreignKey: { name: "areaId", allowNull: false },
+        foreignKey: { name: "areaId", allowNull: true },
         targetKey: "id",
         onDelete: "SET NULL",
       });
@@ -39,11 +39,11 @@ module.exports = (sequelize, DataTypes) => {
       },
       age: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: true,
       },
       gender: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       nickname: {
         type: Sequelize.STRING,
