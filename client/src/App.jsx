@@ -8,10 +8,23 @@ import Schedule from "./pages/Schedule";
 import Mypage from "./pages/Mypage";
 import Map from "./pages/Map";
 import Footer from "./components/Footer";
+import { useDispatch, useSelector } from "react-redux";
+import Modal from "./components/Modal";
+// import GathCreate from "./components/GathCreate";
+import { gathCreateModalOnAction } from "./store/actions";
 
 const App = () => {
+  const { isGathCreateModal } = useSelector(({ modalReducer }) => modalReducer);
+  const isModal = isGathCreateModal;
+  const dispatch = useDispatch();
+  const handleClick = (e) => {
+    dispatch(gathCreateModalOnAction);
+  };
   return (
     <BrowserRouter>
+      <div style={{ color: "red" }} onClick={handleClick}>
+        모달 띄우기
+      </div>
       <Header />
       <Switch>
         <Route path="/" exact component={Landing} />
@@ -23,6 +36,7 @@ const App = () => {
         <Redirect from="*" to="/" />
       </Switch>
       <Footer />
+      {isModal && <Modal>{/* isGathCreateModal && <GathCreate /> */}</Modal>}
     </BrowserRouter>
   );
 };
