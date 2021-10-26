@@ -11,38 +11,14 @@ const user = require("../models/user");
 const emailForm = require("../views/emailFormat");
 
 module.exports = {
-  checkNickname: async (req, res) => {
-    const { nickname } = req.params;
-    try {
-      const userInfo = await userFindOne({ nickname });
-      if (!userInfo) return res.status(200).json({ message: "Valid nickname" });
-      return res.status(409).json({ message: `${nickname} already exists` });
-    } catch (err) {
-      DBERROR(res, err);
-    }
+  validNickname: async (req, res) => {
+    res.status(200).json({ message: "Valid nickname" });
   },
-  checkEmail: async (req, res) => {
-    const { email } = req.params;
-    try {
-      const userInfo = await userFindOne({ email });
-      if (!userInfo) return res.status(200).json({ message: "Valid nickname" });
-      const { type } = userInfo.dataValues;
-      return res.status(409).json({ message: `${email} already exists`, type });
-    } catch (err) {
-      DBERROR(res, err);
-    }
+  validEmail: async (req, res) => {
+    return res.status(200).json({ message: "Valid nickname" });
   },
   signup: async (req, res) => {
     const { email, password, nickname } = req.body;
-    console.log(req.body);
-    const foundUserByNickname = await userFindOne({ nickname });
-    if (foundUserByNickname) return res.status(409).json({ message: `${nickname} already exists` });
-
-    const foundUserByEmail = await userFindOne({ email });
-    if (foundUserByEmail) {
-      const { type } = foundUserByEmail.dataValues;
-      return res.status(409).json({ message: `${email} already exists`, type });
-    }
 
     const hashed = await bcrypt.hash(password, saltRounds);
     const authKey = Math.random().toString(36).slice(2);
@@ -105,4 +81,5 @@ module.exports = {
     const { id, image, nickname } = foundUserByEmail.dataValues;
     return res.status(200).json({ id, image, nickname });
   },
+  me: async (req, res) => {},
 };
