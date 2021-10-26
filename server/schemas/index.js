@@ -1,9 +1,11 @@
 const mongoose = require("mongoose");
-
-const { MONGO_ID, MONGO_PASSWORD, NODE_ENV } = process.env;
-const MONGO_URL = `mongodb://${MONGO_ID}:${MONGO_PASSWORD}@localhost:27017/admin`;
+const {
+  mongodb: { id, password },
+  nodeEnv,
+} = require("../config");
+const MONGO_URL = `mongodb://${id}:${password}@localhost:27017/admin`;
 const connect = () => {
-  if (NODE_ENV !== "production") {
+  if (nodeEnv !== "production") {
     mongoose.set("debug", true);
   }
   mongoose.connect(

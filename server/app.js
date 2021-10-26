@@ -5,7 +5,6 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const { sequelize } = require("./models");
 const config = require("./config");
-const mongoose = require("mongoose");
 const mongooseConnect = require("./schemas");
 const {
   port,
