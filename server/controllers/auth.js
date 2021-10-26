@@ -82,4 +82,8 @@ module.exports = {
     userInfo.update({ authStatus: 1, authKey: null });
     return res.redirect(302, `${process.env.CLIENT_URL}`);
   },
+  signout: (req, res) => {
+    clearCookie(res);
+    res.status(205).json({ message: "Signed out" });
+  },
 };
