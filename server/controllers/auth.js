@@ -87,4 +87,8 @@ module.exports = {
     const { id, image, nickname } = userInfo;
     res.status(200).json({ id, image, nickname });
   },
+  signout: (req, res) => {
+    clearCookie(res);
+    res.status(205).json({ message: "Signed out" });
+  },
 };
