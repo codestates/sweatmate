@@ -9,7 +9,7 @@ const {
   port,
   cors: { allowedOrigin },
 } = require("./config");
-console.log(process.env.GOOGLE_PASSWORD);
+
 const authRouter = require("./router/auth");
 const userRouter = require("./router/user");
 const gatheringRouter = require("./router/gathering");

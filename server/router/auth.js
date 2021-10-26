@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { checkNickname, checkEmail } = require("../controllers/auth");
+const { checkNickname, checkEmail, signup, certifyEmail } = require("../controllers/auth");
 
 router.get("/nickname/:nickname", checkNickname);
 router.get("/email/:email", checkEmail);
@@ -14,8 +14,6 @@ router.post("/signin", (_, res) => {
 router.get("/signout", (_, res) => {
   res.status(200).send("로그아웃 라우터");
 });
-router.post("/signup", (_, res) => {
-  res.status(200).send("회원가입 라우터");
-});
-
+router.post("/signup", signup);
+router.get("/certification/:authKey", certifyEmail);
 module.exports = router;

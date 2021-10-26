@@ -1,7 +1,7 @@
 const { sign, verify } = require("jsonwebtoken");
 const {
   jwt: { secretKey, expiresInSec },
-} = require("../config");
+} = require("../../config");
 
 module.exports = {
   generateAccessToken: (id) => {

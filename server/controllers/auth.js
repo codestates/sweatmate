@@ -1,8 +1,15 @@
 const bcrypt = require("bcrypt");
 const { v4: uuid } = require("uuid");
 const { userFindOne, createUser } = require("./functions/sequelize");
+const { sendGmail } = require("./functions/mail");
 const { DBERROR } = require("./functions/utility");
-const { saltRounds } = require("../config");
+const { generateAccessToken, setCookie } = require("./functions/token");
+const {
+  bcrypt: { saltRounds },
+} = require("../config");
+const user = require("../models/user");
+const emailForm = require("../views/emailFormat");
+
 module.exports = {
   checkNickname: async (req, res) => {
     const { nickname } = req.params;
@@ -27,7 +34,7 @@ module.exports = {
   },
   signup: async (req, res) => {
     const { email, password, nickname } = req.body;
-
+    console.log(req.body);
     const foundUserByNickname = await userFindOne({ nickname });
     if (foundUserByNickname) return res.status(409).json({ message: `${nickname} already exists` });
 
@@ -38,20 +45,41 @@ module.exports = {
     }
 
     const hashed = await bcrypt.hash(password, saltRounds);
+    const authKey = Math.random().toString(36).slice(2);
 
     try {
-      const userInfo = await createUser({
+      const createdUserInfo = await createUser({
         id: uuid(),
         nickname,
         email,
         password: hashed,
+        authKey,
       });
-      const { id, image } = userInfo.dataValues;
-      const token = generateAccessToken(id);
-      setCookie(res, token);
-      return res.status(201).json({ id, image, nickname });
+
+      setTimeout(async () => {
+        const userInfo = await userFindOne({ authKey });
+        if (!userInfo.dataValues.authStatus) {
+          await userInfo.destroy();
+          console.log(abc.dataValues, "유저 정보가 삭제되었습니다.");
+        }
+      }, 60 * 60 * 1000);
+
+      sendGmail({
+        toEmail: email,
+        subject: "안녕하세요 Sweatmate입니다.",
+        html: emailForm(authKey),
+      });
+
+      return res.status(201).json({ message: "1시간 이내에 이메일 인증을 진행해주세요" });
     } catch (err) {
       DBERROR(res, err);
     }
+  },
+  certifyEmail: async (req, res) => {
+    const { authKey } = req.params;
+    const userInfo = await userFindOne({ authKey });
+    if (!userInfo) return res.status(400).send("인증 시간이 초과되었습니다.");
+    userInfo.update({ authStatus: 1, authKey: null });
+    return res.redirect(302, `${process.env.CLIENT_URL}`);
   },
 };
