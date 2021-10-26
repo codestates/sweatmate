@@ -4,9 +4,9 @@ const {
 } = require("../../config");
 
 module.exports = {
-  generateAccessToken: (id) => {
+  generateAccessToken: (id, type) => {
     try {
-      const token = sign({ id }, secretKey, {
+      const token = sign({ id, type }, secretKey, {
         expiresIn: expiresInSec,
       });
       return token;
