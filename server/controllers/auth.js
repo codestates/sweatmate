@@ -11,38 +11,14 @@ const user = require("../models/user");
 const emailForm = require("../views/emailFormat");
 
 module.exports = {
-  checkNickname: async (req, res) => {
-    const { nickname } = req.params;
-    try {
-      const userInfo = await userFindOne({ nickname });
-      if (!userInfo) return res.status(200).json({ message: "Valid nickname" });
-      return res.status(409).json({ message: `${nickname} already exists` });
-    } catch (err) {
-      DBERROR(res, err);
-    }
+  validNickname: async (req, res) => {
+    res.status(200).json({ message: "Valid nickname" });
   },
-  checkEmail: async (req, res) => {
-    const { email } = req.params;
-    try {
-      const userInfo = await userFindOne({ email });
-      if (!userInfo) return res.status(200).json({ message: "Valid nickname" });
-      const { type } = userInfo.dataValues;
-      return res.status(409).json({ message: `${email} already exists`, type });
-    } catch (err) {
-      DBERROR(res, err);
-    }
+  validEmail: async (req, res) => {
+    return res.status(200).json({ message: "Valid nickname" });
   },
   signup: async (req, res) => {
     const { email, password, nickname } = req.body;
-    console.log(req.body);
-    const foundUserByNickname = await userFindOne({ nickname });
-    if (foundUserByNickname) return res.status(409).json({ message: `${nickname} already exists` });
-
-    const foundUserByEmail = await userFindOne({ email });
-    if (foundUserByEmail) {
-      const { type } = foundUserByEmail.dataValues;
-      return res.status(409).json({ message: `${email} already exists`, type });
-    }
 
     const hashed = await bcrypt.hash(password, saltRounds);
     const authKey = Math.random().toString(36).slice(2);
@@ -81,5 +57,34 @@ module.exports = {
     if (!userInfo) return res.status(400).send("인증 시간이 초과되었습니다.");
     userInfo.update({ authStatus: 1, authKey: null });
     return res.redirect(302, `${process.env.CLIENT_URL}`);
+    //TODO: 클라이언트와 싱크 맞추기
+  },
+  signin: async (req, res) => {
+    const { email, password } = req.body;
+    //TODO: email 유효성 검사 추가
+    const foundUserByEmail = await userFindOne({ email });
+    if (!foundUserByEmail) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+    if (!foundUserByEmail.dataValues.authStatus) {
+      return res.status(401).json({ message: "Need to verify your email first" });
+    }
+    const isValidPassword = await bcrypt.compare(password, foundUserByEmail.dataValues.password);
+    if (!isValidPassword) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+    const token = generateAccessToken(
+      foundUserByEmail.dataValues.id,
+      foundUserByEmail.dataValues.type
+    );
+    setCookie(res, token);
+    const { id, image, nickname } = foundUserByEmail.dataValues;
+    return res.status(200).json({ id, image, nickname });
+  },
+  me: async (req, res) => {
+    const { userId, type } = res.locals;
+    const userInfo = await userFindOne({ id: userId });
+    const { id, image, nickname } = userInfo;
+    res.status(200).json({ id, image, nickname });
   },
 };
