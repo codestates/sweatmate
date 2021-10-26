@@ -1,8 +1,11 @@
 const { User, Gathering, Sport } = require("../../models");
 
 module.exports = {
-  userFindOne: (object) => {
-    return User.findOne({ where: { ...object } });
+  userFindOne: async (object, attributes = []) => {
+    return await User.findOne({
+      where: { ...object },
+      attributes: { exclude: [...attributes] },
+    });
   },
   createUser: (object) => {
     return User.create(object);

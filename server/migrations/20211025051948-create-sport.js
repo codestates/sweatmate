@@ -15,6 +15,10 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
+      sportEngName: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
     });
   },
   down: async (queryInterface, Sequelize) => {

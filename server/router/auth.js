@@ -19,4 +19,3 @@ router.get("/signout", signout);
 router.post("/signup", checkEmail, checkNickname, signup);
 router.get("/certification/:authKey", certifyEmail);
 module.exports = router;
-
