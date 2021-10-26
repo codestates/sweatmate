@@ -13,7 +13,7 @@ import {
 } from "react-icons/io5";
 import { HiMenu } from "react-icons/hi";
 import { BsPerson } from "react-icons/bs";
-import UserThumbnail from "./UserThumbnail";
+import UserProfile from "./UserProfile";
 
 const StyledHeader = styled.header`
   background-color: var(--color-white);
@@ -114,7 +114,7 @@ const StyledNavLink = styled(NavLink)`
 
   ${media.lessThan("medium")`
     padding: 1rem;
-    font-size: 2rem;
+    font-size: 1.68rem;
     margin-right: 0;
     margin-bottom: 0.5rem;
     border: none;
@@ -140,7 +140,7 @@ const Text = styled.span`
   line-height: 1;
 
   ${media.lessThan("medium")`
-    margin-left: 1rem;
+    margin-left: 0.96rem;
     font-size: 1.2rem;
   `}
 `;
@@ -149,7 +149,7 @@ const MobileUserContainer = styled.div`
   display: flex;
   width: 100%;
   padding: 1rem;
-  background-color: #f5f5f5;
+  background-color: var(--color-darkwhite);
   border-radius: 0.5rem;
   font-size: 1.3rem;
   align-items: center;
@@ -168,7 +168,7 @@ const MobileNavBtn = styled.button`
   display: flex;
   align-items: center;
   padding: 1rem;
-  font-size: 2rem;
+  font-size: 1.68rem;
   margin-bottom: 0.5rem;
   border-radius: 0.5rem;
   color: var(--color-red);
@@ -195,7 +195,7 @@ const NonUserBtn = styled.button`
     `}
 
   :hover {
-    background-color: #f5f5f5;
+    background-color: var(--color-darkwhite);
     ${({ main }) =>
       main &&
       css`
@@ -224,7 +224,7 @@ const NotificationBtn = styled.button`
   transition: background-color, 100ms, ease-out;
 
   :hover {
-    background-color: #f5f5f5;
+    background-color: var(--color-darkwhite);
   }
 
   ${media.lessThan("medium")`
@@ -244,7 +244,7 @@ const UserBtn = styled.button`
   transition: background-color, 100ms, ease-out;
 
   :hover {
-    background-color: #f5f5f5;
+    background-color: var(--color-darkwhite);
   }
 
   ${media.lessThan("medium")`
@@ -290,7 +290,7 @@ const PcUserInfoMyPageBtn = styled(Link)`
   transition: background-color, 100ms, ease-out;
 
   :hover {
-    background-color: #f5f5f5;
+    background-color: var(--color-darkwhite);
   }
 `;
 
@@ -302,8 +302,7 @@ const PcUserInfoLogoutBtn = styled.button`
   transition: background-color, opacity 100ms, ease-out;
 
   :hover {
-    background-color: var(--color-red);
-    opacity: 25%;
+    background-color: var(--color-red--25);
   }
 `;
 
@@ -399,15 +398,15 @@ const Header = () => {
       {isLogin && (
         <Nav isNav={isHamburgerBtnClicked}>
           <MobileUserContainer>
-            <UserThumbnail
-              size={2}
+            <UserProfile
+              size={1.2}
               user={{
                 id: "uuid",
-                nickname: "농구에 미친 사람",
+                nickname: "Unuuuuu",
                 image: "",
               }}
+              isDisabled
             />
-            <MobileNickname>Unuuuuu</MobileNickname>
           </MobileUserContainer>
           <MobileStyledH4>Page</MobileStyledH4>
           <StyledNavLink to="/home" onClick={closeAll}>
@@ -462,15 +461,15 @@ const Header = () => {
             )}
           </NotificationContainer>
           <UserBtn onClick={HandleUserInfoClick}>
-            <UserThumbnail
-              size={1.5}
+            <UserProfile
+              size={1}
               user={{
                 id: "uuid",
-                nickname: "농구에 미친 사람",
+                nickname: "Unuuuuu",
                 image: "",
               }}
+              isDisabled
             />
-            <Nickname>Unuuuuu</Nickname>
           </UserBtn>
           <MobileHamburgerBtn onClick={handleHamburgerClick}>
             <HiMenu />
