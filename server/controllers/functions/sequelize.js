@@ -1,4 +1,4 @@
-const { User, Gathering, Sport } = require("../../models");
+const { User, Gathering, Sport, User_sport } = require("../../models");
 
 module.exports = {
   userFindOne: async (object, attributes = []) => {
@@ -9,5 +9,11 @@ module.exports = {
   },
   createUser: (object) => {
     return User.create(object);
+  },
+  findSportsOfUser: async (object, attributes = []) => {
+    return await User_sport.findAll({
+      where: { ...object },
+      attributes: { exclude: [...attributes] },
+    });
   },
 };
