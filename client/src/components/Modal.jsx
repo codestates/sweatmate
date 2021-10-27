@@ -6,54 +6,71 @@ import { useDispatch } from "react-redux";
 import { IoClose } from "react-icons/io5";
 import media from "styled-media-query";
 
-const Container = styled.div`
+const Background = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  position: absolute;
-  top: 0rem;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(17, 26, 61, 0.5);
+  background-color: var(--color-modalbg);
 `;
 
-const ModalBox = styled.div`
+const ModalContainer = styled.div`
+  z-index: 1;
+  color: var(--color-darkgray);
+  background-color: var(--color-white);
+  border-radius: 1rem;
+  width: 60rem;
+  height: 36rem;
+  max-height: 100vh - 16rem;
+  padding: 1.5rem;
+  ${media.lessThan("medium")`
+    padding: 1rem;
+  `};
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: start;
-  width: 60rem;
-  height: 40rem;
-  border: 1px solid black;
-  background-color: white;
+  justify-content: space-between;
+  position: relative;
   ${media.between("medium", "large")`
-    /* screen width is between 768px (medium) and 1170px (large) */
     width: 40rem;
   `}
-  ${media.lessThan("medium")`
-    /* screen width is between 768px (medium) and 1170px (large) */
+  ${media.between("small", "medium")`
     width: 25rem;
+  `}
+  ${media.lessThan("small")`
+    border-radius: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
   `}
 `;
 
 const CloseBtn = styled.div`
+  border-radius: 0.5rem;
+  padding: 0.25rem;
   position: absolute;
-  display: flex;
-  flex-direction: row-reverse;
-  width: 60rem;
-  height: 0rem;
-  font-size: 1.2rem;
-  color: var(--color-black);
-  padding-right: 2rem;
-  padding-top: 2rem;
-  ${media.between("medium", "large")`
-    /* screen width is between 768px (medium) and 1170px (large) */
-    width: 40rem;
-  `}
+  right: 1.5rem;
+  top: 1.5rem;
+  width: 2.25rem;
+  height: 2.25rem;
+  font-size: 1.75rem;
   ${media.lessThan("medium")`
-    /* screen width is between 768px (medium) and 1170px (large) */
-    width: 25rem;
-  `}
+    right: 1rem;
+    top: 1rem;
+    width: 2rem;
+    height: 2rem;
+    font-size: 1.5rem;
+  `};
+  color: var(--color-gray);
+  :hover {
+    color: var(--color-darkgray);
+    background-color: var(--color-darkwhite);
+  }
 `;
 
 const Modal = ({ children }) => {
@@ -65,14 +82,14 @@ const Modal = ({ children }) => {
     dispatch(modalOffAction);
   };
   return (
-    <Container onClick={handleBackgroundClick}>
-      <ModalBox>
+    <Background onClick={handleBackgroundClick}>
+      <ModalContainer>
         <CloseBtn onClick={handleCloseClick}>
-          <IoClose fontSize="2rem" />
+          <IoClose />
         </CloseBtn>
         {children}
-      </ModalBox>
-    </Container>
+      </ModalContainer>
+    </Background>
   );
 };
 
