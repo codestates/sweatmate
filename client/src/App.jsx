@@ -35,7 +35,10 @@ const App = () => {
         <Route path="/map" component={Map} />
         <Redirect from="*" to="/" />
       </Switch>
-      <Footer />
+      <Route path="/" exact component={Footer} />
+      <Route path="/home" component={Footer} />
+      <Route path="/schedule" component={Footer} />
+      <Route path="/users/:id" component={Footer} />
       {isModal && <Modal>{/* isGathCreateModal && <GathCreate /> */}</Modal>}
     </BrowserRouter>
   );
