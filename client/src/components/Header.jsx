@@ -404,7 +404,7 @@ const Header = () => {
             <IoHomeOutline />
             <Text>홈</Text>
           </StyledNavLink>
-          <StyledNavLink to="/chat/1" onClick={closeAll}>
+          <StyledNavLink to="/chat" onClick={closeAll}>
             <IoChatbubblesOutline />
             <Text>채팅</Text>
           </StyledNavLink>
