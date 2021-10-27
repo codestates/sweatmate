@@ -30,8 +30,7 @@ const Fill = styled.div`
   top: 0;
   width: 100%;
   height: 100%;
-  background-color: var(--color-black);
-  opacity: 0.92;
+  background-color: var(--color-modalbg);
 `;
 
 const LoadingContainer = styled.div`
