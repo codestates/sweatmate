@@ -1,5 +1,7 @@
 import React from "react";
 import GathCard from "../components/GathCard";
+import { useDispatch } from "react-redux";
+import { gathCreateModalOnAction } from "../store/actions";
 
 const Home = () => {
   /* 모임 정보 Dummy */
@@ -33,10 +35,19 @@ const Home = () => {
     ],
   };
 
+  const dispatch = useDispatch();
+  const handleClick = (e) => {
+    dispatch(gathCreateModalOnAction);
+  };
   return (
-    <div>
-      <GathCard gathering={gathering} />
-    </div>
+    <>
+      <div style={{ color: "red" }} onClick={handleClick}>
+        모달 띄우기
+      </div>
+      <div>
+        <GathCard gathering={gathering} />
+      </div>
+    </>
   );
 };
 
