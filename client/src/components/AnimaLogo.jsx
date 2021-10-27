@@ -132,7 +132,7 @@ const Icon = styled.div`
   animation: ${Bounce} 0.6s alternate 10 cubic-bezier(0.75, 0.1, 0.04, 0.8) forwards,
     ${LastBounce} 1.2s 6s alternate 1 cubic-bezier(0.4, 0.1, 0.02, 0.8) forwards,
     ${ChangeImage} 6s normal 1 cubic-bezier(0.4, 0.1, 0.02, 0.8) forwards,
-    ${IconDisappear} 0.3s 8.1s normal 1 ease-out forwards;
+    ${IconDisappear} 0.3s 7.2s normal 1 ease-out forwards;
 `;
 
 const LogoResize = keyframes`
@@ -150,7 +150,7 @@ const Logo = styled(Icon)`
     width: calc(2.4rem * 5.7);
   `}
   background-image: url("../animation_assets/Sweatmate.png");
-  animation: ${LogoResize} 0.9s 7.8s normal 1 cubic-bezier(0.75, 0.1, 0.04, 0.8) forwards;
+  animation: ${LogoResize} 0.9s 6.9s normal 1 cubic-bezier(0.75, 0.1, 0.04, 0.8) forwards;
 `;
 
 const MarkPosition = keyframes`
@@ -170,7 +170,7 @@ const ExcMark = styled(Icon)`
     left: calc(2.4rem * (1 - 0.25));
   `}
   background-image: url("../animation_assets/ExcMark.png");
-  animation: ${MarkPosition} 0.9s 7.8s normal 1 cubic-bezier(0.75, 0.1, 0.04, 0.8) forwards;
+  animation: ${MarkPosition} 0.9s 6.9s normal 1 cubic-bezier(0.75, 0.1, 0.04, 0.8) forwards;
 `;
 
 const ShadowBounce = keyframes`
