@@ -3,6 +3,7 @@ import styled from "styled-components";
 import PropTypes from "prop-types";
 import UserProfile from "./UserProfile";
 import { FaMapMarkerAlt } from "react-icons/fa";
+import media from "styled-media-query";
 
 const CardContainer = styled.div`
   border-radius: 1rem;
@@ -24,6 +25,10 @@ const CardContainer = styled.div`
   .text {
     padding-top: 0.1em;
   }
+  ${media.lessThan("medium")`
+    /* screen width is between 768px (medium) and 1170px (large) */
+    display : none;
+  `}
 `;
 
 const InfoHeader = styled.div`
