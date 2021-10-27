@@ -1,23 +1,46 @@
-const { User, Gathering, Sport, User_sport } = require("../../models");
+const { User, Gathering, Sport, User_sport, User_gathering } = require("../../models");
 
 module.exports = {
-  userFindOne: async (object, attributes = []) => {
+  userFindOne: async (queries, attributes = []) => {
     return await User.findOne({
-      where: { ...object },
+      where: { ...queries },
       attributes: { exclude: [...attributes] },
     });
   },
-  createUser: (object) => {
+  createUser: (queries) => {
     return User.create(object);
   },
-  findSportsOfUser: async (object, attributes = []) => {
+  findSportsOfUser: async (queries, attributes = []) => {
     return await User_sport.findAll({
-      where: { ...object },
+      where: { ...queries },
       attributes: { exclude: [...attributes] },
     });
   },
-  modifyUserSportList: async (object, sportList) => {
-    await User_sport.destroy({ where: { ...object } });
+  modifyUserSportList: async (queries, sportList) => {
+    await User_sport.destroy({ where: { ...queries } });
     await User_sport.bulkCreate(sportList);
+  },
+  findAllGathering: async (queries) => {
+    const gatheringList = await Gathering.findAll({
+      where: { ...queries },
+      include: [
+        { model: User, as: "creator", attributes: ["id", "nickname", "image"] },
+        {
+          model: User_gathering,
+          include: { model: User, attributes: ["id", "nickname", "image"] },
+          attributes: { exclude: ["userId", "gatheringId"] },
+        },
+      ],
+      attributes: { exclude: ["creatorId", "createdAt"] }, //TODO: 생성일자는 필요없는지 상의
+    });
+    return Promise.all(
+      gatheringList.map((element) => {
+        const users = element.dataValues.User_gatherings.map((userInfo) => {
+          return userInfo.User.dataValues;
+        });
+        delete element.dataValues.User_gatherings;
+        return { ...element.dataValues, users };
+      })
+    );
   },
 };
