@@ -53,10 +53,10 @@ const bouncing = keyframes`
 
 const resizing = keyframes`
   0% {
-    transform: translate3d(0, 0.4rem, 0) scale(1, 1);
+    transform: translate3d(0, 50%, 0) scale(1, 1);
   }
   100% {
-    transform: translate3d(0, 0.2rem, 0) scale(0.5, 0.8);
+    transform: translate3d(0, 50%, 0) scale(0.5, 0.8);
   }
 `;
 
