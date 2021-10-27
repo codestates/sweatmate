@@ -1,93 +1,19 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import media from "styled-media-query";
 import { IoChatbubblesOutline } from "react-icons/io5";
+import { HiMenu } from "react-icons/hi";
 import { useRouteMatch, useParams, Switch, Route, useHistory } from "react-router";
 import { NavLink } from "react-router-dom";
+import PropTypes from "prop-types";
 
 const Container = styled.div`
   display: flex;
-  min-height: calc(100vh - 416.72px);
-`;
-
-const Nav = styled.nav`
-  width: calc(4.5rem + 171.72px + 53.88px + 67.78px);
-  border-right: 1px solid var(--color-lightgray);
-  display: flex;
-  flex-direction: column;
+  min-height: calc(100vh - 73px);
 
   ${media.lessThan("medium")`
-    width: 100%;
-  `};
-`;
-
-const NavHeader = styled.header`
-  padding: 1rem 2rem;
-`;
-
-const NavH1 = styled.h1`
-  font-size: 1.2rem;
-  display: inline;
-
-  svg {
-    font-size: 1.5rem;
-    vertical-align: text-bottom;
-    margin-right: 0.5rem;
-  }
-`;
-
-// const NavH2 = styled.h2`
-//   font-size: 0.9rem;
-//   color: var(--color-gray);
-//   padding: 1rem;
-// `;
-
-const ChatItemContainer = styled.div`
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-`;
-
-const ChatItem = styled(NavLink)`
-  padding: 1rem;
-  border-radius: 0.5rem;
-  transition: background-color 100ms ease-out;
-  display: flex;
-
-  &.active,
-  :hover {
-    background-color: var(--color-darkwhite);
-  }
-
-  :not(:last-child) {
-    margin-bottom: 0.5rem;
-  }
-`;
-
-const Emoji = styled.span`
-  font-size: 1.5rem;
-  margin-right: 0.5rem;
-`;
-
-const Content = styled.span`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-`;
-
-const Title = styled.span`
-  font-size: 1rem;
-  margin-bottom: 0.2rem;
-`;
-
-const RecentMsg = styled.span`
-  font-size: 0.8rem;
-  color: var(--color-gray);
-`;
-
-const Time = styled.span`
-  font-size: 0.6rem;
-  color: var(--color-gray);
+    min-height: calc(100vh - 57px);
+  `}
 `;
 
 const Main = styled.main`
@@ -122,6 +48,7 @@ const Logo = styled.img`
   `}
 `;
 
+// TODO: 이후에 mock을 진짜 데이터로 대체해야 함
 const mock = [
   {
     id: "1",
@@ -151,43 +78,226 @@ const Chat = () => {
 
   return (
     <Container>
-      <Nav>
-        <NavHeader>
-          <NavH1>
-            <IoChatbubblesOutline />
-            채팅
-          </NavH1>
-        </NavHeader>
-        <ChatItemContainer>
-          {mock.map((item) => (
-            <ChatItem key={item.id} to={`${url}/${item.id}`}>
-              <Emoji>{item.sportEmoji}</Emoji>
-              <Content>
-                <Title>{item.title}</Title>
-                <RecentMsg>{item.recentMessage}</RecentMsg>
-              </Content>
-              <Time>{item.recentMessageHour}</Time>
-            </ChatItem>
-          ))}
-        </ChatItemContainer>
-      </Nav>
-      <Main>
-        <Switch>
-          <Route exact path={path}>
+      <Switch>
+        <Route exact path={path}>
+          <Navigation url={url} />
+          <Main>
             <NoContent>
               <Logo src={`${process.env.PUBLIC_URL}/assets/long-logo.png`} alt="logo" />
             </NoContent>
-          </Route>
-          <Route path={`${path}/:id`} component={Room} />
-        </Switch>
-      </Main>
+          </Main>
+        </Route>
+        <Route path={`${path}/:id`}>
+          <Navigation url={url} />
+          <Main>
+            <Room />
+          </Main>
+        </Route>
+      </Switch>
     </Container>
   );
 };
 
+const Nav = styled.nav`
+  width: calc(4.5rem + 171.72px + 53.88px + 67.78px);
+  border-right: 1px solid var(--color-lightgray);
+  display: flex;
+  flex-direction: column;
+
+  ${media.lessThan("medium")`
+    width: 100%;
+  `};
+`;
+
+const NavHeader = styled.header`
+  height: 4.5rem;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+`;
+
+const NavH1 = styled.h1`
+  font-size: 1.2rem;
+  display: inline;
+
+  svg {
+    font-size: 1.5rem;
+    vertical-align: text-bottom;
+    margin-right: 0.5rem;
+  }
+`;
+
+// const NavH2 = styled.h2`
+//   font-size: 0.9rem;
+//   color: var(--color-gray);
+//   padding: 1rem;
+// `;
+
+const ChatItemContainer = styled.div`
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+`;
+
+const ChatItem = styled(NavLink)`
+  padding: 1rem;
+  border-radius: 0.5rem;
+  transition: background-color 100ms ease-out;
+  display: flex;
+
+  :hover {
+    background-color: var(--color-darkwhite);
+  }
+
+  &.active {
+    background-color: var(--color-maingreen--25);
+  }
+
+  :not(:last-child) {
+    margin-bottom: 0.5rem;
+  }
+`;
+
+const Emoji = styled.span`
+  display: flex;
+  align-items: center;
+  font-size: 1.5rem;
+  margin-right: 1rem;
+`;
+
+const Content = styled.span`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+`;
+
+const Title = styled.span`
+  font-size: 1rem;
+  margin-bottom: 0.2rem;
+`;
+
+const RecentMsg = styled.span`
+  font-size: 0.8rem;
+  color: var(--color-gray);
+`;
+
+const Time = styled.span`
+  font-size: 0.6rem;
+  color: var(--color-gray);
+`;
+
+const Navigation = ({ url }) => {
+  return (
+    <Nav>
+      <NavHeader>
+        <NavH1>
+          <IoChatbubblesOutline />
+          채팅
+        </NavH1>
+      </NavHeader>
+      <ChatItemContainer>
+        {mock.map((item) => (
+          <ChatItem key={item.id} to={`${url}/${item.id}`}>
+            <Emoji>{item.sportEmoji}</Emoji>
+            <Content>
+              <Title>{item.title}</Title>
+              <RecentMsg>{item.recentMessage}</RecentMsg>
+            </Content>
+            <Time>{item.recentMessageHour}</Time>
+          </ChatItem>
+        ))}
+      </ChatItemContainer>
+    </Nav>
+  );
+};
+
+Navigation.propTypes = {
+  url: PropTypes.string.isRequired,
+};
+
+// TODO: 이후에 진짜 데이터로 대체해야 함
+const gatheringWithChat = {
+  title: "구로구에서 풋살합시다",
+  users: [
+    { id: "1", nickname: "영희", image: "" },
+    { id: "2", nickname: "철수", image: "" },
+  ],
+  chatLog: [
+    {
+      id: "1",
+      nickname: "영희",
+      image: "",
+      message: "오고 계신가요?",
+    },
+    {
+      id: "2",
+      nickname: "철수",
+      image: "",
+      message: "네",
+    },
+    {
+      id: "1",
+      nickname: "영희",
+      image: "",
+      message: "몇 시 도착 예정이실까요",
+    },
+    {
+      id: "2",
+      nickname: "철수",
+      image: "",
+      message: "2시용",
+    },
+  ],
+};
+
+const RoomContainer = styled.div`
+  display: flex;
+  height: 100%;
+`;
+const ChatContainer = styled.div`
+  flex: 1;
+  height: 100%;
+  border-right: 1px solid var(--color-lightgray);
+
+  ${media.lessThan("large")`
+    display : ${({ isDrawer }) => isDrawer && "none"};
+  `}
+`;
+const ChatHeader = styled.header`
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--color-lightgray);
+  justify-content: space-between;
+`;
+const ChatTitle = styled.h1`
+  font-size: 1.2rem;
+  margin: 0;
+`;
+const Hamburger = styled.button`
+  display: flex;
+  align-items: center;
+  font-size: 1.5rem;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+
+  :hover {
+    background-color: var(--color-darkwhite);
+  }
+`;
+const DrawerContainer = styled.div`
+  flex-basis: calc(4.5rem + 171.72px + 53.88px + 67.78px);
+  height: 100%;
+
+  ${media.lessThan("large")`
+    flex-basis: 100%;
+  `}
+`;
+
 const Room = () => {
   const history = useHistory();
   const { id } = useParams();
+  const [isDrawer, setIsDrawer] = useState(false);
 
   // TODO: 진짜 데이터와 비교하는 것으로 바꿔야 함
   useEffect(() => {
@@ -196,7 +306,23 @@ const Room = () => {
     }
   }, []);
 
-  return <h1>hi</h1>;
+  const handleHamburgerClick = () => {
+    setIsDrawer((prev) => !prev);
+  };
+
+  return (
+    <RoomContainer>
+      <ChatContainer isDrawer={isDrawer}>
+        <ChatHeader>
+          <ChatTitle>{gatheringWithChat.title}</ChatTitle>
+          <Hamburger onClick={handleHamburgerClick}>
+            <HiMenu />
+          </Hamburger>
+        </ChatHeader>
+      </ChatContainer>
+      {isDrawer && <DrawerContainer></DrawerContainer>}
+    </RoomContainer>
+  );
 };
 
 export default Chat;
