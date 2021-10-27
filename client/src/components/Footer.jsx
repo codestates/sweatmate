@@ -28,7 +28,8 @@ const Wrapper = styled.div`
   flex: 1;
 `;
 
-const Heading = styled.h4`
+const Heading = styled.h1`
+  font-size: 1rem;
   margin-bottom: 1rem;
   font-family: Interop-Medium;
   color: var(--color-black);
