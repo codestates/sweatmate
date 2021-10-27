@@ -1,14 +1,30 @@
 const express = require("express");
 const router = express.Router();
+const { getUerInfo, removeUserInfo, modifyUserInfo } = require("../controllers/user");
+const { isAuth, checkNickname } = require("../middlewares");
+const multer = require("multer");
+const multerS3 = require("multer-s3");
+const aws = require("aws-sdk");
 
-router.get("/:userId", (_, res) => {
-  res.status(200).send("유저 정보 조회 라우터");
+const s3 = new aws.S3();
+const upload = multer({
+  storage: multerS3({
+    s3,
+    bucket: "sweatmate",
+    metadata(req, file, cb) {
+      cb(null, { fieldName: file.fieldname });
+    },
+    key(req, file, cb) {
+      const extension = file.mimetype.split("/")[1];
+      cb(null, `${Date.now()}.${extension}`);
+    },
+    ACL: "public-read",
+    contentType: multerS3.AUTO_CONTENT_TYPE,
+  }),
 });
-router.put("/:userId", (_, res) => {
-  res.status(200).send("유저 정보 수정 라우터");
-});
-router.delete("/:userId", (_, res) => {
-  res.status(200).send("유저 정보 삭제 라우터");
-});
+
+router.get("/:userId", isAuth, getUerInfo);
+router.put("/:userId", isAuth, upload.single("image"), modifyUserInfo);
+router.delete("/:userId", isAuth, removeUserInfo);
 
 module.exports = router;
