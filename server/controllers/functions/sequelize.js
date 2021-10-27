@@ -16,6 +16,12 @@ module.exports = {
       attributes: { exclude: [...attributes] },
     });
   },
+  findGatheringOfUser: async (queries, attributes = []) => {
+    return await User_gathering.findAll({
+      where: { ...queries },
+      attributes: { exclude: [...attributes] },
+    });
+  },
   modifyUserSportList: async (queries, sportList) => {
     await User_sport.destroy({ where: { ...queries } });
     await User_sport.bulkCreate(sportList);
