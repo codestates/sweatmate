@@ -1,5 +1,8 @@
-const { userFindOne, findSportsOfUser } = require("./functions/sequelize");
+const { userFindOne, findSportsOfUser, modifyUserSportList } = require("./functions/sequelize");
 const { clearCookie } = require("./functions/token");
+const { DBERROR, deleteImageinTable } = require("./functions/utility");
+const areaList = require("../resource/areaList");
+const sportsList = require("../resource/sportList");
 module.exports = {
   getUerInfo: async (req, res) => {
     const { userId, type } = res.locals;
@@ -24,12 +27,42 @@ module.exports = {
         return { skill, sportEmoji, sportName, sportEngName };
       });
       const sports = await Promise.all(sportsPromise);
-      const { areaName } = areaInfo.dataValues;
+      const areaName = areaInfo?.dataValues.areaName ?? null;
       delete userInfo.dataValues.areaId;
       res.status(200).json({ ...userInfo.dataValues, areaName, sports });
     } catch (err) {
-      console.log(err);
-      res.status(500).send("에러났어요");
+      DBERROR(res, err);
+    }
+  },
+  modifyUserInfo: async function (req, res) {
+    const { userId, type } = res.locals;
+    if (userId !== req.params.userId) {
+      return res.status(403).json({ message: "User don't have permission" });
+    }
+    try {
+      const { nickname, areaName, age, sports, gender } = req.body;
+      const userInfo = await userFindOne({ id: userId });
+      let location;
+      if (req.file) {
+        location = req.file.location;
+        const { image } = userInfo.dataValues;
+        if (image) {
+          deleteImageinTable(image);
+        }
+      }
+      const areaId = areaList.filter((el) => el.areaName === areaName)[0].id;
+      const setSportsByUser = JSON.parse(sports); // [{sportName:축구, skill: 1}, {sportName:야구, skill: 3} ...]
+      const getUserSportsList = setSportsByUser.map((userSport) => {
+        const sportInfo = sportsList.filter((sportList) => {
+          return userSport.sportName === sportList.sportName;
+        })[0];
+        return { sportId: sportInfo.id, userId, skill: userSport.skill };
+      });
+      await userInfo.update({ nickname, age, areaId, image: location, gender });
+      await modifyUserSportList({ userId }, getUserSportsList);
+      module.exports.getUerInfo(req, res);
+    } catch (err) {
+      DBERROR(res, err);
     }
   },
   removeUserInfo: async (req, res) => {
@@ -37,12 +70,16 @@ module.exports = {
     if (userId !== req.params.userId) {
       return res.status(403).json({ message: "User don't have permission" });
     }
-    const userInfo = await userFindOne({ id: userId });
-    if (!userInfo) {
-      return res.status(404).json({ message: "User not found" });
+    try {
+      const userInfo = await userFindOne({ id: userId });
+      if (!userInfo) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      await userInfo.destroy();
+      clearCookie(res, token);
+      return res.status(200).json({ message: "User deleted" });
+    } catch (err) {
+      DBERROR(res, err);
     }
-    await userInfo.destroy();
-    clearCookie(res, token);
-    return res.status(200).json({ message: "User deleted" });
   },
 };

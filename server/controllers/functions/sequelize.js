@@ -16,4 +16,8 @@ module.exports = {
       attributes: { exclude: [...attributes] },
     });
   },
+  modifyUserSportList: async (object, sportList) => {
+    await User_sport.destroy({ where: { ...object } });
+    await User_sport.bulkCreate(sportList);
+  },
 };
