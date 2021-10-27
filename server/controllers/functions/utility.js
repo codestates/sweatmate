@@ -1,5 +1,5 @@
 const AWS = require("aws-sdk");
-AWS.config.loadFromPath("./awsconfig.json");
+// AWS.config.loadFromPath("./awsconfig.json");
 const s3 = new AWS.S3();
 
 module.exports = {
