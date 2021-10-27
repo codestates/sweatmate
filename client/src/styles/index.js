@@ -114,6 +114,7 @@ const GlobalStyle = createGlobalStyle`
     --color-darkwhite: #f5f5f5;
     --color-white: #FFFFFF;
     --color-shadow: #1D1D2140;
+    --color-modalbg: #1D1D21E5;
   }
 `;
 
