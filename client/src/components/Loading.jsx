@@ -7,7 +7,6 @@ import media from "styled-media-query";
   Loading 컴포넌트 활용 가이드
   * 뷰포트 전체에 꽉 차게 하고 싶은 경우, isFullscreen 프롭스를 전달하여 사용합니다.
     위 속성이 존재하지 않는 경우, 부모 컴포넌트의 100%를 차지합니다.
-    (주의) 이 때, 부모 컴포넌트는 반드시 position: relative 속성을 가져야 합니다.
   * 배경색을 투명하게 하고 싶은 경우, isTransparent 프롭스를 전달하여 사용합니다.
     위 속성이 존재하지 않는 경우, 투명도 0.92의 var(--color-black) 색상을 기본 배경색으로 가집니다.
 */
