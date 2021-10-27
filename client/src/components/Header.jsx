@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 import React, { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import styled, { css } from "styled-components";
@@ -159,10 +157,6 @@ const MobileUserContainer = styled.div`
   `};
 `;
 
-const MobileNickname = styled.span`
-  margin-left: 1rem;
-`;
-
 const MobileNavBtn = styled.button`
   display: flex;
   align-items: center;
@@ -251,10 +245,6 @@ const UserBtn = styled.button`
   `};
 `;
 
-const Nickname = styled.span`
-  margin-left: 0.5rem;
-`;
-
 const MobileHamburgerBtn = styled.button`
   display: flex;
   font-size: 1.5rem;
@@ -298,6 +288,7 @@ const PcUserInfoLogoutBtn = styled.button`
   padding: 0.5rem 1rem;
   font-size: 0.9rem;
   border-radius: 0 0 0.5rem 0.5rem;
+  background-color: var(--color-white);
   transition: background-color, opacity 100ms, ease-out;
 
   :hover {
