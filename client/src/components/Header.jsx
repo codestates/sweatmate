@@ -215,7 +215,7 @@ const NotificationBtn = styled.button`
   font-size: 1.5rem;
   padding: 0.5rem;
   border-radius: 0.5rem;
-  transition: background-color, 100ms, ease-out;
+  transition: background-color 100ms ease-out;
 
   :hover {
     background-color: var(--color-darkwhite);
@@ -235,7 +235,7 @@ const UserBtn = styled.button`
   align-items: center;
   border-radius: 0.5rem;
   padding: 0.5rem;
-  transition: background-color, 100ms, ease-out;
+  transition: background-color 100ms ease-out;
 
   :hover {
     background-color: var(--color-darkwhite);
@@ -277,7 +277,7 @@ const PcUserInfoMyPageBtn = styled(Link)`
   font-size: 0.9rem;
   border-radius: 0.5rem 0.5rem 0 0;
   border-bottom: 1px solid var(--color-lightgray);
-  transition: background-color, 100ms, ease-out;
+  transition: background-color 100ms ease-out;
 
   :hover {
     background-color: var(--color-darkwhite);
@@ -290,7 +290,7 @@ const PcUserInfoLogoutBtn = styled.button`
   font-size: 0.9rem;
   border-radius: 0 0 0.5rem 0.5rem;
   background-color: var(--color-white);
-  transition: background-color, opacity 100ms, ease-out;
+  transition: background-color 100ms ease-out;
 
   :hover {
     background-color: var(--color-red--25);
