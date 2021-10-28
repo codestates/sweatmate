@@ -12,6 +12,8 @@ import {
 import { useRouteMatch, useParams, Switch, Route, useHistory } from "react-router";
 import { NavLink } from "react-router-dom";
 import PropTypes from "prop-types";
+import UserProfile from "../components/UserProfile";
+// import ConfirmModal from "../components/ConfirmModal";
 
 const Container = styled.div`
   display: flex;
@@ -117,6 +119,10 @@ const NavHeader = styled.header`
   padding: 1rem 2rem;
   display: flex;
   align-items: center;
+
+  ${media.lessThan("medium")`
+    padding: 1rem;
+  `}
 `;
 const HeaderTitle = styled.h1`
   font-size: 1.2rem;
@@ -155,6 +161,13 @@ const ChatItem = styled(NavLink)`
   :not(:last-child) {
     margin-bottom: 0.5rem;
   }
+
+  ${media.lessThan("medium")`
+    padding: 1rem 0;
+    :hover {
+      background-color: transparent;
+    }
+  `}
 `;
 const Emoji = styled.span`
   display: flex;
@@ -216,6 +229,7 @@ Navigation.propTypes = {
 // TODO: 이후에 진짜 데이터로 대체해야 함
 const gatheringWithChat = {
   title: "구로구에서 풋살합시다",
+  emoji: "⚽",
   users: [
     { id: "1", nickname: "영희", image: "" },
     { id: "2", nickname: "철수", image: "" },
@@ -269,35 +283,40 @@ const ChatHeader = styled.header`
   border-bottom: 1px solid var(--color-lightgray);
   justify-content: space-between;
 `;
+const ChatHeaderTitle = styled(HeaderTitle)``;
 const HeaderButton = styled.button`
   display: flex;
   align-items: center;
   font-size: 1.5rem;
   padding: 0.5rem;
   border-radius: 0.5rem;
-  margin-right: ${({ isMarginRight }) => isMarginRight && "1rem"};
+  transition: background-color 100ms ease-out;
 
   :hover {
     background-color: var(--color-darkwhite);
   }
 
-  ${media.greaterThan("medium")`
-    display: ${({ isMobile }) => isMobile && "none"};
-  `}
-
   ${media.lessThan("medium")`
-    padding: 0;
+  padding: 0;
     :hover {
       background-color: transparent;
     }
   `}
 `;
+const ChatBackBtn = styled(HeaderButton)`
+  display: none;
+  ${media.lessThan("medium")`
+    display: flex;
+  `}
+`;
+const EllipsisBtn = styled(HeaderButton)``;
+const DrawerCloseBtn = styled(HeaderButton)``;
 const DrawerContainer = styled.div`
   flex-basis: calc(4.5rem + 171.72px + 53.88px + 67.78px);
   height: 100%;
 
   ${media.lessThan("large")`
-    flex-basis: 100%;
+  flex-basis: 100%;
   `}
 `;
 const DrawerHeader = styled.header`
@@ -305,12 +324,57 @@ const DrawerHeader = styled.header`
   align-items: center;
   padding: 1rem;
   height: 4.5rem;
+
+  ${media.lessThan("large")`
+    justify-content: space-between;
+    flex-direction: row-reverse;
+  `}
 `;
+const DrawerHeaderTitle = styled(HeaderTitle)`
+  flex: 1;
+  text-align: center;
+  margin-right: 2.5rem;
+  ${media.between("medium", "large")`
+    text-align: left;
+  `}
+  ${media.lessThan("medium")`
+    margin-right: 0;
+    margin-left: 1.5rem;
+  `}
+`;
+const DrawerMain = styled.main`
+  padding: 1rem;
+`;
+const Members = styled.ul`
+  margin-bottom: 4rem;
+`;
+const Member = styled.li`
+  height: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  :not(:last-of-type) {
+    margin-bottom: 0.5rem;
+  }
+`;
+const BanishBtn = styled.button`
+  font-size: 0.9rem;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-lightgray);
+  color: var(--color-red);
+  transition: background-color 100ms ease-out;
+  :hover {
+    background-color: var(--color-darkwhite);
+  }
+`;
+const LeaveBtn = styled.button``;
 
 const Room = () => {
   const history = useHistory();
   const { id } = useParams();
   const [isDrawer, setIsDrawer] = useState(false);
+  // const [isConfirm, setIsConfirm] = useState(false);
 
   // TODO: 진짜 데이터와 비교하는 것으로 바꿔야 함
   useEffect(() => {
@@ -318,44 +382,88 @@ const Room = () => {
       history.push("/chat");
     }
   }, []);
-  const handleChatBackClick = () => {
+  const handleChatBackBtnClick = () => {
     history.push("/chat");
   };
-  const handleHamburgerClick = () => {
+  const handleEllopsisBtnClick = () => {
     setIsDrawer(true);
   };
-  const handleDrawerCloseClick = () => {
+  const handleDrawerCloseBtnClick = () => {
     setIsDrawer(false);
+  };
+  const handleLeaveBtnClick = () => {
+    setIsConfirm(true);
   };
 
   return (
     <RoomContainer>
       <ChatContainer isDrawer={isDrawer}>
         <ChatHeader>
-          <HeaderButton type="button" onClick={handleChatBackClick} isMobile={true}>
+          <ChatBackBtn type="button" onClick={handleChatBackBtnClick}>
             <IoChevronBackOutline />
-          </HeaderButton>
-          <HeaderTitle>{gatheringWithChat.title}</HeaderTitle>
+          </ChatBackBtn>
+          <ChatHeaderTitle>
+            {gatheringWithChat.emoji} {gatheringWithChat.title}
+          </ChatHeaderTitle>
           {!isDrawer && (
-            <HeaderButton type="button" onClick={handleHamburgerClick}>
+            <EllipsisBtn type="button" onClick={handleEllopsisBtnClick}>
               <IoEllipsisHorizontalOutline />
-            </HeaderButton>
+            </EllipsisBtn>
           )}
         </ChatHeader>
       </ChatContainer>
       {isDrawer && (
         <DrawerContainer>
           <DrawerHeader>
-            <HeaderButton type="button" onClick={handleDrawerCloseClick} isMarginRight={true}>
+            <DrawerCloseBtn type="button" onClick={handleDrawerCloseBtnClick}>
               <IoClose />
-            </HeaderButton>
-            <HeaderTitle>
+            </DrawerCloseBtn>
+            <DrawerHeaderTitle>
               <IoPeopleOutline />
               참여중인 메이트
-            </HeaderTitle>
+            </DrawerHeaderTitle>
           </DrawerHeader>
+          <DrawerMain>
+            <Members>
+              <Member>
+                <UserProfile
+                  size={1}
+                  user={{
+                    id: "1",
+                    nickname: "Unuuuuu",
+                    image: "",
+                  }}
+                  isCreator={true}
+                />
+              </Member>
+              <Member>
+                <UserProfile
+                  size={1}
+                  user={{
+                    id: "2",
+                    nickname: "Heegu",
+                    image: "",
+                  }}
+                />
+                <BanishBtn type="button">추방</BanishBtn>
+              </Member>
+            </Members>
+            <LeaveBtn type="button" onClick={handleLeaveBtnClick}>
+              모임 나가기
+            </LeaveBtn>
+            {/* <QuitBtn></QuitBtn> */}
+          </DrawerMain>
         </DrawerContainer>
       )}
+      {/* {isConfirm && (
+        <ConfirmModal
+          content={{
+            title: "title",
+            body: "body",
+            func: () => {},
+          }}
+        />
+      )} */}
     </RoomContainer>
   );
 };
