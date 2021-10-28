@@ -6,6 +6,7 @@ const {
   getRandomGathering,
   createGathering,
   endGathering,
+  joinGathering,
 } = require("../controllers/gathering");
 const {
   createConditionsForSearching,
@@ -20,9 +21,7 @@ router.get("/upcoming/:userId", isAuth, checkPermission, getGatheringOfUser); //
 router.get("/passed/:userId", isAuth, checkPermission, getGatheringOfUser); // 유저의 종료된 게더링 조회
 router.post("/", isAuth, checkToCreateGathering, createGathering); // 게더링 생성
 router.patch("/:gatheringId", isAuth, endGathering); // 게더링 조기 종료
-router.post("/:gatheringId", (req, res) => {
-  res.status(200).send("일정 참여 라우터");
-});
+router.post("/:gatheringId", isAuth, joinGathering);
 router.delete("/:gatheringId", (req, res) => {
   res.status(200).send("일정 취소 라우터");
 });

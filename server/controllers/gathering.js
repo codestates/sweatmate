@@ -4,6 +4,7 @@ const {
   findGatheringOfUser,
   createGathering,
   gatheringFindOne,
+  findOrCreateUser_gathering,
 } = require("./functions/sequelize");
 const { createValidObject, DBERROR } = require("./functions/utility");
 
@@ -54,13 +55,39 @@ module.exports = {
     //TODO: 조기 종료 되거나 노드 스케쥴러에 의해 종료가 되면 채팅창진입불가(채팅창 로그는 볼 수 있게 하느냐 마느냐 나중에 결정)
     const { userId } = res.locals;
     const { gatheringId } = req.params;
-    const gatheringInfo = await gatheringFindOne({ id: gatheringId });
-    if (gatheringInfo.dataValues.creatorId !== userId) {
-      return res.status(403).json({ message: "You don't have permission." });
+    try {
+      const gatheringInfo = await gatheringFindOne({ id: gatheringId });
+      if (gatheringInfo.dataValues.creatorId !== userId) {
+        return res.status(403).json({ message: "You don't have permission." });
+      }
+      gatheringInfo.update({ done: 1 });
+      //TODO: 게더링이 조기종료 했다고 모든 참여자에게 알림 또는 노드스케줄러에 의해 종료되었음을 알림
+      const endedGatheringInfo = await findAllGathering({ id: gatheringId });
+      res.status(200).json(endedGatheringInfo[0]);
+    } catch (err) {
+      DBERROR(res, err);
     }
-    gatheringInfo.update({ done: 1 });
-    //TODO: 게더링이 조기종료 했다고 모든 참여자에게 알림 또는 노드스케줄러에 의해 종료되었음을 알림
-    const endedGatheringInfo = await findAllGathering({ id: gatheringId });
-    res.status(200).json(endedGatheringInfo[0]);
+  },
+  joinGathering: async (req, res) => {
+    //참여 조건 게더링의 done = 0, 인원 수가 최대 이하.
+    const { userId } = res.locals;
+    const { gatheringId } = req.params;
+    try {
+      const gatheringInfo = await gatheringFindOne({ id: gatheringId });
+      const { totalNum, currentNum, done } = gatheringInfo;
+      if (totalNum <= currentNum || done === 1) {
+        return res.status(400).json({ message: "already full of people or ended gathering" });
+      }
+      const [_, result] = await findOrCreateUser_gathering({ userId, gatheringId }); // 이름바꾸기
+      if (!result) {
+        return res.status(400).json({ message: "already participating" });
+      }
+      // TODO: 유저가 게더링에 참여했다는 이벤트를 모든 참여자에게 알림
+      await gatheringInfo.update({ currentNum: currentNum + 1 });
+      const joinedGatheringInfo = await findAllGathering({ id: gatheringId });
+      return res.status(201).json(joinedGatheringInfo);
+    } catch (err) {
+      DBERROR(res, err);
+    }
   },
 };
