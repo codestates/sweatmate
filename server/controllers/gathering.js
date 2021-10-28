@@ -1,10 +1,5 @@
 const e = require("express");
-const {
-  findAllGathering,
-  findGatheringOfUser,
-  findSportsOfUser,
-  userFindOne,
-} = require("./functions/sequelize");
+const { findAllGathering, findGatheringOfUser, userFindOne } = require("./functions/sequelize");
 const { createValidObject, creatRandomNumber } = require("./functions/utility");
 const { verifyAccessToken } = require("./functions/token");
 module.exports = {
