@@ -1,5 +1,7 @@
 const AWS = require("aws-sdk");
 const s3 = new AWS.S3();
+const areaList = require("../../resource/areaList");
+const sportsList = require("../../resource/sportList");
 
 module.exports = {
   DBERROR: (res, err) => {
@@ -26,5 +28,11 @@ module.exports = {
   },
   creatRandomNumber: (startRange, endRange) => {
     return Math.floor(Math.random() * endRange + startRange);
+  },
+  TranslateFromSportNameToSportName: (sportName) => {
+    return sportsList.filter((el) => el.sportName === sportName)[0]?.id;
+  },
+  TranslateFromAreaNameToAreaName: (areaName) => {
+    return areaList.filter((el) => el.areaName === areaName)[0]?.id;
   },
 };
