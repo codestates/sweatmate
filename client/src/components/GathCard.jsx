@@ -3,6 +3,8 @@ import styled from "styled-components";
 import PropTypes from "prop-types";
 import UserProfile from "./UserProfile";
 import { FaMapMarkerAlt } from "react-icons/fa";
+import { useDispatch } from "react-redux";
+import { gathDetailModalOnAction } from "../store/actions";
 
 const CardContainer = styled.div`
   border-radius: 1rem;
@@ -81,8 +83,12 @@ const InfoFooter = styled.div`
 `;
 
 const GathCard = ({ gathering }) => {
+  const dispatch = useDispatch();
+  const handleGathDetailModalOn = (e) => {
+    dispatch(gathDetailModalOnAction);
+  };
   return (
-    <CardContainer>
+    <CardContainer onClick={handleGathDetailModalOn}>
       <InfoHeader>
         <div>
           <div className="text">{`${gathering.date.split("-")[1]}월 ${
