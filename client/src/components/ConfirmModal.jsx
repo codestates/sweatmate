@@ -1,6 +1,8 @@
 import React from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
+import { modalOffAction } from "../store/actions";
+import { useDispatch } from "react-redux";
 
 /*
   ConfirmModal 컴포넌트 활용 가이드
@@ -107,6 +109,18 @@ const ComfirmBtn = styled.button`
 `;
 
 const ConfirmModal = ({ isTransparent, content }) => {
+  const dispatch = useDispatch();
+  const handleCancelClick = () => {
+    dispatch(modalOffAction);
+  };
+  const handleConfirmClick = async () => {
+    try {
+      await content.func();
+      dispatch(modalOffAction);
+    } catch (err) {
+      alert(err);
+    }
+  };
   return (
     <Background isTransparent={isTransparent}>
       {!isTransparent && <Fill />}
@@ -116,8 +130,8 @@ const ConfirmModal = ({ isTransparent, content }) => {
           <Warning>{content.body}</Warning>
         </Contents>
         <ButtonContainer>
-          <CancelBtn>아니요, 취소할래요</CancelBtn>
-          <ComfirmBtn onClick={content.func}>네, 그렇게 할래요</ComfirmBtn>
+          <CancelBtn onClick={handleCancelClick}>아니요, 취소할래요</CancelBtn>
+          <ComfirmBtn onClick={handleConfirmClick}>네, 그렇게 할래요</ComfirmBtn>
         </ButtonContainer>
       </ModalContainer>
     </Background>
