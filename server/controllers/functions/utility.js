@@ -29,10 +29,10 @@ module.exports = {
   creatRandomNumber: (startRange, endRange) => {
     return Math.floor(Math.random() * endRange + startRange);
   },
-  TranslateFromSportNameToSportName: (sportName) => {
-    return sportsList.filter((el) => el.sportName === sportName)[0]?.id;
+  TranslateFromSportNameToSportInfo: (sportName) => {
+    return sportsList.filter((el) => el.sportName === sportName)[0];
   },
-  TranslateFromAreaNameToAreaName: (areaName) => {
-    return areaList.filter((el) => el.areaName === areaName)[0]?.id;
+  TranslateFromAreaNameToAreaInfo: (areaName) => {
+    return areaList.filter((el) => el.areaName === areaName)[0];
   },
 };

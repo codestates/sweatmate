@@ -9,21 +9,21 @@ const {
   createValidObject,
   creatRandomNumber,
   DBERROR,
-  TranslateFromSportNameToSportName,
-  TranslateFromAreaNameToAreaName,
+  TranslateFromSportNameToSportInfo,
+  TranslateFromAreaNameToAreaInfo,
 } = require("./functions/utility");
 const { verifyAccessToken } = require("./functions/token");
 
 module.exports = {
   getGatheringList: async (req, res) => {
-    const queries = res.locals.gathering;
-    const searchCondition = createValidObject(queries);
+    const searchCondition = createValidObject(res.locals.gathering);
+    const conditions = createValidObject(res.locals.conditions);
     try {
       const gatheringList = await findAllGathering(searchCondition);
+      res.status(200).json({ conditions, gathering: gatheringList });
     } catch (err) {
       DBERROR(res, err);
     }
-    res.status(200).json(gatheringList);
   },
   getGatheringOfUser: async (req, res) => {
     const url = req.url.split("/")[1];
@@ -34,34 +34,23 @@ module.exports = {
       const user_gatheringsOfUser = await findGatheringOfUser({ userId }, ["id", "userId"]);
       const gatheringId = user_gatheringsOfUser.map((el) => el.gatheringId);
       const gatheringList = await findAllGathering({ id: gatheringId, done });
-      res.status(200).json(gatheringList);
+      res.status(200).json({ gathering: gatheringList });
     } catch (err) {
       DBERROR(res, err);
     }
   },
   getRandomGathering: async (req, res) => {
-    const accessToken = req.cookies.jwt;
-    const searchCondition = { sportId: creatRandomNumber(1, 4), areaId: creatRandomNumber(1, 1) }; //TODO: 랜덤검색 시 충분한 데이터가 없음
     try {
-      if (accessToken) {
-        const { id } = verifyAccessToken(accessToken);
-        const userInfo = await userFindOne({ id });
-        searchCondition.areaId = userInfo.dataValues.areaId ?? searchCondition.areaId;
-        const userSportList = await userInfo.getUser_sports({ attributes: ["sportId"] });
-        if (userSportList.length !== 0) {
-          searchCondition.sportId = userSportList.map((el) => el.sportId);
-        }
-      }
-      const gatheringList = await findAllGathering(searchCondition);
-      res.status(200).json(gatheringList);
+      const gatheringList = await findAllGathering({ done: 0 });
+      res.status(200).json({ gatherings: gatheringList });
     } catch (err) {
       DBERROR(res, err);
     }
   },
   createGathering: async (req, res) => {
     const { userId } = res.locals;
-    const sportId = TranslateFromSportNameToSportName(req.body.sportName);
-    const areaId = TranslateFromAreaNameToAreaName(req.body.areaName);
+    const sportId = TranslateFromSportNameToSportInfo(req.body.sportName).id;
+    const areaId = TranslateFromAreaNameToAreaInfo(req.body.areaName).id;
     delete req.body.sportName;
     delete req.body.areaName;
     const setGatheringInfo = { ...req.body, currentNum: 1, creatorId: userId, sportId, areaId };
