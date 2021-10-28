@@ -2,12 +2,23 @@ import axios from "axios";
 import React, { useEffect } from "react";
 import PropTypes from "prop-types"; // ES6
 import styled from "styled-components";
+import media from "styled-media-query";
 const { kakao } = window;
 
 const MapContainer = styled.div`
   width: 23rem;
   height: 15rem;
   border-radius: 1rem;
+  margin-top: 1rem;
+  filter: drop-shadow(2px 2px 6px var(--color-shadow));
+  ${media.between("medium", "large")`
+    /* screen width is between 768px (medium) and 1170px (large) */
+    width: 16rem;
+  `}
+  ${media.lessThan("medium")`
+    /* screen width is between 768px (medium) and 1170px (large) */
+    width: 20rem;
+  `}
 `;
 
 const MapPreview = ({ sportName, place, latitude, longitude }) => {

@@ -15,6 +15,7 @@ module.exports = (sequelize, DataTypes) => {
       models.Gathering.belongsTo(models.User, {
         foreignKey: { name: "creatorId", allowNull: false },
         targetKey: "id",
+        as: "creator",
         onDelete: "CASCADE",
       });
       models.Gathering.hasMany(models.User_gathering, {
@@ -44,7 +45,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       date: {
-        type: Sequelize.DATE,
+        type: Sequelize.DATEONLY,
         allowNull: false,
       },
       time: {
