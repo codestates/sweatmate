@@ -1,4 +1,4 @@
-import { GATH_CREATE_MODAL_ON, MODAL_OFF } from "./actionTypes";
+import { GATH_CREATE_MODAL_ON, CONFIRM_MODAL_ON, MODAL_OFF } from "./actionTypes";
 
 // // action
 // export const exampleAction = {
@@ -15,6 +15,9 @@ import { GATH_CREATE_MODAL_ON, MODAL_OFF } from "./actionTypes";
 // Modal
 export const gathCreateModalOnAction = {
   type: GATH_CREATE_MODAL_ON,
+};
+export const confirmModalOnAction = {
+  type: CONFIRM_MODAL_ON,
 };
 export const modalOffAction = {
   type: MODAL_OFF,
