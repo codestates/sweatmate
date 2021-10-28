@@ -69,7 +69,7 @@ module.exports = {
       }
       await userInfo.destroy();
       clearCookie(res, token);
-      return res.status(200).json({ message: "User deleted" });
+      return res.status(200).json({ message: "User deleted", data: { userId } });
     } catch (err) {
       DBERROR(res, err);
     }

@@ -16,7 +16,10 @@ router.post("/", isAuth, createGathering); // 게더링 생성 라우터
 router.patch("/", (_, res) => {
   res.status(200).send("일정 종료 라우터");
 });
-router.get("/:gatheringId", (req, res) => {
+router.post("/:gatheringId", (req, res) => {
   res.status(200).send("일정 참여 라우터");
+});
+router.delete("/:gatheringId", (req, res) => {
+  res.status(200).send("일정 취소 라우터");
 });
 module.exports = router;

@@ -70,6 +70,7 @@ module.exports = {
       totalNum,
       areaId,
       sportId,
+      done: 0,
     };
     res.locals.conditions = { ...req.query, ...sportInfo };
     next();

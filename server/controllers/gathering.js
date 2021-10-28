@@ -40,20 +40,9 @@ module.exports = {
     }
   },
   getRandomGathering: async (req, res) => {
-    const accessToken = req.cookies.jwt;
-    const searchCondition = { sportId: creatRandomNumber(1, 4), areaId: creatRandomNumber(1, 1) }; //TODO: 랜덤검색 시 충분한 데이터가 없음
     try {
-      if (accessToken) {
-        const { id } = verifyAccessToken(accessToken);
-        const userInfo = await userFindOne({ id });
-        searchCondition.areaId = userInfo.dataValues.areaId ?? searchCondition.areaId;
-        const userSportList = await userInfo.getUser_sports({ attributes: ["sportId"] });
-        if (userSportList.length !== 0) {
-          searchCondition.sportId = userSportList.map((el) => el.sportId);
-        }
-      }
-      const gatheringList = await findAllGathering(searchCondition);
-      res.status(200).json({ conditions: searchCondition, gatherings: gatheringList });
+      const gatheringList = await findAllGathering({ done: 0 });
+      res.status(200).json({ gatherings: gatheringList });
     } catch (err) {
       DBERROR(res, err);
     }
