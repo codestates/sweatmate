@@ -17,7 +17,7 @@ module.exports = {
           currentNum: 2,
           title: "축구해요!",
           description: "한강공원에서 축구하실분~",
-          creatorId: "59117a45-6b95-4c2e-a19e-accb9b267f9c",
+          creatorId: "59117a45-6b95-4c2e-a19e-ackie019rhfi",
           done: 0,
         },
         {
