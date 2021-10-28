@@ -1,8 +1,14 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import media from "styled-media-query";
-import { IoChatbubblesOutline } from "react-icons/io5";
-import { HiMenu } from "react-icons/hi";
+import {
+  IoChatbubblesOutline,
+  IoClose,
+  IoPeopleOutline,
+  IoChevronBackOutline,
+  IoEllipsisHorizontalOutline,
+} from "react-icons/io5";
+// import { HiMenu } from "react-icons/hi";
 import { useRouteMatch, useParams, Switch, Route, useHistory } from "react-router";
 import { NavLink } from "react-router-dom";
 import PropTypes from "prop-types";
@@ -15,12 +21,10 @@ const Container = styled.div`
     min-height: calc(100vh - 57px);
   `}
 `;
-
 const Main = styled.main`
   flex: 1;
   position: relative;
 `;
-
 const NoContent = styled.div`
   width: 100%;
   height: 100%;
@@ -36,7 +40,6 @@ const NoContent = styled.div`
     display: none;
   `}
 `;
-
 const Logo = styled.img`
   opacity: 50%;
   height: 4rem;
@@ -88,7 +91,7 @@ const Chat = () => {
           </Main>
         </Route>
         <Route path={`${path}/:id`}>
-          <Navigation url={url} />
+          <Navigation url={url} isChatActive={true} />
           <Main>
             <Room />
           </Main>
@@ -106,17 +109,16 @@ const Nav = styled.nav`
 
   ${media.lessThan("medium")`
     width: 100%;
+    display: ${({ isChatActive }) => isChatActive && "none"};
   `};
 `;
-
 const NavHeader = styled.header`
   height: 4.5rem;
   padding: 1rem 2rem;
   display: flex;
   align-items: center;
 `;
-
-const NavH1 = styled.h1`
+const HeaderTitle = styled.h1`
   font-size: 1.2rem;
   display: inline;
 
@@ -126,19 +128,16 @@ const NavH1 = styled.h1`
     margin-right: 0.5rem;
   }
 `;
-
 // const NavH2 = styled.h2`
 //   font-size: 0.9rem;
 //   color: var(--color-gray);
 //   padding: 1rem;
 // `;
-
 const ChatItemContainer = styled.div`
   padding: 1rem;
   display: flex;
   flex-direction: column;
 `;
-
 const ChatItem = styled(NavLink)`
   padding: 1rem;
   border-radius: 0.5rem;
@@ -157,43 +156,38 @@ const ChatItem = styled(NavLink)`
     margin-bottom: 0.5rem;
   }
 `;
-
 const Emoji = styled.span`
   display: flex;
   align-items: center;
   font-size: 1.5rem;
   margin-right: 1rem;
 `;
-
 const Content = styled.span`
   flex: 1;
   display: flex;
   flex-direction: column;
 `;
-
 const Title = styled.span`
   font-size: 1rem;
   margin-bottom: 0.2rem;
 `;
-
 const RecentMsg = styled.span`
   font-size: 0.8rem;
   color: var(--color-gray);
 `;
-
 const Time = styled.span`
   font-size: 0.6rem;
   color: var(--color-gray);
 `;
 
-const Navigation = ({ url }) => {
+const Navigation = ({ url, isChatActive }) => {
   return (
-    <Nav>
+    <Nav isChatActive={isChatActive}>
       <NavHeader>
-        <NavH1>
+        <HeaderTitle>
           <IoChatbubblesOutline />
           채팅
-        </NavH1>
+        </HeaderTitle>
       </NavHeader>
       <ChatItemContainer>
         {mock.map((item) => (
@@ -211,8 +205,12 @@ const Navigation = ({ url }) => {
   );
 };
 
+Navigation.defaultProps = {
+  isChatActive: false,
+};
 Navigation.propTypes = {
   url: PropTypes.string.isRequired,
+  isChatActive: PropTypes.bool,
 };
 
 // TODO: 이후에 진짜 데이터로 대체해야 함
@@ -264,26 +262,35 @@ const ChatContainer = styled.div`
   `}
 `;
 const ChatHeader = styled.header`
-  padding: 1rem 2rem;
+  height: 4.5rem;
+  padding: 1rem;
   display: flex;
   align-items: center;
   border-bottom: 1px solid var(--color-lightgray);
   justify-content: space-between;
 `;
-const ChatTitle = styled.h1`
-  font-size: 1.2rem;
-  margin: 0;
-`;
-const Hamburger = styled.button`
+const HeaderButton = styled.button`
   display: flex;
   align-items: center;
   font-size: 1.5rem;
   padding: 0.5rem;
   border-radius: 0.5rem;
+  margin-right: ${({ isMarginRight }) => isMarginRight && "1rem"};
 
   :hover {
     background-color: var(--color-darkwhite);
   }
+
+  ${media.greaterThan("medium")`
+    display: ${({ isMobile }) => isMobile && "none"};
+  `}
+
+  ${media.lessThan("medium")`
+    padding: 0;
+    :hover {
+      background-color: transparent;
+    }
+  `}
 `;
 const DrawerContainer = styled.div`
   flex-basis: calc(4.5rem + 171.72px + 53.88px + 67.78px);
@@ -292,6 +299,12 @@ const DrawerContainer = styled.div`
   ${media.lessThan("large")`
     flex-basis: 100%;
   `}
+`;
+const DrawerHeader = styled.header`
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  height: 4.5rem;
 `;
 
 const Room = () => {
@@ -305,22 +318,44 @@ const Room = () => {
       history.push("/chat");
     }
   }, []);
-
+  const handleChatBackClick = () => {
+    history.push("/chat");
+  };
   const handleHamburgerClick = () => {
-    setIsDrawer((prev) => !prev);
+    setIsDrawer(true);
+  };
+  const handleDrawerCloseClick = () => {
+    setIsDrawer(false);
   };
 
   return (
     <RoomContainer>
       <ChatContainer isDrawer={isDrawer}>
         <ChatHeader>
-          <ChatTitle>{gatheringWithChat.title}</ChatTitle>
-          <Hamburger onClick={handleHamburgerClick}>
-            <HiMenu />
-          </Hamburger>
+          <HeaderButton type="button" onClick={handleChatBackClick} isMobile={true}>
+            <IoChevronBackOutline />
+          </HeaderButton>
+          <HeaderTitle>{gatheringWithChat.title}</HeaderTitle>
+          {!isDrawer && (
+            <HeaderButton type="button" onClick={handleHamburgerClick}>
+              <IoEllipsisHorizontalOutline />
+            </HeaderButton>
+          )}
         </ChatHeader>
       </ChatContainer>
-      {isDrawer && <DrawerContainer></DrawerContainer>}
+      {isDrawer && (
+        <DrawerContainer>
+          <DrawerHeader>
+            <HeaderButton type="button" onClick={handleDrawerCloseClick} isMarginRight={true}>
+              <IoClose />
+            </HeaderButton>
+            <HeaderTitle>
+              <IoPeopleOutline />
+              참여중인 메이트
+            </HeaderTitle>
+          </DrawerHeader>
+        </DrawerContainer>
+      )}
     </RoomContainer>
   );
 };
