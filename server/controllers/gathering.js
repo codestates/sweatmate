@@ -1,10 +1,10 @@
-const e = require("express");
 const {
   findAllGathering,
   findGatheringOfUser,
   createGathering,
   gatheringFindOne,
   findOrCreateUser_gathering,
+  User_gatheringFindOne,
 } = require("./functions/sequelize");
 const { createValidObject, DBERROR } = require("./functions/utility");
 
@@ -63,13 +63,12 @@ module.exports = {
       gatheringInfo.update({ done: 1 });
       //TODO: 게더링이 조기종료 했다고 모든 참여자에게 알림 또는 노드스케줄러에 의해 종료되었음을 알림
       const endedGatheringInfo = await findAllGathering({ id: gatheringId });
-      res.status(200).json(endedGatheringInfo[0]);
+      return res.status(200).json(endedGatheringInfo[0]);
     } catch (err) {
       DBERROR(res, err);
     }
   },
   joinGathering: async (req, res) => {
-    //참여 조건 게더링의 done = 0, 인원 수가 최대 이하.
     const { userId } = res.locals;
     const { gatheringId } = req.params;
     try {
@@ -85,7 +84,26 @@ module.exports = {
       // TODO: 유저가 게더링에 참여했다는 이벤트를 모든 참여자에게 알림
       await gatheringInfo.update({ currentNum: currentNum + 1 });
       const joinedGatheringInfo = await findAllGathering({ id: gatheringId });
-      return res.status(201).json(joinedGatheringInfo);
+      return res.status(201).json(joinedGatheringInfo[0]);
+    } catch (err) {
+      DBERROR(res, err);
+    }
+  },
+  leaveGathering: async (req, res) => {
+    const { userId } = res.locals;
+    const { gatheringId } = req.params;
+    try {
+      const User_gatheringInfo = await User_gatheringFindOne({ userId, gatheringId });
+      if (!User_gatheringInfo) {
+        return res.status(400).json({ message: "You are not in a state of participation." });
+      }
+      //TODO: 유저가 게더링을 떠났다는 이벤트를 모든 참여자에게 알림
+      const gatheringInfo = await gatheringFindOne({ id: gatheringId });
+      const { currentNum } = gatheringInfo;
+      await User_gatheringInfo.destroy();
+      gatheringInfo.update({ currentNum: currentNum - 1 });
+      const leftGatheringInfo = await findAllGathering({ id: gatheringId });
+      return res.status(201).json(leftGatheringInfo[0]);
     } catch (err) {
       DBERROR(res, err);
     }
