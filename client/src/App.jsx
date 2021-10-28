@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
 import Header from "./components/Header";
 import Home from "./pages/Home";
@@ -13,12 +13,11 @@ import { gathCreateModalOnAction, confirmModalOnAction } from "./store/actions";
 import Modal from "./components/Modal";
 import GathCreate from "./components/GathCreate";
 import ConfirmModal from "./components/ConfirmModal";
-import MoveTop from "./components/MoveTop";
+import MoveTopBtn from "./components/MoveTopBtn";
 
 const App = () => {
   const { isGathCreateModal, isConfirmModal } = useSelector(({ modalReducer }) => modalReducer);
   const dispatch = useDispatch();
-  const refScrollUp = useRef();
 
   const handleGathCreateModalOn = (e) => {
     dispatch(gathCreateModalOnAction);
@@ -34,17 +33,8 @@ const App = () => {
     },
   };
 
-  const handleScrollUp = (e) => {
-    refScrollUp.current.scrollIntoView({ behavior: "smooth" });
-  };
-
-  useEffect(() => {
-    refScrollUp.current.scrollIntoView({ behavior: "smooth" });
-  }, []);
-
   return (
     <BrowserRouter>
-      <div ref={refScrollUp}></div>
       <Header />
       <div>
         <button onClick={handleGathCreateModalOn}>모임 생성 모달 열기</button>
@@ -63,9 +53,11 @@ const App = () => {
       <Route path="/home" component={Footer} />
       <Route path="/schedule" component={Footer} />
       <Route path="/users/:id" component={Footer} />
+      <Route path="/" exact component={MoveTopBtn} />
+      <Route path="/home" component={MoveTopBtn} />
+      <Route path="/schedule" component={MoveTopBtn} />
       {isGathCreateModal && <Modal>{isGathCreateModal && <GathCreate />}</Modal>}
       {isConfirmModal && <ConfirmModal content={contentExample} />}
-      <MoveTop handleScrollUp={handleScrollUp} />
     </BrowserRouter>
   );
 };
