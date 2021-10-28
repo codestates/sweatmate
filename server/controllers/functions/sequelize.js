@@ -62,4 +62,7 @@ module.exports = {
   findOrCreateUser_gathering: async (queries) => {
     return User_gathering.findOrCreate({ where: queries });
   },
+  User_gatheringFindOne: async (queries) => {
+    return User_gathering.findOne({ where: queries });
+  },
 };

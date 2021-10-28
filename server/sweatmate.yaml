@@ -551,20 +551,14 @@ paths:
           schema:
             type: string
       responses:
-        "201":
+        "200":
           description: ok
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/gatheringInfomation"
-        "401":
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AuthenticationMessage"
-        "403":
-          description: You don't have permission.
+        "400":
+          description: You are not in a state of participation.
           content:
             application/json:
               schema:
@@ -572,7 +566,15 @@ paths:
                 properties:
                   message:
                     type: string
-                    default: You don't have permission.
+                    example: You are not in a state of participation.
+
+        "403":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationMessage"
+
   /gathering/random:
     get:
       tags:
