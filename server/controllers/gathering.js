@@ -2,17 +2,10 @@ const e = require("express");
 const {
   findAllGathering,
   findGatheringOfUser,
-  userFindOne,
   createGathering,
+  gatheringFindOne,
 } = require("./functions/sequelize");
-const {
-  createValidObject,
-  creatRandomNumber,
-  DBERROR,
-  TranslateFromSportNameToSportInfo,
-  TranslateFromAreaNameToAreaInfo,
-} = require("./functions/utility");
-const { verifyAccessToken } = require("./functions/token");
+const { createValidObject, DBERROR } = require("./functions/utility");
 
 module.exports = {
   getGatheringList: async (req, res) => {
@@ -20,7 +13,7 @@ module.exports = {
     const conditions = createValidObject(res.locals.conditions);
     try {
       const gatheringList = await findAllGathering({ ...searchCondition, done: 0 });
-      res.status(200).json({ conditions, gathering: gatheringList });
+      return res.status(200).json({ conditions, gathering: gatheringList });
     } catch (err) {
       DBERROR(res, err);
     }
@@ -34,7 +27,7 @@ module.exports = {
       const user_gatheringsOfUser = await findGatheringOfUser({ userId }, ["id", "userId"]);
       const gatheringId = user_gatheringsOfUser.map((el) => el.gatheringId);
       const gatheringList = await findAllGathering({ id: gatheringId, done });
-      res.status(200).json({ gathering: gatheringList });
+      return res.status(200).json({ gathering: gatheringList });
     } catch (err) {
       DBERROR(res, err);
     }
@@ -42,26 +35,32 @@ module.exports = {
   getRandomGathering: async (req, res) => {
     try {
       const gatheringList = await findAllGathering({ done: 0 });
-      res.status(200).json({ gatherings: gatheringList });
+      return res.status(200).json({ gatherings: gatheringList });
     } catch (err) {
       DBERROR(res, err);
     }
   },
   createGathering: async (req, res) => {
     //TODO: 게더링 생성 시 게더링 정보 몽고디비에 추가
-    const { userId } = res.locals;
-    const sportId = TranslateFromSportNameToSportInfo(req.body.sportName).id;
-    const areaId = TranslateFromAreaNameToAreaInfo(req.body.areaName).id;
-    delete req.body.sportName;
-    delete req.body.areaName;
-    const setGatheringInfo = { ...req.body, currentNum: 1, creatorId: userId, sportId, areaId };
+    const { userId, setGatheringInfo } = res.locals;
     try {
-      const createdGathering = await createGathering(setGatheringInfo);
-      delete createdGathering.dataValues.createdAt;
-      //TODO: 게더링 생성시 응답 데이터 미정.
-      res.status(200).json(createdGathering);
+      const createdGathering = await createGathering(setGatheringInfo, userId);
+      return res.status(200).json(createdGathering[0]);
     } catch (err) {
       DBERROR(res, err);
     }
+  },
+  endGathering: async (req, res) => {
+    //TODO: 조기 종료 되거나 노드 스케쥴러에 의해 종료가 되면 채팅창진입불가(채팅창 로그는 볼 수 있게 하느냐 마느냐 나중에 결정)
+    const { userId } = res.locals;
+    const { gatheringId } = req.params;
+    const gatheringInfo = await gatheringFindOne({ id: gatheringId });
+    if (gatheringInfo.dataValues.creatorId !== userId) {
+      return res.status(403).json({ message: "You don't have permission." });
+    }
+    gatheringInfo.update({ done: 1 });
+    //TODO: 게더링이 조기종료 했다고 모든 참여자에게 알림 또는 노드스케줄러에 의해 종료되었음을 알림
+    const endedGatheringInfo = await findAllGathering({ id: gatheringId });
+    res.status(200).json(endedGatheringInfo[0]);
   },
 };

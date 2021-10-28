@@ -5,7 +5,7 @@ const sportsList = require("../../resource/sportList");
 
 module.exports = {
   DBERROR: (res, err) => {
-    res.status(500).json({ message: `Error occured in database: ${err}` });
+    return res.status(500).json({ message: `Error occured in database: ${err}` });
   },
   deleteImageinTable: (image) => {
     const imageKey = /[\d]{13}\.[\w]+/.exec(image)[0];

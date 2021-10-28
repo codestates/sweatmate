@@ -28,7 +28,7 @@ module.exports = {
       const sports = await Promise.all(sportsPromise);
       const areaName = areaInfo?.dataValues.areaName ?? null;
       delete userInfo.dataValues.areaId;
-      res.status(200).json({ ...userInfo.dataValues, areaName, sports });
+      return res.status(200).json({ ...userInfo.dataValues, areaName, sports });
     } catch (err) {
       DBERROR(res, err);
     }
