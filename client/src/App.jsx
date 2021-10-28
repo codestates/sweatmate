@@ -11,6 +11,7 @@ import Footer from "./components/Footer";
 import { useSelector } from "react-redux";
 import Modal from "./components/Modal";
 import GathCreate from "./components/GathCreate";
+import MoveTopBtn from "./components/MoveTopBtn";
 
 const App = () => {
   const { isGathCreateModal, isGathDetailModal } = useSelector(({ modalReducer }) => modalReducer);
@@ -31,6 +32,9 @@ const App = () => {
       <Route path="/home" component={Footer} />
       <Route path="/schedule" component={Footer} />
       <Route path="/users/:id" component={Footer} />
+      <Route path="/home" component={MoveTopBtn} />
+      <Route path="/schedule" component={MoveTopBtn} />
+      <Route path="/users/:id" component={MoveTopBtn} />
       {isModal && (
         <Modal>
           {isGathCreateModal && <GathCreate />}
