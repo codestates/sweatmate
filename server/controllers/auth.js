@@ -11,7 +11,7 @@ const emailForm = require("../views/emailFormat");
 
 module.exports = {
   validNickname: async (req, res) => {
-    res.status(200).json({ message: "Valid nickname" });
+    return res.status(200).json({ message: "Valid nickname" });
   },
   validEmail: async (req, res) => {
     return res.status(200).json({ message: "Valid nickname" });
@@ -92,13 +92,13 @@ module.exports = {
     try {
       const userInfo = await userFindOne({ id: userId });
       const { id, image, nickname } = userInfo;
-      res.status(200).json({ id, image, nickname });
+      return res.status(200).json({ id, image, nickname });
     } catch (err) {
       DBERROR(res, err);
     }
   },
   signout: (req, res) => {
     clearCookie(res);
-    res.status(205).json({ message: "Signed out" });
+    return res.status(205).json({ message: "Signed out" });
   },
 };
