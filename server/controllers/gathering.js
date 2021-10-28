@@ -20,10 +20,10 @@ module.exports = {
     const searchCondition = createValidObject(queries);
     try {
       const gatheringList = await findAllGathering(searchCondition);
+      res.status(200).json(gatheringList);
     } catch (err) {
       DBERROR(res, err);
     }
-    res.status(200).json(gatheringList);
   },
   getGatheringOfUser: async (req, res) => {
     const url = req.url.split("/")[1];
