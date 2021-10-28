@@ -3,7 +3,6 @@ import styled from "styled-components";
 import PropTypes from "prop-types";
 import UserProfile from "./UserProfile";
 import { FaMapMarkerAlt } from "react-icons/fa";
-import media from "styled-media-query";
 
 const CardContainer = styled.div`
   border-radius: 1rem;
@@ -13,8 +12,8 @@ const CardContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  max-width: 380px;
-  min-width: 280px;
+  /* max-width: 25rem; */
+  min-width: 20rem;
   > * {
     margin-bottom: 1.25rem;
   }
@@ -25,10 +24,6 @@ const CardContainer = styled.div`
   .text {
     padding-top: 0.1em;
   }
-  ${media.lessThan("medium")`
-    /* screen width is between 768px (medium) and 1170px (large) */
-    display : none;
-  `}
 `;
 
 const InfoHeader = styled.div`
@@ -86,8 +81,6 @@ const InfoFooter = styled.div`
 `;
 
 const GathCard = ({ gathering }) => {
-  const timeName = { morning: "오전", afternoon: "오후", evening: "저녁" };
-
   return (
     <CardContainer>
       <InfoHeader>
@@ -96,7 +89,7 @@ const GathCard = ({ gathering }) => {
             gathering.date.split("-")[2]
           }일`}</div>
           <div className="divider">|</div>
-          <div className="text">{timeName[gathering.time]}</div>
+          <div className="text">{gathering.time}</div>
         </div>
         <div>
           <div className="text">{`${gathering.currentNum}명 모집 중`}</div>
