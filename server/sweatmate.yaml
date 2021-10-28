@@ -487,14 +487,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/gatheringInfomation"
-        "401":
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AuthenticationMessage"
-        "403":
-          description: You don't have permission.
+        "400":
+          description: already full of people or ended gathering
           content:
             application/json:
               schema:
@@ -502,7 +496,14 @@ paths:
                 properties:
                   message:
                     type: string
-                    default: You don't have permission.
+                    example: already full of people or ended gathering
+
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationMessage"
     patch:
       tags:
         - "gathering"
