@@ -8,7 +8,7 @@ module.exports = {
     });
   },
   createUser: (queries) => {
-    return User.create(object);
+    return User.create(queries);
   },
   findSportsOfUser: async (queries, attributes = []) => {
     return await User_sport.findAll({
@@ -49,5 +49,8 @@ module.exports = {
         return { ...element.dataValues, users };
       })
     );
+  },
+  createGathering: async (queries) => {
+    return Gathering.create(queries);
   },
 };

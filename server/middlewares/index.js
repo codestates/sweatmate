@@ -1,9 +1,11 @@
 const { verifyAccessToken, clearCookie } = require("../controllers/functions/token");
 const { userFindOne } = require("../controllers/functions/sequelize");
-const { DBERROR, createValidObject } = require("../controllers/functions/utility");
+const {
+  DBERROR,
+  TranslateFromSportNameToSportName,
+  TranslateFromAreaNameToAreaName,
+} = require("../controllers/functions/utility");
 const AUTH_ERROR = { message: "Authentication Error" };
-const areaList = require("../resource/areaList");
-const sportsList = require("../resource/sportList");
 
 module.exports = {
   isAuth: async (req, res, next) => {
@@ -58,8 +60,8 @@ module.exports = {
   },
   createConditionsForSearching: (req, res, next) => {
     const { sportName, areaName, time, date, totalNum } = req.query;
-    const areaId = areaList.filter((el) => el.areaName === areaName)[0]?.id;
-    const sportId = sportsList.filter((el) => el.sportName === sportName)[0]?.id;
+    const areaId = TranslateFromAreaNameToAreaName(areaName);
+    const sportId = TranslateFromSportNameToSportName(sportName);
     res.locals.gathering = {
       time,
       date,
