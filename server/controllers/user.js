@@ -3,12 +3,10 @@ const { clearCookie } = require("./functions/token");
 const { DBERROR, deleteImageinTable } = require("./functions/utility");
 const areaList = require("../resource/areaList");
 const sportsList = require("../resource/sportList");
+
 module.exports = {
   getUerInfo: async (req, res) => {
-    const { userId, type } = res.locals;
-    if (userId !== req.params.userId) {
-      return res.status(403).json({ message: "You don't have permission" });
-    }
+    const { userId } = res.locals;
     try {
       const userInfo = await userFindOne({ id: userId }, [
         "id",
@@ -35,10 +33,7 @@ module.exports = {
     }
   },
   modifyUserInfo: async function (req, res) {
-    const { userId, type } = res.locals;
-    if (userId !== req.params.userId) {
-      return res.status(403).json({ message: "User don't have permission" });
-    }
+    const { userId } = res.locals;
     try {
       const { nickname, areaName, age, sports, gender } = req.body;
       const userInfo = await userFindOne({ id: userId });
@@ -66,10 +61,7 @@ module.exports = {
     }
   },
   removeUserInfo: async (req, res) => {
-    const { userId, type } = res.locals;
-    if (userId !== req.params.userId) {
-      return res.status(403).json({ message: "User don't have permission" });
-    }
+    const { userId } = res.locals;
     try {
       const userInfo = await userFindOne({ id: userId });
       if (!userInfo) {

@@ -1,7 +1,9 @@
 const { verifyAccessToken, clearCookie } = require("../controllers/functions/token");
 const { userFindOne } = require("../controllers/functions/sequelize");
-const { DBERROR } = require("../controllers/functions/utility");
+const { DBERROR, createValidObject } = require("../controllers/functions/utility");
 const AUTH_ERROR = { message: "Authentication Error" };
+const areaList = require("../resource/areaList");
+const sportsList = require("../resource/sportList");
 
 module.exports = {
   isAuth: async (req, res, next) => {
@@ -47,5 +49,24 @@ module.exports = {
     } catch (err) {
       DBERROR(res, err);
     }
+  },
+  checkPermission: async (req, res, next) => {
+    if (res.locals.userId !== req.params.userId) {
+      return res.status(403).json({ message: "You don't have permission" });
+    }
+    next();
+  },
+  createConditionsForSearching: (req, res, next) => {
+    const { sportName, areaName, time, date, totalNum } = req.query;
+    const areaId = areaList.filter((el) => el.areaName === areaName)[0]?.id;
+    const sportId = sportsList.filter((el) => el.sportName === sportName)[0]?.id;
+    res.locals.gathering = {
+      time,
+      date,
+      totalNum,
+      areaId,
+      sportId,
+    };
+    next();
   },
 };

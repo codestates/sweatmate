@@ -17,4 +17,11 @@ module.exports = {
       else console.log();
     });
   },
+  createValidObject: (queries) => {
+    return Object.keys(queries)
+      .filter((el) => queries[el])
+      .reduce((acc, cur) => {
+        return { ...acc, [cur]: queries[cur] };
+      }, {});
+  },
 };

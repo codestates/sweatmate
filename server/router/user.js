@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { getUerInfo, removeUserInfo, modifyUserInfo } = require("../controllers/user");
-const { isAuth, checkNickname } = require("../middlewares");
+const { isAuth, checkPermission } = require("../middlewares");
 const multer = require("multer");
 const multerS3 = require("multer-s3");
 const aws = require("aws-sdk");
@@ -23,8 +23,8 @@ const upload = multer({
   }),
 });
 
-router.get("/:userId", isAuth, getUerInfo);
-router.put("/:userId", isAuth, upload.single("image"), modifyUserInfo);
-router.delete("/:userId", isAuth, removeUserInfo);
+router.get("/:userId", isAuth, checkPermission, getUerInfo);
+router.put("/:userId", isAuth, checkPermission, upload.single("image"), modifyUserInfo);
+router.delete("/:userId", isAuth, checkPermission, removeUserInfo);
 
 module.exports = router;
