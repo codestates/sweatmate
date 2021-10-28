@@ -19,7 +19,7 @@ module.exports = {
     const searchCondition = createValidObject(res.locals.gathering);
     const conditions = createValidObject(res.locals.conditions);
     try {
-      const gatheringList = await findAllGathering(searchCondition);
+      const gatheringList = await findAllGathering({ ...searchCondition, done: 0 });
       res.status(200).json({ conditions, gathering: gatheringList });
     } catch (err) {
       DBERROR(res, err);
@@ -48,6 +48,7 @@ module.exports = {
     }
   },
   createGathering: async (req, res) => {
+    //TODO: 게더링 생성 시 게더링 정보 몽고디비에 추가
     const { userId } = res.locals;
     const sportId = TranslateFromSportNameToSportInfo(req.body.sportName).id;
     const areaId = TranslateFromAreaNameToAreaInfo(req.body.areaName).id;

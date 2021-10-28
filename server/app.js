@@ -10,6 +10,9 @@ const {
   port,
   cors: { allowedOrigin },
 } = require("./config");
+const swaggerUi = require("swagger-ui-express");
+const YAML = require("yamljs");
+const swaggerDocument = YAML.load("./sweatmate.yaml");
 
 const authRouter = require("./router/auth");
 const userRouter = require("./router/user");
@@ -20,6 +23,7 @@ const chatRouter = require("./router/chat");
 const app = express();
 
 const corsOption = { origin: allowedOrigin, optionsSuccessStatus: 200, credentials: true };
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use(cors(corsOption));
 app.use(helmet());
 app.use(morgan("tiny"));
