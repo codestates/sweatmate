@@ -28,6 +28,7 @@ const Background = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 20;
 `;
 
 const Fill = styled.div`
@@ -40,7 +41,6 @@ const Fill = styled.div`
 `;
 
 const ModalContainer = styled.div`
-  z-index: 1;
   color: var(--color-darkgray);
   background-color: var(--color-white);
   border-radius: 1rem;

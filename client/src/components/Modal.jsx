@@ -16,10 +16,10 @@ const Background = styled.div`
   align-items: center;
   justify-content: center;
   background-color: var(--color-modalbg);
+  z-index: 20;
 `;
 
 const ModalContainer = styled.div`
-  z-index: 1;
   color: var(--color-darkgray);
   background-color: var(--color-white);
   border-radius: 1rem;
