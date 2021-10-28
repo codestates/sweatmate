@@ -2,8 +2,8 @@ const { verifyAccessToken, clearCookie } = require("../controllers/functions/tok
 const { userFindOne } = require("../controllers/functions/sequelize");
 const {
   DBERROR,
-  TranslateFromSportNameToSportName,
-  TranslateFromAreaNameToAreaName,
+  TranslateFromAreaNameToAreaInfo,
+  TranslateFromSportNameToSportInfo,
 } = require("../controllers/functions/utility");
 const AUTH_ERROR = { message: "Authentication Error" };
 
@@ -60,8 +60,10 @@ module.exports = {
   },
   createConditionsForSearching: (req, res, next) => {
     const { sportName, areaName, time, date, totalNum } = req.query;
-    const areaId = TranslateFromAreaNameToAreaName(areaName);
-    const sportId = TranslateFromSportNameToSportName(sportName);
+    const areaId = TranslateFromAreaNameToAreaInfo(areaName)?.id;
+    const sportInfo = TranslateFromSportNameToSportInfo(sportName);
+    const sportId = sportInfo?.id;
+    delete sportInfo?.id;
     res.locals.gathering = {
       time,
       date,
@@ -69,6 +71,7 @@ module.exports = {
       areaId,
       sportId,
     };
+    res.locals.conditions = { ...req.query, ...sportInfo };
     next();
   },
 };
