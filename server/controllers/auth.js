@@ -60,7 +60,6 @@ module.exports = {
   },
   signin: async (req, res) => {
     const { email, password } = req.body;
-    //TODO: email 유효성 검사 추가
     const foundUserByEmail = await userFindOne({ email });
     if (!foundUserByEmail) {
       return res.status(401).json({ message: "Invalid email or password" });

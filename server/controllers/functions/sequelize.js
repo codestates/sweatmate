@@ -37,6 +37,7 @@ module.exports = {
           attributes: { exclude: ["userId", "gatheringId"] },
         },
       ],
+      order: ["date"],
       attributes: { exclude: ["creatorId", "createdAt"] }, //TODO: 생성일자는 필요없는지 상의
     });
     return Promise.all(

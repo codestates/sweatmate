@@ -1,6 +1,10 @@
 const express = require("express");
 const router = express.Router();
-const { getGatheringList, getGatheringOfUser } = require("../controllers/gathering");
+const {
+  getGatheringList,
+  getGatheringOfUser,
+  getRandomGathering,
+} = require("../controllers/gathering");
 const { createConditionsForSearching, isAuth, checkPermission } = require("../middlewares");
 //TODO: 미들웨어에서 sportName => id 로 변환
 router.get("/", createConditionsForSearching, getGatheringList);
@@ -10,9 +14,7 @@ router.post("/", (_, res) => {
 router.patch("/", (_, res) => {
   res.status(200).send("일정 종료 라우터");
 });
-router.get("/random", (_, res) => {
-  res.status(200).send("일정 랜덤 조회 라우터");
-});
+router.get("/random", getRandomGathering);
 router.get("/upcoming/:userId", isAuth, checkPermission, getGatheringOfUser);
 router.get("/passed/:userId", isAuth, checkPermission, getGatheringOfUser);
 module.exports = router;
