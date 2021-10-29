@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styled, { keyframes } from "styled-components";
 import PropTypes from "prop-types";
 import media from "styled-media-query";
@@ -11,30 +11,45 @@ import media from "styled-media-query";
     위 속성이 존재하지 않는 경우, 투명도 0.92의 var(--color-black) 색상을 기본 배경색으로 가집니다.
 */
 
-const Background = styled.div`
-  ${(props) => {
-    if (props.isFullscreen) return "position: absolute;\ntop: 0;\nleft: 0;";
-    else return "position: relative;";
-  }}
+const LoadingWrapper = styled.div`
+  position: relative;
   width: 100%;
   height: 100%;
-  padding-top: 10%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
-const Fill = styled.div`
-  position: absolute;
+  ${(props) =>
+    props.isFullscreen &&
+    `position: fixed;
   left: 0;
   top: 0;
+  right: 0;
+  bottom: 0;`}
+  padding-top: 7.5%;
+  overflow: auto;
+  outline: 0;
+  z-index: 1000;
+`;
+
+const LoadingOverlay = styled.div`
+  position: relative;
   width: 100%;
   height: 100%;
+  ${(props) =>
+    props.isFullscreen &&
+    `position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;`}
   background-color: var(--color-modalbg);
+  z-index: 999;
+  display: ${(props) => (props.isTransparent ? "none" : "block")};
 `;
 
 const LoadingContainer = styled.div`
   z-index: 1;
+  position: relative;
+  top: 50%;
+  left: 50%;
+  transform: translateY(-50%);
 `;
 
 const IconContainer = styled.div`
@@ -122,16 +137,26 @@ const Shadow = styled.div`
 `;
 
 const Loading = ({ isTransparent, isFullscreen }) => {
+  useEffect(() => {
+    document.body.style.cssText = `position: fixed; top: -${window.scrollY}px`;
+    return () => {
+      const scrollY = document.body.style.top;
+      document.body.style.cssText = `position: ""; top: "";`;
+      window.scrollTo(0, parseInt(scrollY || "0") * -1);
+    };
+  }, []);
   return (
-    <Background isFullscreen={isFullscreen}>
-      {!isTransparent && <Fill />}
-      <LoadingContainer>
-        <IconContainer>
-          <Shadow />
-          <Icon />
-        </IconContainer>
-      </LoadingContainer>
-    </Background>
+    <>
+      <LoadingOverlay isTransparent={isTransparent} isFullscreen={isFullscreen} />
+      <LoadingWrapper isFullscreen={isFullscreen}>
+        <LoadingContainer>
+          <IconContainer>
+            <Shadow />
+            <Icon />
+          </IconContainer>
+        </LoadingContainer>
+      </LoadingWrapper>
+    </>
   );
 };
 
