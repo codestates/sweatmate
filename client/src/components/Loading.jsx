@@ -146,17 +146,33 @@ const Loading = ({ isTransparent, isFullscreen }) => {
     };
   }, []);
   return (
-    <Portal elementId="root-dimmed">
-      <LoadingOverlay isTransparent={isTransparent} isFullscreen={isFullscreen} />
-      <LoadingWrapper isFullscreen={isFullscreen}>
-        <LoadingContainer>
-          <IconContainer>
-            <Shadow />
-            <Icon />
-          </IconContainer>
-        </LoadingContainer>
-      </LoadingWrapper>
-    </Portal>
+    <>
+      {isFullscreen ? (
+        <Portal elementId="root-dimmed">
+          <LoadingOverlay isTransparent={isTransparent} isFullscreen={isFullscreen} />
+          <LoadingWrapper isFullscreen={isFullscreen}>
+            <LoadingContainer>
+              <IconContainer>
+                <Shadow />
+                <Icon />
+              </IconContainer>
+            </LoadingContainer>
+          </LoadingWrapper>
+        </Portal>
+      ) : (
+        <>
+          <LoadingOverlay isTransparent={isTransparent} isFullscreen={isFullscreen} />
+          <LoadingWrapper isFullscreen={isFullscreen}>
+            <LoadingContainer>
+              <IconContainer>
+                <Shadow />
+                <Icon />
+              </IconContainer>
+            </LoadingContainer>
+          </LoadingWrapper>
+        </>
+      )}
+    </>
   );
 };
 
