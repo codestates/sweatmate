@@ -19,6 +19,9 @@ const BtnContainer = styled.div`
   display: flex;
   gap: 1rem;
   margin-bottom: 2rem;
+  ${media.lessThan("medium")`
+    margin-bottom: 1rem;
+  `}
 `;
 const Btn = styled.button`
   padding: 0.5rem;
