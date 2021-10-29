@@ -450,9 +450,6 @@ const ChatMain = styled.main`
   height: calc(100% - 4.5rem);
   display: flex;
   flex-direction: column;
-  background-image: url("/chat_assets/bg.svg");
-  background-position: center;
-  background-size: contain;
 `;
 const ChatLog = styled.div`
   padding: 1rem;
@@ -460,10 +457,9 @@ const ChatLog = styled.div`
   flex-direction: column;
   overflow-y: scroll;
   height: calc(100% - 5.5rem);
-
-  /* ${media.lessThan("medium")`
-    max-height: calc(100% - 5.5rem);
-  `} */
+  background-image: url("/chat_assets/bg.svg");
+  background-position: center;
+  background-size: contain;
 `;
 const ChatLogItem = styled.div`
   display: flex;
@@ -498,21 +494,21 @@ const Nickname = styled.span`
 `;
 const BubbleMessage = styled.p``;
 const ChatFormContainer = styled.div`
+  border-top: 1px solid var(--color-lightgray);
   padding: 1rem;
 `;
 const ChatForm = styled.form`
   display: flex;
   padding: 0.5rem;
   border-radius: 0.5rem;
-  background-color: var(--color-maingreen--10);
+  background-color: var(--color-darkwhite);
 `;
 const ChatInput = styled.input`
   flex: 1;
   padding: 0.5rem;
-  font-size: 1.2rem;
-  color: var(--color-maingreen--100);
+  font-size: 1rem;
   ::placeholder {
-    color: var(--color-maingreen--50);
+    color: var(--color-lightgray);
   }
 `;
 const ChatSubmitBtn = styled.button`
