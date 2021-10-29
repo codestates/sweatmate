@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import { modalOffAction } from "../store/actions";
@@ -19,31 +19,36 @@ import { useDispatch } from "react-redux";
     }
 */
 
-const Background = styled.div`
-  position: absolute;
-  top: 0;
+const ModalWrapper = styled.div`
+  position: fixed;
   left: 0;
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 20;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  overflow: auto;
+  outline: 0;
+  z-index: 1000;
 `;
 
-const Fill = styled.div`
-  position: absolute;
+const ModalOverlay = styled.div`
+  position: fixed;
   left: 0;
   top: 0;
-  width: 100%;
-  height: 100%;
+  right: 0;
+  bottom: 0;
   background-color: var(--color-modalbg);
+  z-index: 999;
+  display: ${(props) => (props.isTransparent ? "none" : "block")};
 `;
 
 const ModalContainer = styled.div`
+  position: relative;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 1rem;
   color: var(--color-darkgray);
   background-color: var(--color-white);
-  border-radius: 1rem;
   width: 20rem;
   padding: 1.25rem;
   display: flex;
@@ -121,20 +126,30 @@ const ConfirmModal = ({ isTransparent, content }) => {
       alert(err);
     }
   };
+  useEffect(() => {
+    document.body.style.cssText = `position: fixed; top: -${window.scrollY}px`;
+    return () => {
+      const scrollY = document.body.style.top;
+      document.body.style.cssText = `position: ""; top: "";`;
+      window.scrollTo(0, parseInt(scrollY || "0") * -1);
+    };
+  }, []);
   return (
-    <Background isTransparent={isTransparent}>
-      {!isTransparent && <Fill />}
-      <ModalContainer>
-        <Contents>
-          <Title>{content.title}</Title>
-          <Warning>{content.body}</Warning>
-        </Contents>
-        <ButtonContainer>
-          <CancelBtn onClick={handleCancelClick}>아니요, 취소할래요</CancelBtn>
-          <ComfirmBtn onClick={handleConfirmClick}>네, 그렇게 할래요</ComfirmBtn>
-        </ButtonContainer>
-      </ModalContainer>
-    </Background>
+    <>
+      <ModalOverlay isTransparent={isTransparent} />
+      <ModalWrapper tabIndex="-1">
+        <ModalContainer tabIndex="0">
+          <Contents>
+            <Title>{content.title}</Title>
+            <Warning>{content.body}</Warning>
+          </Contents>
+          <ButtonContainer>
+            <CancelBtn onClick={handleCancelClick}>아니요, 취소할래요</CancelBtn>
+            <ComfirmBtn onClick={handleConfirmClick}>네, 그렇게 할래요</ComfirmBtn>
+          </ButtonContainer>
+        </ModalContainer>
+      </ModalWrapper>
+    </>
   );
 };
 

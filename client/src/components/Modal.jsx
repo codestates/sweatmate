@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import { modalOffAction } from "../store/actions";
@@ -6,48 +6,55 @@ import { useDispatch } from "react-redux";
 import { IoClose } from "react-icons/io5";
 import media from "styled-media-query";
 
-const Background = styled.div`
-  position: absolute;
-  top: 0;
+const ModalWrapper = styled.div`
+  position: fixed;
   left: 0;
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  overflow: auto;
+  outline: 0;
+  z-index: 1000;
+`;
+
+const ModalOverlay = styled.div`
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
   background-color: var(--color-modalbg);
-  z-index: 20;
+  z-index: 999;
 `;
 
 const ModalContainer = styled.div`
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+  margin: 0 auto;
+  width: 60rem;
+  max-width: calc(100% - 8rem);
+  height: 36rem;
+  max-height: calc(100% - 8rem);
+  border-radius: 1rem;
   color: var(--color-darkgray);
   background-color: var(--color-white);
-  border-radius: 1rem;
-  width: 60rem;
-  height: 36rem;
-  max-height: 100vh - 16rem;
-  padding: 1.5rem;
+  padding: 2rem 1.5rem;
   ${media.lessThan("medium")`
-    padding: 1rem;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    transform: translateY(0);
+    padding: 4rem 1rem;
+    min-height: 100%;
+    min-width: 100%;
+    border-radius: 0;
   `};
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  position: relative;
-  ${media.between("medium", "large")`
-    width: 40rem;
-  `}
-  ${media.between("small", "medium")`
-    width: 25rem;
-  `}
-  ${media.lessThan("small")`
-    border-radius: 0;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-  `}
 `;
 
 const CloseBtn = styled.div`
@@ -59,7 +66,7 @@ const CloseBtn = styled.div`
   width: 2.25rem;
   height: 2.25rem;
   font-size: 1.75rem;
-  ${media.lessThan("medium")`
+  ${media.lessThan("small")`
     right: 1rem;
     top: 1rem;
     width: 2rem;
@@ -81,15 +88,26 @@ const Modal = ({ children }) => {
   const handleCloseClick = () => {
     dispatch(modalOffAction);
   };
+  useEffect(() => {
+    document.body.style.cssText = `position: fixed; top: -${window.scrollY}px`;
+    return () => {
+      const scrollY = document.body.style.top;
+      document.body.style.cssText = `position: ""; top: "";`;
+      window.scrollTo(0, parseInt(scrollY || "0") * -1);
+    };
+  }, []);
   return (
-    <Background onClick={handleBackgroundClick}>
-      <ModalContainer>
-        <CloseBtn onClick={handleCloseClick}>
-          <IoClose />
-        </CloseBtn>
-        {children}
-      </ModalContainer>
-    </Background>
+    <>
+      <ModalOverlay />
+      <ModalWrapper onClick={handleBackgroundClick} tabIndex="-1">
+        <ModalContainer tabIndex="0">
+          <CloseBtn onClick={handleCloseClick}>
+            <IoClose />
+          </CloseBtn>
+          {children}
+        </ModalContainer>
+      </ModalWrapper>
+    </>
   );
 };
 
