@@ -98,7 +98,7 @@ const Modal = ({ children }) => {
     };
   }, []);
   return (
-    <Portal elementId="root-modal">
+    <Portal elementId="root-dimmed">
       <ModalOverlay />
       <ModalWrapper onClick={handleBackgroundClick} tabIndex="-1">
         <ModalContainer tabIndex="0">

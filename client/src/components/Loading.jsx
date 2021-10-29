@@ -41,12 +41,11 @@ const LoadingOverlay = styled.div`
   right: 0;
   bottom: 0;`}
   background-color: var(--color-modalbg);
-  z-index: 999;
   display: ${(props) => (props.isTransparent ? "none" : "block")};
+  z-index: 999;
 `;
 
 const LoadingContainer = styled.div`
-  z-index: 1;
   position: relative;
   top: 50%;
   left: 50%;
@@ -147,7 +146,7 @@ const Loading = ({ isTransparent, isFullscreen }) => {
     };
   }, []);
   return (
-    <Portal elementId="root-animation">
+    <Portal elementId="root-dimmed">
       <LoadingOverlay isTransparent={isTransparent} isFullscreen={isFullscreen} />
       <LoadingWrapper isFullscreen={isFullscreen}>
         <LoadingContainer>

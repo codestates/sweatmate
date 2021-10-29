@@ -38,8 +38,8 @@ const ModalOverlay = styled.div`
   right: 0;
   bottom: 0;
   background-color: var(--color-modalbg);
-  z-index: 999;
   display: ${(props) => (props.isTransparent ? "none" : "block")};
+  z-index: 999;
 `;
 
 const ModalContainer = styled.div`
@@ -136,7 +136,7 @@ const ConfirmModal = ({ isTransparent, content }) => {
     };
   }, []);
   return (
-    <Portal elementId="root-modal">
+    <Portal elementId="root-dimmed">
       <ModalOverlay isTransparent={isTransparent} />
       <ModalWrapper tabIndex="-1">
         <ModalContainer tabIndex="0">
