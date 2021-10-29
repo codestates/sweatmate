@@ -50,7 +50,19 @@ module.exports = {
       })
     );
   },
-  createGathering: async (queries) => {
-    return Gathering.create(queries);
+  createGathering: async (queries, userId) => {
+    const createdGathering = await Gathering.create(queries);
+    const gatheringId = createdGathering.dataValues.id;
+    await User_gathering.create({ userId, gatheringId });
+    return await module.exports.findAllGathering({ id: gatheringId });
+  },
+  gatheringFindOne: async (queries) => {
+    return Gathering.findOne({ where: { ...queries } });
+  },
+  findOrCreateUser_gathering: async (queries) => {
+    return User_gathering.findOrCreate({ where: queries });
+  },
+  User_gatheringFindOne: async (queries) => {
+    return User_gathering.findOne({ where: queries });
   },
 };

@@ -1,4 +1,5 @@
 const { userFindOne, findSportsOfUser, modifyUserSportList } = require("./functions/sequelize");
+const { Gathering } = require("../models");
 const { clearCookie } = require("./functions/token");
 const { DBERROR, deleteImageinTable } = require("./functions/utility");
 const areaList = require("../resource/areaList");
@@ -27,7 +28,7 @@ module.exports = {
       const sports = await Promise.all(sportsPromise);
       const areaName = areaInfo?.dataValues.areaName ?? null;
       delete userInfo.dataValues.areaId;
-      res.status(200).json({ ...userInfo.dataValues, areaName, sports });
+      return res.status(200).json({ ...userInfo.dataValues, areaName, sports });
     } catch (err) {
       DBERROR(res, err);
     }
@@ -61,12 +62,18 @@ module.exports = {
     }
   },
   removeUserInfo: async (req, res) => {
-    const { userId } = res.locals;
+    const { userId, token } = res.locals;
     try {
       const userInfo = await userFindOne({ id: userId });
       if (!userInfo) {
         return res.status(404).json({ message: "User not found" });
       }
+      const User_gatheringlist = await userInfo.getUser_gatherings({
+        include: { model: Gathering },
+      });
+      await Promise.all(
+        User_gatheringlist.map(async (el) => await el.Gathering.decrement("currentNum", { by: 1 }))
+      );
       await userInfo.destroy();
       clearCookie(res, token);
       return res.status(200).json({ message: "User deleted", data: { userId } });

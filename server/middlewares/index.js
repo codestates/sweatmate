@@ -74,4 +74,49 @@ module.exports = {
     res.locals.conditions = { ...req.query, ...sportInfo };
     next();
   },
+  checkToCreateGathering: (req, res, next) => {
+    const {
+      title,
+      description,
+      placeName,
+      latitude,
+      longitude,
+      date,
+      time,
+      timeDescription,
+      totalNum,
+      areaName,
+      sportName,
+    } = req.body;
+    if (
+      !(
+        title &&
+        description &&
+        placeName &&
+        latitude &&
+        longitude &&
+        date &&
+        time &&
+        timeDescription &&
+        totalNum &&
+        areaName &&
+        sportName
+      )
+    ) {
+      return res.status(400).json({ message: "Incorrect format" });
+    }
+    const { userId } = res.locals;
+    const sportId = TranslateFromSportNameToSportInfo(req.body.sportName).id;
+    const areaId = TranslateFromAreaNameToAreaInfo(req.body.areaName).id;
+    delete req.body.sportName;
+    delete req.body.areaName;
+    res.locals.setGatheringInfo = {
+      ...req.body,
+      currentNum: 1,
+      creatorId: userId,
+      sportId,
+      areaId,
+    };
+    next();
+  },
 };

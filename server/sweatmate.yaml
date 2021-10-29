@@ -468,27 +468,27 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/AuthenticationMessage"
-    patch:
+  /gathering/{gathering}:
+    post:
       tags:
         - "gathering"
-      summary: End the schedule of gathering
-      description: gathering 일정 미리 끝내기 (호스트만 가능)
-      requestBody:
-        content:
-          "application/json":
-            schema:
-              type: object
-              properties:
-                gatheringId:
-                  type: integer
-              required:
-                - gatheringId
-            example:
-              gatheringId: 12
-        required: true
+      summary: participate at "gathering"
+      description: 게더링 참여하기 위한 요청 (로그인/ 게스트)
+      parameters:
+        - name: gathering
+          in: path
+          required: true
+          schema:
+            type: string
       responses:
         "201":
-          description: End the schedule of gathering
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/gatheringInfomation"
+        "400":
+          description: already full of people or ended gathering
           content:
             application/json:
               schema:
@@ -496,7 +496,32 @@ paths:
                 properties:
                   message:
                     type: string
-                    example: "End the schedule of gathering."
+                    example: already full of people or ended gathering
+
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationMessage"
+    patch:
+      tags:
+        - "gathering"
+      summary: End "gathering"
+      description: 게더링 (조기) 종료하기 위한 요청 (호스트)
+      parameters:
+        - name: gathering
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "201":
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/gatheringInfomation"
         "401":
           description: Unauthorized
           content:
@@ -513,42 +538,6 @@ paths:
                   message:
                     type: string
                     example: "You don't have permission."
-  /gathering/{gathering}:
-    post:
-      tags:
-        - "gathering"
-      summary: participate at gathering
-      description: 게더링 참여하기 위한 요청 (로그인/ 게스트)
-      parameters:
-        - name: gathering
-          in: path
-
-          required: true
-          schema:
-            type: string
-      responses:
-        "201":
-          description: ok
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/gatheringInfomation"
-        "401":
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AuthenticationMessage"
-        "403":
-          description: You don't have permission.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    default: You don't have permission.
     delete:
       tags:
         - "gathering"
@@ -562,20 +551,14 @@ paths:
           schema:
             type: string
       responses:
-        "201":
+        "200":
           description: ok
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/gatheringInfomation"
-        "401":
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AuthenticationMessage"
-        "403":
-          description: You don't have permission.
+        "400":
+          description: You are not in a state of participation.
           content:
             application/json:
               schema:
@@ -583,7 +566,15 @@ paths:
                 properties:
                   message:
                     type: string
-                    default: You don't have permission.
+                    example: You are not in a state of participation.
+
+        "403":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationMessage"
+
   /gathering/random:
     get:
       tags:
@@ -616,7 +607,7 @@ paths:
     get:
       tags:
         - "gathering"
-      summary: Check the user's upcoming schedule of gathering
+      summary: Check the user's upcoming schedule of "gathering"
       parameters:
         - name: userId
           in: path
@@ -656,7 +647,7 @@ paths:
     get:
       tags:
         - "gathering"
-      summary: Check the user's passed schedule of gathering
+      summary: Check the user's passed schedule of "gathering"
       parameters:
         - name: userId
           in: path
@@ -762,7 +753,7 @@ components:
     gatheringInfomation:
       type: object
       properties:
-        gatheringId:
+        id:
           type: integer
         title:
           type: string
@@ -813,7 +804,7 @@ components:
               image:
                 type: string
       example:
-        gatheringId: 12
+        id: 12
         title: 농구 함 때려볼 용산러들~!
         description: 용산에서 즐기면서 농구하는 사람들 한 판 같이 합시다~
         creator:
