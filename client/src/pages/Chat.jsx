@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import media from "styled-media-query";
 import {
   IoChatbubblesOutline,
@@ -8,19 +8,21 @@ import {
   IoChevronBackOutline,
   IoEllipsisHorizontalOutline,
 } from "react-icons/io5";
-// import { HiMenu } from "react-icons/hi";
+import { IoIosSend } from "react-icons/io";
 import { useRouteMatch, useParams, Switch, Route, useHistory } from "react-router";
 import { NavLink } from "react-router-dom";
 import PropTypes from "prop-types";
 import UserProfile from "../components/UserProfile";
-// import ConfirmModal from "../components/ConfirmModal";
+import ConfirmModal from "../components/ConfirmModal";
+import { useSelector, useDispatch } from "react-redux";
+import { confirmModalOnAction } from "../store/actions";
 
 const Container = styled.div`
   display: flex;
-  min-height: calc(100vh - 73px);
+  height: calc(100vh - 73px);
 
   ${media.lessThan("medium")`
-    min-height: calc(100vh - 57px);
+    height: calc(100vh - 57px);
   `}
 `;
 const Main = styled.main`
@@ -34,7 +36,7 @@ const NoContent = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-image: url("/assets/no-content.svg");
+  background-image: url("/chat_assets/no-content.svg");
   background-position: bottom;
   background-size: cover;
 
@@ -76,30 +78,105 @@ const mock = [
     recentMessage: "자리있나요?",
     recentMessageHour: "오후 12:27",
   },
+  {
+    id: "4",
+    sportEmoji: "⚽",
+    title: "구로구에서 풋살합시다",
+    recentMessage: "잘 부탁드려요~",
+    recentMessageHour: "10월 25일",
+  },
+  {
+    id: "5",
+    sportEmoji: "👟",
+    title: "서울숲에서 조깅하실분",
+    recentMessage: "공기 넘 좋아용",
+    recentMessageHour: "어제",
+  },
+  {
+    id: "6",
+    sportEmoji: "🎾",
+    title: "용산 혼성 테니스 하실 분",
+    recentMessage: "자리있나요?",
+    recentMessageHour: "오후 12:27",
+  },
+  {
+    id: "7",
+    sportEmoji: "⚽",
+    title: "구로구에서 풋살합시다",
+    recentMessage: "잘 부탁드려요~",
+    recentMessageHour: "10월 25일",
+  },
+  {
+    id: "8",
+    sportEmoji: "👟",
+    title: "서울숲에서 조깅하실분",
+    recentMessage: "공기 넘 좋아용",
+    recentMessageHour: "어제",
+  },
+  {
+    id: "9",
+    sportEmoji: "🎾",
+    title: "용산 혼성 테니스 하실 분",
+    recentMessage: "자리있나요?",
+    recentMessageHour: "오후 12:27",
+  },
+  {
+    id: "10",
+    sportEmoji: "⚽",
+    title: "구로구에서 풋살합시다",
+    recentMessage: "잘 부탁드려요~",
+    recentMessageHour: "10월 25일",
+  },
+  {
+    id: "11",
+    sportEmoji: "👟",
+    title: "서울숲에서 조깅하실분",
+    recentMessage: "공기 넘 좋아용",
+    recentMessageHour: "어제",
+  },
+  {
+    id: "12",
+    sportEmoji: "🎾",
+    title: "용산 혼성 테니스 하실 분",
+    recentMessage: "자리있나요?",
+    recentMessageHour: "오후 12:27",
+  },
 ];
+
+const confirmContent = {
+  title: "정말 채팅방에서 나가시겠습니까?",
+  body: "채팅방에서 나가시는 경우, 해당 모임 참여도 함께 취소됩니다.",
+  func: () => {
+    console.log("채팅방 나가기 완료");
+  },
+};
 
 const Chat = () => {
   const { path, url } = useRouteMatch();
+  const { isConfirmModal } = useSelector(({ modalReducer }) => modalReducer);
 
   return (
-    <Container>
-      <Switch>
-        <Route exact path={path}>
-          <Navigation url={url} />
-          <Main>
-            <NoContent>
-              <Logo src={`${process.env.PUBLIC_URL}/assets/long-logo.png`} alt="logo" />
-            </NoContent>
-          </Main>
-        </Route>
-        <Route path={`${path}/:id`}>
-          <Navigation url={url} isChatActive={true} />
-          <Main>
-            <Room />
-          </Main>
-        </Route>
-      </Switch>
-    </Container>
+    <>
+      <Container>
+        <Switch>
+          <Route exact path={path}>
+            <Navigation url={url} />
+            <Main>
+              <NoContent>
+                <Logo src={`${process.env.PUBLIC_URL}/assets/long-logo.png`} alt="logo" />
+              </NoContent>
+            </Main>
+          </Route>
+          <Route path={`${path}/:id`}>
+            <Navigation url={url} isChatActive={true} />
+            <Main>
+              <Room />
+            </Main>
+          </Route>
+        </Switch>
+      </Container>
+      {isConfirmModal && <ConfirmModal content={confirmContent} />}
+    </>
   );
 };
 
@@ -143,6 +220,7 @@ const ChatItemContainer = styled.div`
   padding: 1rem;
   display: flex;
   flex-direction: column;
+  overflow-y: scroll;
 `;
 const ChatItem = styled(NavLink)`
   padding: 1rem;
@@ -237,27 +315,109 @@ const gatheringWithChat = {
   chatLog: [
     {
       id: "1",
+      userId: "1",
       nickname: "영희",
       image: "",
       message: "오고 계신가요?",
     },
     {
       id: "2",
+      userId: "2",
       nickname: "철수",
       image: "",
       message: "네",
     },
     {
-      id: "1",
+      id: "3",
+      userId: "1",
+      nickname: "영희",
+      image: "",
+      message:
+        "몇 시 도착 예정이실까요몇 시 도착 예정이실까요몇 시 도착 예정이실까요몇 시 도착 예정이실까요몇 시 도착 예정이실까요몇 시 도착 예정이실까요몇 시 도착 예정이실까요",
+    },
+    {
+      id: "4",
+      userId: "2",
+      nickname: "철수",
+      image: "",
+      message: "2시용",
+    },
+    {
+      id: "5",
+      userId: "7",
+      nickname: "Unuuuuu",
+      image: "",
+      message: "굳",
+    },
+    {
+      id: "6",
+      userId: "1",
+      nickname: "영희",
+      image: "",
+      message: "오고 계신가요?",
+    },
+    {
+      id: "7",
+      userId: "2",
+      nickname: "철수",
+      image: "",
+      message: "네",
+    },
+    {
+      id: "8",
+      userId: "1",
       nickname: "영희",
       image: "",
       message: "몇 시 도착 예정이실까요",
     },
     {
-      id: "2",
+      id: "9",
+      userId: "2",
       nickname: "철수",
       image: "",
       message: "2시용",
+    },
+    {
+      id: "10",
+      userId: "7",
+      nickname: "Unuuuuu",
+      image: "",
+      message: "굳",
+    },
+    {
+      id: "11",
+      userId: "1",
+      nickname: "영희",
+      image: "",
+      message: "오고 계신가요?",
+    },
+    {
+      id: "12",
+      userId: "2",
+      nickname: "철수",
+      image: "",
+      message: "네",
+    },
+    {
+      id: "13",
+      userId: "1",
+      nickname: "영희",
+      image: "",
+      message: "몇 시 도착 예정이실까요",
+    },
+    {
+      id: "14",
+      userId: "2",
+      nickname: "철수",
+      image: "",
+      message: "2시용",
+    },
+    {
+      id: "15",
+      userId: "7",
+      nickname: "Unuuuuu",
+      image: "",
+      message: "굳",
     },
   ],
 };
@@ -270,6 +430,8 @@ const ChatContainer = styled.div`
   flex: 1;
   height: 100%;
   border-right: 1px solid var(--color-lightgray);
+  display: flex;
+  flex-direction: column;
 
   ${media.lessThan("large")`
     display : ${({ isDrawer }) => isDrawer && "none"};
@@ -284,6 +446,85 @@ const ChatHeader = styled.header`
   justify-content: space-between;
 `;
 const ChatHeaderTitle = styled(HeaderTitle)``;
+const ChatMain = styled.main`
+  height: calc(100% - 4.5rem);
+  display: flex;
+  flex-direction: column;
+  background-image: url("/chat_assets/bg.svg");
+  background-position: center;
+  background-size: contain;
+`;
+const ChatLog = styled.div`
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
+  height: calc(100% - 5.5rem);
+
+  /* ${media.lessThan("medium")`
+    max-height: calc(100% - 5.5rem);
+  `} */
+`;
+const ChatLogItem = styled.div`
+  display: flex;
+  align-items: flex-start;
+  :not(:last-of-type) {
+    margin-bottom: 1rem;
+  }
+  align-self: ${({ isCreator }) => isCreator && "flex-end"};
+`;
+const Bubble = styled.div`
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem;
+  border: 1px solid var(--color-lightgray);
+  background-color: var(--color-darkwhite);
+  border-radius: 0 0.5rem 0.5rem;
+  ${({ isCreator }) =>
+    isCreator &&
+    css`
+      border-radius: 0.5rem 0 0.5rem 0.5rem;
+      background-color: var(--color-maingreen--25);
+      border-color: var(--color-maingreen--100);
+    `};
+`;
+const NicknameBubbleContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+const Nickname = styled.span`
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+`;
+const BubbleMessage = styled.p``;
+const ChatFormContainer = styled.div`
+  padding: 1rem;
+`;
+const ChatForm = styled.form`
+  display: flex;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  background-color: var(--color-maingreen--10);
+`;
+const ChatInput = styled.input`
+  flex: 1;
+  padding: 0.5rem;
+  font-size: 1.2rem;
+  color: var(--color-maingreen--100);
+  ::placeholder {
+    color: var(--color-maingreen--50);
+  }
+`;
+const ChatSubmitBtn = styled.button`
+  background-color: var(--color-maingreen--100);
+  border-radius: 0.5rem;
+  display: flex;
+  padding: 0.5rem;
+  font-size: 1.5rem;
+  svg {
+    color: white;
+  }
+`;
 const HeaderButton = styled.button`
   display: flex;
   align-items: center;
@@ -314,9 +555,11 @@ const DrawerCloseBtn = styled(HeaderButton)``;
 const DrawerContainer = styled.div`
   flex-basis: calc(4.5rem + 171.72px + 53.88px + 67.78px);
   height: 100%;
+  display: flex;
+  flex-direction: column;
 
   ${media.lessThan("large")`
-  flex-basis: 100%;
+    flex-basis: 100%;
   `}
 `;
 const DrawerHeader = styled.header`
@@ -343,10 +586,16 @@ const DrawerHeaderTitle = styled(HeaderTitle)`
   `}
 `;
 const DrawerMain = styled.main`
-  padding: 1rem;
+  height: calc(100% - 4.5rem);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0 1rem 1rem;
 `;
 const Members = styled.ul`
-  margin-bottom: 4rem;
+  margin-bottom: 1rem;
+  flex: 1;
+  overflow-y: scroll;
 `;
 const Member = styled.li`
   height: 2rem;
@@ -354,27 +603,49 @@ const Member = styled.li`
   justify-content: space-between;
   align-items: center;
   :not(:last-of-type) {
-    margin-bottom: 0.5rem;
+    margin-bottom: 1rem;
   }
 `;
 const BanishBtn = styled.button`
+  display: flex;
   font-size: 0.9rem;
-  padding: 0.5rem;
-  border-radius: 0.5rem;
-  border: 1px solid var(--color-lightgray);
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.2rem;
   color: var(--color-red);
+  border: 1px solid var(--color-red);
   transition: background-color 100ms ease-out;
   :hover {
     background-color: var(--color-darkwhite);
   }
+  ${media.lessThan("medium")`
+    padding: 0.25rem;
+    margin: 0;
+    :hover {
+      background-color: transparent;
+    }
+  `}
 `;
-const LeaveBtn = styled.button``;
+const LeaveBtn = styled.button`
+  height: 3.5rem;
+  border: 1px solid var(--color-red);
+  color: var(--color-red);
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  transition: background-color 100ms ease-out;
+
+  :hover {
+    background-color: var(--color-darkwhite);
+  }
+`;
 
 const Room = () => {
   const history = useHistory();
+  const dispatch = useDispatch();
   const { id } = useParams();
+  const { url } = useRouteMatch();
+
   const [isDrawer, setIsDrawer] = useState(false);
-  // const [isConfirm, setIsConfirm] = useState(false);
 
   // TODO: 진짜 데이터와 비교하는 것으로 바꿔야 함
   useEffect(() => {
@@ -382,6 +653,11 @@ const Room = () => {
       history.push("/chat");
     }
   }, []);
+
+  useEffect(() => {
+    setIsDrawer(false);
+  }, [url]);
+
   const handleChatBackBtnClick = () => {
     history.push("/chat");
   };
@@ -392,7 +668,7 @@ const Room = () => {
     setIsDrawer(false);
   };
   const handleLeaveBtnClick = () => {
-    setIsConfirm(true);
+    dispatch(confirmModalOnAction);
   };
 
   return (
@@ -411,6 +687,39 @@ const Room = () => {
             </EllipsisBtn>
           )}
         </ChatHeader>
+        <ChatMain>
+          <ChatLog>
+            {gatheringWithChat.chatLog.map((item) => {
+              const isCreator = item.userId === "7";
+              return (
+                <ChatLogItem key={item.id} isCreator={isCreator}>
+                  {!isCreator && (
+                    <UserProfile
+                      user={{ ...item, id: item.userId }}
+                      size={1.5}
+                      hideName={true}
+                      isCreator={isCreator}
+                    />
+                  )}
+                  <NicknameBubbleContainer>
+                    {!isCreator && <Nickname>{item.nickname}</Nickname>}
+                    <Bubble isCreator={isCreator}>
+                      <BubbleMessage>{item.message}</BubbleMessage>
+                    </Bubble>
+                  </NicknameBubbleContainer>
+                </ChatLogItem>
+              );
+            })}
+          </ChatLog>
+          <ChatFormContainer>
+            <ChatForm>
+              <ChatInput type="text" placeholder="메시지를 입력해주세요."></ChatInput>
+              <ChatSubmitBtn type="submit">
+                <IoIosSend />
+              </ChatSubmitBtn>
+            </ChatForm>
+          </ChatFormContainer>
+        </ChatMain>
       </ChatContainer>
       {isDrawer && (
         <DrawerContainer>
@@ -427,7 +736,7 @@ const Room = () => {
             <Members>
               <Member>
                 <UserProfile
-                  size={1}
+                  size={1.2}
                   user={{
                     id: "1",
                     nickname: "Unuuuuu",
@@ -438,14 +747,168 @@ const Room = () => {
               </Member>
               <Member>
                 <UserProfile
-                  size={1}
+                  size={1.2}
                   user={{
                     id: "2",
                     nickname: "Heegu",
                     image: "",
                   }}
                 />
-                <BanishBtn type="button">추방</BanishBtn>
+                <BanishBtn type="button">내보내기</BanishBtn>
+              </Member>
+              <Member>
+                <UserProfile
+                  size={1.2}
+                  user={{
+                    id: "1",
+                    nickname: "Unuuuuu",
+                    image: "",
+                  }}
+                  isCreator={true}
+                />
+              </Member>
+              <Member>
+                <UserProfile
+                  size={1.2}
+                  user={{
+                    id: "2",
+                    nickname: "Heegu",
+                    image: "",
+                  }}
+                />
+                <BanishBtn type="button">내보내기</BanishBtn>
+              </Member>
+              <Member>
+                <UserProfile
+                  size={1.2}
+                  user={{
+                    id: "1",
+                    nickname: "Unuuuuu",
+                    image: "",
+                  }}
+                  isCreator={true}
+                />
+              </Member>
+              <Member>
+                <UserProfile
+                  size={1.2}
+                  user={{
+                    id: "2",
+                    nickname: "Heegu",
+                    image: "",
+                  }}
+                />
+                <BanishBtn type="button">내보내기</BanishBtn>
+              </Member>
+              <Member>
+                <UserProfile
+                  size={1.2}
+                  user={{
+                    id: "1",
+                    nickname: "Unuuuuu",
+                    image: "",
+                  }}
+                  isCreator={true}
+                />
+              </Member>
+              <Member>
+                <UserProfile
+                  size={1.2}
+                  user={{
+                    id: "2",
+                    nickname: "Heegu",
+                    image: "",
+                  }}
+                />
+                <BanishBtn type="button">내보내기</BanishBtn>
+              </Member>
+              <Member>
+                <UserProfile
+                  size={1.2}
+                  user={{
+                    id: "1",
+                    nickname: "Unuuuuu",
+                    image: "",
+                  }}
+                  isCreator={true}
+                />
+              </Member>
+              <Member>
+                <UserProfile
+                  size={1.2}
+                  user={{
+                    id: "2",
+                    nickname: "Heegu",
+                    image: "",
+                  }}
+                />
+                <BanishBtn type="button">내보내기</BanishBtn>
+              </Member>
+              <Member>
+                <UserProfile
+                  size={1.2}
+                  user={{
+                    id: "1",
+                    nickname: "Unuuuuu",
+                    image: "",
+                  }}
+                  isCreator={true}
+                />
+              </Member>
+              <Member>
+                <UserProfile
+                  size={1.2}
+                  user={{
+                    id: "2",
+                    nickname: "Heegu",
+                    image: "",
+                  }}
+                />
+                <BanishBtn type="button">내보내기</BanishBtn>
+              </Member>
+              <Member>
+                <UserProfile
+                  size={1.2}
+                  user={{
+                    id: "1",
+                    nickname: "Unuuuuu",
+                    image: "",
+                  }}
+                  isCreator={true}
+                />
+              </Member>
+              <Member>
+                <UserProfile
+                  size={1.2}
+                  user={{
+                    id: "2",
+                    nickname: "Heegu",
+                    image: "",
+                  }}
+                />
+                <BanishBtn type="button">내보내기</BanishBtn>
+              </Member>
+              <Member>
+                <UserProfile
+                  size={1.2}
+                  user={{
+                    id: "1",
+                    nickname: "Unuuuuu",
+                    image: "",
+                  }}
+                  isCreator={true}
+                />
+              </Member>
+              <Member>
+                <UserProfile
+                  size={1.2}
+                  user={{
+                    id: "2",
+                    nickname: "Heegu",
+                    image: "",
+                  }}
+                />
+                <BanishBtn type="button">내보내기</BanishBtn>
               </Member>
             </Members>
             <LeaveBtn type="button" onClick={handleLeaveBtnClick}>
@@ -455,15 +918,6 @@ const Room = () => {
           </DrawerMain>
         </DrawerContainer>
       )}
-      {/* {isConfirm && (
-        <ConfirmModal
-          content={{
-            title: "title",
-            body: "body",
-            func: () => {},
-          }}
-        />
-      )} */}
     </RoomContainer>
   );
 };
