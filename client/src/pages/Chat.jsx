@@ -639,6 +639,109 @@ const LeaveBtn = styled.button`
   }
 `;
 
+const memberMockUp = [
+  {
+    id: "7",
+    nickname: "Unuuuuu",
+    image: "",
+  },
+  {
+    id: "8",
+    nickname: "Heegu",
+    image: "",
+  },
+  {
+    id: "7",
+    nickname: "Unuuuuu",
+    image: "",
+  },
+  {
+    id: "8",
+    nickname: "Heegu",
+    image: "",
+  },
+  {
+    id: "7",
+    nickname: "Unuuuuu",
+    image: "",
+  },
+  {
+    id: "8",
+    nickname: "Heegu",
+    image: "",
+  },
+  {
+    id: "7",
+    nickname: "Unuuuuu",
+    image: "",
+  },
+  {
+    id: "8",
+    nickname: "Heegu",
+    image: "",
+  },
+  {
+    id: "7",
+    nickname: "Unuuuuu",
+    image: "",
+  },
+  {
+    id: "8",
+    nickname: "Heegu",
+    image: "",
+  },
+  {
+    id: "7",
+    nickname: "Unuuuuu",
+    image: "",
+  },
+  {
+    id: "8",
+    nickname: "Heegu",
+    image: "",
+  },
+  {
+    id: "7",
+    nickname: "Unuuuuu",
+    image: "",
+  },
+  {
+    id: "8",
+    nickname: "Heegu",
+    image: "",
+  },
+  {
+    id: "7",
+    nickname: "Unuuuuu",
+    image: "",
+  },
+  {
+    id: "8",
+    nickname: "Heegu",
+    image: "",
+  },
+  {
+    id: "7",
+    nickname: "Unuuuuu",
+    image: "",
+  },
+  {
+    id: "8",
+    nickname: "Heegu",
+    image: "",
+  },
+  {
+    id: "7",
+    nickname: "Unuuuuu",
+    image: "",
+  },
+  {
+    id: "8",
+    nickname: "Heegu",
+    image: "",
+  },
+];
+
 const Room = () => {
   const history = useHistory();
   const dispatch = useDispatch();
@@ -695,7 +798,7 @@ const Room = () => {
                 <ChatLogItem key={item.id} isCreator={isCreator}>
                   {!isCreator && (
                     <UserProfile
-                      user={{ ...item, id: item.userId }}
+                      user={{ id: item.userId, nickname: item.nickname, image: item.image }}
                       size={1.5}
                       hideName={true}
                       isCreator={isCreator}
@@ -734,182 +837,16 @@ const Room = () => {
           </DrawerHeader>
           <DrawerMain>
             <Members>
-              <Member>
-                <UserProfile
-                  size={1.2}
-                  user={{
-                    id: "1",
-                    nickname: "Unuuuuu",
-                    image: "",
-                  }}
-                  isCreator={true}
-                />
-              </Member>
-              <Member>
-                <UserProfile
-                  size={1.2}
-                  user={{
-                    id: "2",
-                    nickname: "Heegu",
-                    image: "",
-                  }}
-                />
-                <BanishBtn type="button">내보내기</BanishBtn>
-              </Member>
-              <Member>
-                <UserProfile
-                  size={1.2}
-                  user={{
-                    id: "1",
-                    nickname: "Unuuuuu",
-                    image: "",
-                  }}
-                  isCreator={true}
-                />
-              </Member>
-              <Member>
-                <UserProfile
-                  size={1.2}
-                  user={{
-                    id: "2",
-                    nickname: "Heegu",
-                    image: "",
-                  }}
-                />
-                <BanishBtn type="button">내보내기</BanishBtn>
-              </Member>
-              <Member>
-                <UserProfile
-                  size={1.2}
-                  user={{
-                    id: "1",
-                    nickname: "Unuuuuu",
-                    image: "",
-                  }}
-                  isCreator={true}
-                />
-              </Member>
-              <Member>
-                <UserProfile
-                  size={1.2}
-                  user={{
-                    id: "2",
-                    nickname: "Heegu",
-                    image: "",
-                  }}
-                />
-                <BanishBtn type="button">내보내기</BanishBtn>
-              </Member>
-              <Member>
-                <UserProfile
-                  size={1.2}
-                  user={{
-                    id: "1",
-                    nickname: "Unuuuuu",
-                    image: "",
-                  }}
-                  isCreator={true}
-                />
-              </Member>
-              <Member>
-                <UserProfile
-                  size={1.2}
-                  user={{
-                    id: "2",
-                    nickname: "Heegu",
-                    image: "",
-                  }}
-                />
-                <BanishBtn type="button">내보내기</BanishBtn>
-              </Member>
-              <Member>
-                <UserProfile
-                  size={1.2}
-                  user={{
-                    id: "1",
-                    nickname: "Unuuuuu",
-                    image: "",
-                  }}
-                  isCreator={true}
-                />
-              </Member>
-              <Member>
-                <UserProfile
-                  size={1.2}
-                  user={{
-                    id: "2",
-                    nickname: "Heegu",
-                    image: "",
-                  }}
-                />
-                <BanishBtn type="button">내보내기</BanishBtn>
-              </Member>
-              <Member>
-                <UserProfile
-                  size={1.2}
-                  user={{
-                    id: "1",
-                    nickname: "Unuuuuu",
-                    image: "",
-                  }}
-                  isCreator={true}
-                />
-              </Member>
-              <Member>
-                <UserProfile
-                  size={1.2}
-                  user={{
-                    id: "2",
-                    nickname: "Heegu",
-                    image: "",
-                  }}
-                />
-                <BanishBtn type="button">내보내기</BanishBtn>
-              </Member>
-              <Member>
-                <UserProfile
-                  size={1.2}
-                  user={{
-                    id: "1",
-                    nickname: "Unuuuuu",
-                    image: "",
-                  }}
-                  isCreator={true}
-                />
-              </Member>
-              <Member>
-                <UserProfile
-                  size={1.2}
-                  user={{
-                    id: "2",
-                    nickname: "Heegu",
-                    image: "",
-                  }}
-                />
-                <BanishBtn type="button">내보내기</BanishBtn>
-              </Member>
-              <Member>
-                <UserProfile
-                  size={1.2}
-                  user={{
-                    id: "1",
-                    nickname: "Unuuuuu",
-                    image: "",
-                  }}
-                  isCreator={true}
-                />
-              </Member>
-              <Member>
-                <UserProfile
-                  size={1.2}
-                  user={{
-                    id: "2",
-                    nickname: "Heegu",
-                    image: "",
-                  }}
-                />
-                <BanishBtn type="button">내보내기</BanishBtn>
-              </Member>
+              {memberMockUp.map((member, idx) => {
+                const user = member;
+                const isCreator = member.id === "7";
+                return (
+                  <Member key={idx}>
+                    <UserProfile size={1.2} user={user} isCreator={isCreator} />
+                    {!isCreator && <BanishBtn type="button">내보내기</BanishBtn>}
+                  </Member>
+                );
+              })}
             </Members>
             <LeaveBtn type="button" onClick={handleLeaveBtnClick}>
               모임 나가기
