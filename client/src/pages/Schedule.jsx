@@ -31,7 +31,7 @@ const Btn = styled.button`
   color: var(--color-gray);
   background-color: var(--color-darkwhite);
   border: 1px solid var(--color-lightgray);
-  transition: all 100ms ease-out;
+  transition: background-color 100ms ease-out, color 100ms ease-out, border-color 100ms ease-out;
   svg {
     margin-right: 0.5rem;
     transition: color 100ms ease-out;
