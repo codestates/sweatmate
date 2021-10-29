@@ -3,6 +3,7 @@ import styled from "styled-components";
 import PropTypes from "prop-types";
 import { modalOffAction } from "../store/actions";
 import { useDispatch } from "react-redux";
+import Portal from "../Portal";
 
 /*
   ConfirmModal 컴포넌트 활용 가이드
@@ -135,7 +136,7 @@ const ConfirmModal = ({ isTransparent, content }) => {
     };
   }, []);
   return (
-    <>
+    <Portal elementId="root-modal">
       <ModalOverlay isTransparent={isTransparent} />
       <ModalWrapper tabIndex="-1">
         <ModalContainer tabIndex="0">
@@ -149,7 +150,7 @@ const ConfirmModal = ({ isTransparent, content }) => {
           </ButtonContainer>
         </ModalContainer>
       </ModalWrapper>
-    </>
+    </Portal>
   );
 };
 

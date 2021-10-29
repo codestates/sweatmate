@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import styled, { keyframes } from "styled-components";
 import PropTypes from "prop-types";
 import media from "styled-media-query";
+import Portal from "../Portal";
 
 /*
   Loading 컴포넌트 활용 가이드
@@ -146,7 +147,7 @@ const Loading = ({ isTransparent, isFullscreen }) => {
     };
   }, []);
   return (
-    <>
+    <Portal elementId="root-animation">
       <LoadingOverlay isTransparent={isTransparent} isFullscreen={isFullscreen} />
       <LoadingWrapper isFullscreen={isFullscreen}>
         <LoadingContainer>
@@ -156,7 +157,7 @@ const Loading = ({ isTransparent, isFullscreen }) => {
           </IconContainer>
         </LoadingContainer>
       </LoadingWrapper>
-    </>
+    </Portal>
   );
 };
 
