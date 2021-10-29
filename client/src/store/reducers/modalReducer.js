@@ -2,6 +2,8 @@ import {
   GATH_CREATE_MODAL_ON,
   GATH_DETAIL_MODAL_ON,
   CONFIRM_MODAL_ON,
+  SIGNUP_MODAL_ON,
+  SIGNIN_MODAL_ON,
   MODAL_OFF,
 } from "../actions/actionTypes";
 
@@ -9,6 +11,8 @@ const initialState = {
   isGathCreateModal: false,
   isGathDetailModal: false,
   isConfirmModal: false,
+  isSignupModal: true,
+  isSigninModal: false,
 };
 
 const modalReducer = (prevState = initialState, action) => {
@@ -22,6 +26,12 @@ const modalReducer = (prevState = initialState, action) => {
       break;
     case CONFIRM_MODAL_ON:
       state = { ...prevState, isConfirmModal: true };
+      break;
+    case SIGNUP_MODAL_ON:
+      state = { ...prevState, isSignupModal: true };
+      break;
+    case SIGNIN_MODAL_ON:
+      state = { ...prevState, isSigninModal: true };
       break;
     case MODAL_OFF:
       state = { ...initialState };

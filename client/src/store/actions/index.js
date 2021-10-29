@@ -2,6 +2,8 @@ import {
   GATH_CREATE_MODAL_ON,
   GATH_DETAIL_MODAL_ON,
   CONFIRM_MODAL_ON,
+  SIGNUP_MODAL_ON,
+  SIGNIN_MODAL_ON,
   MODAL_OFF,
 } from "./actionTypes";
 
@@ -26,6 +28,12 @@ export const gathDetailModalOnAction = {
 };
 export const confirmModalOnAction = {
   type: CONFIRM_MODAL_ON,
+};
+export const signupOnAction = {
+  type: SIGNUP_MODAL_ON,
+};
+export const signinOnAction = {
+  type: SIGNIN_MODAL_ON,
 };
 export const modalOffAction = {
   type: MODAL_OFF,

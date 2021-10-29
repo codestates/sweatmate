@@ -32,7 +32,7 @@ const ModalContainer = styled.div`
   top: 50%;
   transform: translateY(-50%);
   margin: 0 auto;
-  width: 60rem;
+  width: fit-content;
   max-width: calc(100% - 8rem);
   height: 36rem;
   max-height: calc(100% - 8rem);
