@@ -6,6 +6,7 @@ const {
   findOrCreateUser_gathering,
   User_gatheringFindOne,
 } = require("./functions/sequelize");
+const creatChat = require("../schemas/chat");
 const { createValidObject, DBERROR } = require("./functions/utility");
 
 module.exports = {
@@ -46,6 +47,7 @@ module.exports = {
     const { userId, setGatheringInfo } = res.locals;
     try {
       const createdGathering = await createGathering(setGatheringInfo, userId);
+      console.log(createdGathering);
       return res.status(200).json(createdGathering[0]);
     } catch (err) {
       DBERROR(res, err);
