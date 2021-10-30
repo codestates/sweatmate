@@ -38,8 +38,8 @@ app.get("/", (req, res) => {
 app.use("/auth", authRouter);
 app.use("/user", userRouter);
 app.use("/gathering", gatheringRouter);
-app.use("/chat", notificationRouter);
-app.use("/notification", chatRouter);
+app.use("/chat", chatRouter);
+app.use("/notification", notificationRouter);
 
 app.use((req, res) => {
   res.status(400).json({ message: "Invalid request" });

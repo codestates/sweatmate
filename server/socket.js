@@ -1,7 +1,13 @@
 const SocketIO = require("socket.io");
-module.exports = (server) => {
+const {
+  cors: { allowedOrigin },
+} = require("./config");
+module.exports = (server, app) => {
   const io = SocketIO(server, {
     path: "/socket.io",
+    cors: {
+      origin: allowedOrigin,
+    },
     serveClient: true, //TODO: 클라이언트에서 socket 설치하면 false 로 바꿔주기
   });
   app.set("io", io);
