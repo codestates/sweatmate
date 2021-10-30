@@ -7,7 +7,7 @@ const {
   User_gatheringFindOne,
 } = require("./functions/sequelize");
 const creatChat = require("../schemas/chat");
-const { createValidObject, DBERROR } = require("./functions/utility");
+const { createValidObject, DBERROR, getCurrentTime } = require("./functions/utility");
 
 module.exports = {
   getGatheringList: async (req, res) => {
@@ -48,10 +48,9 @@ module.exports = {
       const createdGathering = await createGathering(setGatheringInfo, userId);
       //mongoDB chat 세팅
       const { id, creator, title } = createdGathering[0];
-      console.log(creator);
       const setChatInfo = { _id: id, chatInfo: { title, ...sportInfo }, creatorId: creator.id };
-      const newRoom = await creatChat.create(setChatInfo);
-
+      await creatChat.create(setChatInfo);
+      //mongoDB
       return res.status(200).json(createdGathering[0]);
     } catch (err) {
       DBERROR(res, err);
@@ -59,6 +58,7 @@ module.exports = {
   },
   endGathering: async (req, res) => {
     //TODO: 조기 종료 되거나 노드 스케쥴러에 의해 종료가 되면 채팅창진입불가(채팅창 로그는 볼 수 있게 하느냐 마느냐 나중에 결정)
+    //호스트가 호출하는 Api입니다.
     const { userId } = res.locals;
     const { gatheringId } = req.params;
     try {
@@ -75,17 +75,19 @@ module.exports = {
     }
   },
   joinGathering: async (req, res) => {
+    //유저가 이미 있는 모임에 참가 신청을 하는 Api 입니다.
     const { userId } = res.locals;
     const { gatheringId } = req.params;
+    const oneDay = 86400;
     try {
-      const gatheringInfo = await gatheringFindOne({ id: gatheringId });
-      const { totalNum, currentNum, done } = gatheringInfo;
-      if (totalNum <= currentNum || done === 1) {
-        return res.status(400).json({ message: "already full of people or ended gathering" });
-      }
-      const [_, result] = await findOrCreateUser_gathering({ userId, gatheringId }); // 이름바꾸기
+      const [_, result] = await findOrCreateUser_gathering({ userId, gatheringId });
       if (!result) {
         return res.status(400).json({ message: "already participating" });
+      }
+      const gatheringInfo = await gatheringFindOne({ id: gatheringId });
+      const { totalNum, currentNum, done, date } = gatheringInfo;
+      if (totalNum <= currentNum || done === 1 || new Date(date) + oneDay < getCurrentTime) {
+        return res.status(400).json({ message: "already full of people or ended gathering" });
       }
       // TODO: 유저가 게더링에 참여했다는 이벤트를 모든 참여자에게 알림
       await gatheringInfo.update({ currentNum: currentNum + 1 });
