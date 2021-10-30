@@ -11,7 +11,7 @@ const initialState = {
   isGathCreateModal: false,
   isGathDetailModal: false,
   isConfirmModal: false,
-  isSignupModal: true,
+  isSignupModal: false,
   isSigninModal: false,
 };
 
