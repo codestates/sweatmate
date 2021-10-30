@@ -312,14 +312,13 @@ paths:
                 image:
                   type: string
                 sports:
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      sportName:
-                        type: string
-                      skill:
-                        type: integer
+                  type: string
+              example:
+                nickname: 축구왕
+                areaName: 노원구
+                age: 71
+                image: imageUrl
+                sports: [{ "sportName": "야구", "skill": "5" }]
       responses:
         "201":
           description: Successfully checked user information.
@@ -327,7 +326,17 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/UserInfomation"
-        "401":
+        "400":
+          description: The nicknames are duplicated.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    default: Nickname already exists
+        "403":
           description: Unauthorized
           content:
             application/json:

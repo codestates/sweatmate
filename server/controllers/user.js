@@ -35,30 +35,29 @@ module.exports = {
   },
   modifyUserInfo: async function (req, res) {
     const { userId } = res.locals;
+    const location = req.file?.location; // multer가 저장한 사진의 s3 url이 저장되어있음
     try {
       const { nickname, areaName, age, sports, gender } = req.body;
       const userInfo = await userFindOne({ id: userId });
-      let location;
-      if (req.file) {
-        location = req.file.location;
-        const { image } = userInfo.dataValues;
-        if (image) {
-          deleteImageinTable(image);
-        }
-      }
+      const { image } = userInfo.dataValues;
       const areaId = areaList.filter((el) => el.areaName === areaName)[0].id;
-      const setSportsByUser = JSON.parse(sports); // [{sportName:축구, skill: 1}, {sportName:야구, skill: 3} ...]
-      const getUserSportsList = setSportsByUser.map((userSport) => {
+      await userInfo.update({ nickname, age, areaId, image: location, gender }); // 닉네임이 중복되어 오류가 나면 s3에 저장한 사진 삭제해줘야 함
+      if (location && image) {
+        console.log("기존 유저 image가 s3에서 삭제됩니다.");
+        deleteImageinTable(image);
+      }
+      const getUserSportsList = JSON.parse(sports).map((userSport) => {
         const sportInfo = sportsList.filter((sportList) => {
           return userSport.sportName === sportList.sportName;
         })[0];
         return { sportId: sportInfo.id, userId, skill: userSport.skill };
       });
-      await userInfo.update({ nickname, age, areaId, image: location, gender });
       await modifyUserSportList({ userId }, getUserSportsList);
       module.exports.getUerInfo(req, res);
     } catch (err) {
-      DBERROR(res, err);
+      console.log(err);
+      deleteImageinTable(location); // 유저 입데이트 과정에서 오류가 났으므로 유저가 업로드한 s3에 저장된 사진을 삭제함
+      return res.status(200).json({ message: "Nickname already exists" });
     }
   },
   removeUserInfo: async (req, res) => {
