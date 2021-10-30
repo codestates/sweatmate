@@ -59,4 +59,4 @@ const sweatmateServer = app.listen(config.port, async () => {
   }
 });
 
-SocketIO(sweatmateServer);
+SocketIO(sweatmateServer, app);

@@ -4,6 +4,7 @@ module.exports = (server) => {
     path: "/socket.io",
     serveClient: true, //TODO: 클라이언트에서 socket 설치하면 false 로 바꿔주기
   });
+  app.set("io", io);
   io.on("connection", (socket) => {
     console.log("새로운 클라이언트 접속!");
     socket.on("disconnect", () => {
