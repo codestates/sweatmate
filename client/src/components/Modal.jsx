@@ -39,7 +39,7 @@ const ModalContainer = styled.div`
   border-radius: 1rem;
   color: var(--color-darkgray);
   background-color: var(--color-white);
-  padding: 2rem 1.5rem;
+  padding: 2rem 3rem;
   ${media.lessThan("medium")`
     position: fixed;
     top: 0;
@@ -54,7 +54,7 @@ const ModalContainer = styled.div`
   `};
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: center;
 `;
 
 const CloseBtn = styled.div`

@@ -9,6 +9,7 @@ import { ImGoogle } from "react-icons/im";
 import { SiKakao } from "react-icons/si";
 import { useDispatch } from "react-redux";
 import { modalOffAction, signinOnAction, signupOnAction } from "../store/actions";
+import debounce from "lodash/debounce";
 
 const Form = styled.form`
   display: flex;
@@ -16,8 +17,7 @@ const Form = styled.form`
   align-items: center;
   justify-content: center;
   width: auto;
-  height: 100%;
-  padding: 1rem;
+  height: auto;
   * {
     width: 20rem;
     height: 3rem;
@@ -57,7 +57,12 @@ const Logo = styled.img`
   height: 2.5rem;
 `;
 
+const InputContainer = styled.div`
+  height: auto;
+`;
+
 const Input = styled.input`
+  height: 2rem;
   padding: 0 0.5rem;
   font-size: 0.875rem;
   color: var(--color-black);
@@ -121,10 +126,11 @@ const FlexContainer = styled.div`
   }
 `;
 
-const ErrorMessage = styled.span`
+const ErrorMessage = styled.div`
   color: var(--color-red);
   font-size: 0.8rem;
-  padding-left: 1rem;
+  padding: 0rem 1rem;
+  height: 0.5rem;
 `;
 
 const Signing = ({ type }) => {
@@ -135,7 +141,12 @@ const Signing = ({ type }) => {
     retypedPassword: "",
     nickname: "",
   });
-  const [error, setError] = useState(true);
+  const [validated, setValidated] = useState({
+    email: false,
+    password: false,
+    retypedPassword: false,
+    nickname: false,
+  });
 
   const handleTypeChange = () => {
     if (type === "로그인") {
@@ -147,54 +158,53 @@ const Signing = ({ type }) => {
     }
   };
 
-  const handleInputChange = (e) => {
+  const handleInputChange = debounce((e) => {
     const { name, value } = e.target;
     setInputValue({ ...inputValue, [name]: value });
-  };
+
+    if (e.target.name === "email") {
+      const checkedEmail =
+        /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i.test(
+          inputValue.email
+        );
+      setValidated({ ...validated, [name]: checkedEmail });
+    }
+  }, 100);
+
+  const handleSubmit = (e) => {};
 
   return (
     <Form>
       <Logo src={`${process.env.PUBLIC_URL}/assets/long-logo.png`} />
-      <Input name="email" placeholder="이메일" onchange={handleInputChange}></Input>
-      {
-        error && (
+      <InputContainer type={type}>
+        <Input name="email" placeholder="이메일" onChange={handleInputChange}></Input>
+        <Input name="password" placeholder="비밀번호" onChange={handleInputChange}></Input>
+        {type === "로그인" && (
+          <ErrorMessage>
+            {"이메일을 입력하세요" || "비밀번호를 입력하세요" || "이메일 또는 비밀번호가 틀립니다."}
+          </ErrorMessage>
+        )}
+        {type === "회원가입" && (
           <>
-            <ErrorMessage>이메일을 입력하세요</ErrorMessage>
-            <ErrorMessage>특수문자는 $!@%!만 사용</ErrorMessage>
+            <Input
+              name="retypedPassword"
+              placeholder="비밀번호 재입력"
+              onChange={handleInputChange}
+            ></Input>
+            <Input name="nickname" placeholder="닉네임" onChange={handleInputChange}></Input>
+            <ErrorMessage>
+              {"특수문자는 $!@%!만 사용" ||
+                "이메일 형식이 올바르지 않습니다." ||
+                "비밀번호가 일치하지 않습니다!"}
+            </ErrorMessage>
           </>
-        ) /* TODO: error를 구체적인 에러 케이스로 변경 필요 (DB데이터 받아오기 등) */
-      }
-      <Input name="password" placeholder="비밀번호"></Input>
-      {
-        error && (
-          <>
-            <ErrorMessage>이메일 또는 비밀번호가 틀립니다.</ErrorMessage>
-            <ErrorMessage>비밀번호를 입력하세요</ErrorMessage>
-            <ErrorMessage>특수문자는 $!@%!만 사용</ErrorMessage>
-          </>
-        ) /* TODO: error를 구체적인 에러 케이스로 변경 필요 (DB데이터 받아오기 등) */
-      }
-      {type === "회원가입" && (
-        <>
-          <Input
-            name="retypedPassword"
-            placeholder="비밀번호 재입력"
-            onchange={handleInputChange}
-          ></Input>
-          {
-            error && (
-              <ErrorMessage>비밀번호가 일치하지 않습니다!</ErrorMessage>
-            ) /* TODO: error를 구체적인 에러 케이스로 변경 필요 (비밀번호 재입력 일치 여부) */
-          }
-          <Input name="nickname" placeholder="닉네임" onchange={handleInputChange}></Input>
-          {
-            error && (
-              <ErrorMessage>비밀번호가 일치하지 않습니다!</ErrorMessage>
-            ) /* TODO: error를 구체적인 에러 케이스로 변경 필요 (닉네임 중복 검사) */
-          }
-        </>
-      )}
-      <Button bgColor={"var(--color-white)"} color={"var(--color-maingreen--100) !important"}>
+        )}
+      </InputContainer>
+      <Button
+        bgColor={"var(--color-white)"}
+        color={"var(--color-maingreen--100) !important"}
+        onClick={handleSubmit}
+      >
         {type === "로그인" ? "로그인" : "회원가입"}
       </Button>
       {type === "로그인" && <button>비밀번호를 잊어버리셨나요?</button>}
