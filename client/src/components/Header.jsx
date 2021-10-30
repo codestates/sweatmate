@@ -166,6 +166,7 @@ const MobileNavBtn = styled.button`
   margin-bottom: 0.5rem;
   border-radius: 0.5rem;
   color: var(--color-red);
+  border: 1px solid var(--color-red);
 
   ${media.greaterThan("medium")`
     display: none;
