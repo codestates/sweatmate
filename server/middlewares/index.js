@@ -106,7 +106,8 @@ module.exports = {
       return res.status(400).json({ message: "Incorrect format" });
     }
     const { userId } = res.locals;
-    const sportId = TranslateFromSportNameToSportInfo(req.body.sportName).id;
+    const sportInfo = TranslateFromSportNameToSportInfo(req.body.sportName);
+    const sportId = sportInfo.id;
     const areaId = TranslateFromAreaNameToAreaInfo(req.body.areaName).id;
     delete req.body.sportName;
     delete req.body.areaName;
@@ -117,6 +118,9 @@ module.exports = {
       sportId,
       areaId,
     };
+    delete sportInfo.id;
+    delete sportInfo.sportEngName;
+    res.locals.sportInfo = sportInfo;
     next();
   },
 };

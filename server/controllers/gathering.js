@@ -43,11 +43,15 @@ module.exports = {
     }
   },
   createGathering: async (req, res) => {
-    //TODO: 게더링 생성 시 게더링 정보 몽고디비에 추가
-    const { userId, setGatheringInfo } = res.locals;
+    const { userId, setGatheringInfo, sportInfo } = res.locals;
     try {
       const createdGathering = await createGathering(setGatheringInfo, userId);
-      console.log(createdGathering);
+      //mongoDB chat 세팅
+      const { id, creator, title } = createdGathering[0];
+      console.log(creator);
+      const setChatInfo = { _id: id, chatInfo: { title, ...sportInfo }, creatorId: creator.id };
+      const newRoom = await creatChat.create(setChatInfo);
+
       return res.status(200).json(createdGathering[0]);
     } catch (err) {
       DBERROR(res, err);
