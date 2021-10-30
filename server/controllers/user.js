@@ -57,7 +57,7 @@ module.exports = {
     } catch (err) {
       console.log(err);
       deleteImageinTable(location); // 유저 입데이트 과정에서 오류가 났으므로 유저가 업로드한 s3에 저장된 사진을 삭제함
-      return res.status(200).json({ message: "Nickname already exists" });
+      return res.status(400).json({ message: "Nickname already exists" });
     }
   },
   removeUserInfo: async (req, res) => {
