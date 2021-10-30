@@ -18,7 +18,7 @@ const StyledHeader = styled.header`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 2rem;
+  padding: 1rem 1rem 1rem 2rem;
   position: sticky;
   top: 0;
   width: 100%;
@@ -404,7 +404,7 @@ const Header = () => {
             <IoHomeOutline />
             <Text>홈</Text>
           </StyledNavLink>
-          <StyledNavLink to="/chat/1" onClick={closeAll}>
+          <StyledNavLink to="/chat" onClick={closeAll}>
             <IoChatbubblesOutline />
             <Text>채팅</Text>
           </StyledNavLink>
