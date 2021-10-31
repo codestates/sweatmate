@@ -1,8 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import media from "styled-media-query";
 import GathCard from "../components/GathCard";
 import { MdOutlinePending, MdOutlineCheckCircle } from "react-icons/md";
+import { signInAction, signOutAction } from "../store/actions";
+import authApi from "../api/auth";
+import { useDispatch } from "react-redux";
+import { useHistory } from "react-router";
 
 const Container = styled.div`
   min-height: calc(100vh - 73px - 343.72px);
@@ -227,6 +231,22 @@ const gatherings = [
 const Schedule = () => {
   const [isUpcoming, setIsUpcoming] = useState(true);
   const [isPassed, setIsPassed] = useState(false);
+
+  const dispatch = useDispatch();
+  const history = useHistory();
+
+  useEffect(() => {
+    const checkValidUser = async () => {
+      const res = await authApi.me();
+      if (res.status === 200) {
+        dispatch(signInAction(res.data.data));
+      } else if (res.status === 202) {
+        dispatch(signOutAction);
+        history.push("/");
+      }
+    };
+    checkValidUser();
+  }, [dispatch, history]);
 
   const handleUpcomingClick = () => {
     setIsUpcoming(true);

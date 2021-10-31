@@ -3,6 +3,10 @@ import styled from "styled-components";
 import GathCard from "../components/GathCard";
 import media from "styled-media-query";
 import OnMapBtn from "../components/OnMapBtn";
+import { useDispatch } from "react-redux";
+import { useHistory } from "react-router";
+import authApi from "../api/auth";
+import { signInAction, signOutAction } from "../store/actions";
 
 const HomeContainer = styled.div`
   width: 100%;
@@ -76,6 +80,22 @@ const Home = () => {
   const [dateInput, setDateInput] = useState(null);
   const [timeInput, setTimeInput] = useState(null);
   const [totalNumInput, setTotalNumInput] = useState(null);
+
+  const dispatch = useDispatch();
+  const history = useHistory();
+
+  useEffect(() => {
+    const checkValidUser = async () => {
+      const res = await authApi.me();
+      if (res.status === 200) {
+        dispatch(signInAction(res.data.data));
+      } else if (res.status === 202) {
+        dispatch(signOutAction);
+        history.push("/");
+      }
+    };
+    checkValidUser();
+  }, [dispatch, history]);
 
   useEffect(() => {
     setSportInput("농구🏀");
