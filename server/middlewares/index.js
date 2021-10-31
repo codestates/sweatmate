@@ -33,7 +33,7 @@ module.exports = {
     const nickname = req.params.nickname ?? req.body.nickname;
     try {
       const userInfo = await userFindOne({ nickname });
-      if (userInfo) return res.status(409).json({ message: `${nickname} already exists` });
+      if (userInfo) return res.status(400).json({ message: `${nickname} already exists` });
       return next();
     } catch (err) {
       DBERROR(res, err);
@@ -45,7 +45,7 @@ module.exports = {
       const userInfo = await userFindOne({ email });
       if (userInfo) {
         const { type } = userInfo.dataValues;
-        return res.status(409).json({ message: `${email} already exists`, type });
+        return res.status(400).json({ message: `${email} already exists`, type });
       }
       return next();
     } catch (err) {
@@ -106,7 +106,8 @@ module.exports = {
       return res.status(400).json({ message: "Incorrect format" });
     }
     const { userId } = res.locals;
-    const sportId = TranslateFromSportNameToSportInfo(req.body.sportName).id;
+    const sportInfo = TranslateFromSportNameToSportInfo(req.body.sportName);
+    const sportId = sportInfo.id;
     const areaId = TranslateFromAreaNameToAreaInfo(req.body.areaName).id;
     delete req.body.sportName;
     delete req.body.areaName;
@@ -117,6 +118,9 @@ module.exports = {
       sportId,
       areaId,
     };
+    delete sportInfo.id;
+    delete sportInfo.sportEngName;
+    res.locals.sportInfo = sportInfo;
     next();
   },
 };

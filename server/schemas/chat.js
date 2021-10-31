@@ -5,7 +5,7 @@ const chatSchema = new Schema({
     type: Number,
     required: true,
   }, // mysql의 gatheringId가 들어감
-  gatheringInfo: {
+  chatInfo: {
     type: Object, // 타이틀, 스포츠 (한글), 스포츠 이모지,
   },
   chatLog: {

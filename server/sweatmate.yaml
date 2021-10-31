@@ -169,7 +169,7 @@ paths:
                 required:
                   - message
                 example:
-                  message: Incorrect email format
+                  message: "Need to verify your email first"
         "401":
           description: Unauthorized
           content:
@@ -692,6 +692,64 @@ paths:
                   message:
                     type: string
                     example: "Don't have data to send you."
+  /chat:
+    get:
+      tags:
+        - "chat"
+      summary: get user's chat list
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    gatheringId:
+                      type: integer
+                    chatInfo:
+                      type: object
+                      properties:
+                        user:
+                          title: string
+                        sportEmoji:
+                          type: string
+                        sportName:
+                          type: string
+                    recentChat:
+                      type: object
+                      properties:
+                        user:
+                          type: string
+                        message:
+                          type: string
+                        date:
+                          type: string
+                    creatorId:
+                      type: string
+              example:
+                gatheringId: 14
+                chatInfo:
+                  user: "muyaho"
+                  sportEmoji: ":baseball:"
+                  sportName: "야구"
+                recentChat:
+                  user: "무야호"
+                  message: "그만큼 좋다는 뜻이거든~"
+                  date: "어제"
+
+        "404":
+          description: "There's no gathering participating"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "There's no gathering participating"
 components:
   schemas:
     AuthenticationMessage:

@@ -14,7 +14,7 @@ module.exports = {
     return res.status(200).json({ message: "Valid nickname" });
   },
   validEmail: async (req, res) => {
-    return res.status(200).json({ message: "Valid nickname" });
+    return res.status(200).json({ message: "Valid Email" });
   },
   signup: async (req, res) => {
     const { email, password, nickname } = req.body;
@@ -71,7 +71,7 @@ module.exports = {
         return res.status(401).json({ message: "Invalid email or password" });
       }
       if (!foundUserByEmail.dataValues.authStatus) {
-        return res.status(401).json({ message: "Need to verify your email first" });
+        return res.status(400).json({ message: "Need to verify your email first" });
       }
       const isValidPassword = await bcrypt.compare(password, foundUserByEmail.dataValues.password);
       if (!isValidPassword) {
