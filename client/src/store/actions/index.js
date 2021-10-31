@@ -5,6 +5,8 @@ import {
   SIGNUP_MODAL_ON,
   SIGNIN_MODAL_ON,
   MODAL_OFF,
+  SIGN_IN,
+  SIGN_OUT,
 } from "./actionTypes";
 
 // // action
@@ -18,6 +20,15 @@ import {
 //   type: EXAMPLE_TYPE,
 //   payload,
 // });
+
+// Auth
+export const signInAction = (data) => ({
+  type: SIGN_IN,
+  payload: { ...data },
+});
+export const signOutAction = {
+  type: SIGN_OUT,
+};
 
 // Modal
 export const gathCreateModalOnAction = {
