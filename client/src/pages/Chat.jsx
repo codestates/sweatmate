@@ -165,12 +165,9 @@ const Chat = () => {
         const res = await authApi.me();
         if (res.status === 200) {
           dispatch(signInAction(res.data.data));
-        } else {
-          const err = new Error();
-          err.status = res.status;
         }
       } catch (error) {
-        if (error.status === 403) {
+        if (error.response.status === 403) {
           dispatch(signOutAction);
           history.push("/");
         }
