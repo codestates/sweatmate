@@ -218,14 +218,13 @@ const Signing = ({ type }) => {
       } else if (name === "nickname") {
         try {
           const res = await authApi.checkNickname(value);
-          console.log(res);
           res.status === 200 && setErrorMsg("");
         } catch (error) {
           setErrorMsg("사용할 수 없는 닉네임입니다.");
         }
       }
     }
-  }, 500);
+  }, 200);
 
   const handleSign = async (e) => {
     e.preventDefault();
@@ -237,7 +236,6 @@ const Signing = ({ type }) => {
         delete signInputValue.nickname;
         try {
           const res = await authApi.signin(signInputValue);
-          console.log(res);
           if (res.status === 200) {
             history.push("/home");
             dispatch(modalOffAction);
@@ -253,7 +251,6 @@ const Signing = ({ type }) => {
         delete signInputValue.retypedPassword;
         try {
           const res = await authApi.signup(signInputValue);
-          console.log(res);
           res.status === 201 && dispatch(modalOffAction);
         } catch (error) {
           setErrorMsg("정보를 확인해주세요.");
