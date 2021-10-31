@@ -3,6 +3,8 @@ import styled from "styled-components";
 import PropTypes from "prop-types";
 import UserProfile from "./UserProfile";
 import { FaMapMarkerAlt } from "react-icons/fa";
+import { useDispatch } from "react-redux";
+import { gathDetailModalOnAction } from "../store/actions";
 
 const CardContainer = styled.div`
   border-radius: 1rem;
@@ -12,8 +14,8 @@ const CardContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  max-width: 380px;
-  min-width: 280px;
+  /* max-width: 25rem; */
+  min-width: 20rem;
   > * {
     margin-bottom: 1.25rem;
   }
@@ -81,17 +83,19 @@ const InfoFooter = styled.div`
 `;
 
 const GathCard = ({ gathering }) => {
-  const timeName = { morning: "오전", afternoon: "오후", evening: "저녁" };
-
+  const dispatch = useDispatch();
+  const handleGathDetailModalOn = (e) => {
+    dispatch(gathDetailModalOnAction);
+  };
   return (
-    <CardContainer>
+    <CardContainer onClick={handleGathDetailModalOn}>
       <InfoHeader>
         <div>
           <div className="text">{`${gathering.date.split("-")[1]}월 ${
             gathering.date.split("-")[2]
           }일`}</div>
           <div className="divider">|</div>
-          <div className="text">{timeName[gathering.time]}</div>
+          <div className="text">{gathering.time}</div>
         </div>
         <div>
           <div className="text">{`${gathering.currentNum}명 모집 중`}</div>

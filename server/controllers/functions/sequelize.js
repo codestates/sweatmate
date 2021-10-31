@@ -1,23 +1,68 @@
-const { User, Gathering, Sport, User_sport } = require("../../models");
+const { User, Gathering, Sport, User_sport, User_gathering } = require("../../models");
 
 module.exports = {
-  userFindOne: async (object, attributes = []) => {
+  userFindOne: async (queries, attributes = []) => {
     return await User.findOne({
-      where: { ...object },
+      where: { ...queries },
       attributes: { exclude: [...attributes] },
     });
   },
-  createUser: (object) => {
-    return User.create(object);
+  createUser: (queries) => {
+    return User.create(queries);
   },
-  findSportsOfUser: async (object, attributes = []) => {
+  findSportsOfUser: async (queries, attributes = []) => {
     return await User_sport.findAll({
-      where: { ...object },
+      where: { ...queries },
       attributes: { exclude: [...attributes] },
     });
   },
-  modifyUserSportList: async (object, sportList) => {
-    await User_sport.destroy({ where: { ...object } });
+  findGatheringOfUser: async (queries, attributes = []) => {
+    return await User_gathering.findAll({
+      where: { ...queries },
+      attributes: { exclude: [...attributes] },
+    });
+  },
+  modifyUserSportList: async (queries, sportList) => {
+    await User_sport.destroy({ where: { ...queries } });
     await User_sport.bulkCreate(sportList);
+  },
+  findAllGathering: async (queries) => {
+    const gatheringList = await Gathering.findAll({
+      where: { ...queries },
+      include: [
+        { model: User, as: "creator", attributes: ["id", "nickname", "image"] },
+        {
+          model: User_gathering,
+          include: { model: User, attributes: ["id", "nickname", "image"] },
+          attributes: { exclude: ["userId", "gatheringId"] },
+        },
+      ],
+      order: ["date"],
+      attributes: { exclude: ["creatorId", "createdAt"] }, //TODO: 생성일자는 필요없는지 상의
+    });
+    return Promise.all(
+      gatheringList.map((element) => {
+        const users = element.dataValues.User_gatherings.map((userInfo) => {
+          return userInfo.User.dataValues;
+        });
+        delete element.dataValues.User_gatherings;
+        return { ...element.dataValues, users };
+      })
+    );
+  },
+  createGathering: async (queries, userId) => {
+    const createdGathering = await Gathering.create(queries);
+    const gatheringId = createdGathering.dataValues.id;
+    await User_gathering.create({ userId, gatheringId });
+    return await module.exports.findAllGathering({ id: gatheringId });
+  },
+  gatheringFindOne: async (queries) => {
+    return Gathering.findOne({ where: { ...queries } });
+  },
+  findOrCreateUser_gathering: async (queries) => {
+    return User_gathering.findOrCreate({ where: queries });
+  },
+  User_gatheringFindOne: async (queries) => {
+    return User_gathering.findOne({ where: queries });
   },
 };

@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
         targetKey: "id",
         onDelete: "CASCADE",
       });
-      models.User_gathering.belongsTo(models.Sport, {
+      models.User_gathering.belongsTo(models.Gathering, {
         foreignKey: { name: "gatheringId", allowNull: false },
         targetKey: "id",
         onDelete: "CASCADE",

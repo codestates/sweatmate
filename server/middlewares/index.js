@@ -1,6 +1,10 @@
 const { verifyAccessToken, clearCookie } = require("../controllers/functions/token");
 const { userFindOne } = require("../controllers/functions/sequelize");
-const { DBERROR } = require("../controllers/functions/utility");
+const {
+  DBERROR,
+  TranslateFromAreaNameToAreaInfo,
+  TranslateFromSportNameToSportInfo,
+} = require("../controllers/functions/utility");
 const AUTH_ERROR = { message: "Authentication Error" };
 
 module.exports = {
@@ -47,5 +51,72 @@ module.exports = {
     } catch (err) {
       DBERROR(res, err);
     }
+  },
+  checkPermission: async (req, res, next) => {
+    if (res.locals.userId !== req.params.userId) {
+      return res.status(403).json({ message: "You don't have permission" });
+    }
+    next();
+  },
+  createConditionsForSearching: (req, res, next) => {
+    const { sportName, areaName, time, date, totalNum } = req.query;
+    const areaId = TranslateFromAreaNameToAreaInfo(areaName)?.id;
+    const sportInfo = TranslateFromSportNameToSportInfo(sportName);
+    const sportId = sportInfo?.id;
+    delete sportInfo?.id;
+    res.locals.gathering = {
+      time,
+      date,
+      totalNum,
+      areaId,
+      sportId,
+    };
+    res.locals.conditions = { ...req.query, ...sportInfo };
+    next();
+  },
+  checkToCreateGathering: (req, res, next) => {
+    const {
+      title,
+      description,
+      placeName,
+      latitude,
+      longitude,
+      date,
+      time,
+      timeDescription,
+      totalNum,
+      areaName,
+      sportName,
+    } = req.body;
+    if (
+      !(
+        title &&
+        description &&
+        placeName &&
+        latitude &&
+        longitude &&
+        date &&
+        time &&
+        timeDescription &&
+        totalNum &&
+        areaName &&
+        sportName
+      )
+    ) {
+      return res.status(400).json({ message: "Incorrect format" });
+    }
+    const { userId } = res.locals;
+    const sportId = TranslateFromSportNameToSportInfo(req.body.sportName).id;
+    const areaId = TranslateFromAreaNameToAreaInfo(req.body.areaName).id;
+    delete req.body.sportName;
+    delete req.body.areaName;
+    res.locals.setGatheringInfo = {
+      ...req.body,
+      currentNum: 1,
+      creatorId: userId,
+      sportId,
+      areaId,
+    };
+    next();
   },
 };

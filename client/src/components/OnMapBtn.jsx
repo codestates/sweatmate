@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import media from "styled-media-query";
 
 const ButtonContainer = styled(Link)`
+  min-width: 10.8rem;
   padding: 0.6rem 1.2rem;
   display: flex;
   align-items: center;
@@ -19,8 +20,10 @@ const ButtonContainer = styled(Link)`
   `};
   ${media.lessThan("small")`
     width: 100%;
-    max-width: 380px;
-    min-width: 280px;
+    height: 3rem;
+    /* max-width: 25rem; */
+    min-width: 20rem;
+    justify-content: center;
   `};
 `;
 
@@ -36,7 +39,7 @@ const OnMapBtn = () => {
   return (
     <ButtonContainer to="/map">
       <Icon>🗺</Icon>
-      <Text>지도로 보기</Text>
+      <Text>지도로 전체 보기</Text>
     </ButtonContainer>
   );
 };

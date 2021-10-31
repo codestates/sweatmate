@@ -1,0 +1,900 @@
+openapi: 3.0.0
+info:
+  title: Sweat mate
+  description: Sweat mate desc
+  version: "1.0.0"
+servers:
+  - url: "http://localhost:8080"
+tags:
+  - name: auth
+    description: Operations about authentication
+  - name: user
+    description: Operations about user
+  - name: gathering
+    description: Operations about gathering
+  - name: chat
+    description: Operations about chat
+  - name: notification
+    description: Operations about notification
+paths:
+  /auth/nickname/{nickname}:
+    get:
+      tags:
+        - auth
+      summary: Verify nickname
+      description: Check if the nicknames overlap
+      parameters:
+        - name: nickname
+          in: path
+          description: Check if the nicknames overlap by nickname
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+                example:
+                  message: Valid nickname
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+                example:
+                  message: Nickname already exists
+  /auth/email/{email}:
+    get:
+      tags:
+        - auth
+      summary: Verify email
+      description: Check if the email is already registered
+      parameters:
+        - name: email
+          in: path
+          description: Check if the email is already registered by email
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+                example:
+                  message: Valid email
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  type:
+                    type: string
+                required:
+                  - message
+                example:
+                  message: Email already exists
+                  type: local
+  /auth/me:
+    get:
+      tags:
+        - auth
+      summary: Verify token
+      description: Check if the token is valid
+      parameters:
+        - name: accessToken
+          in: cookie
+          description: Check if it's a valid token by accessToken
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+        "403":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationMessage"
+  /auth/signin:
+    post:
+      tags:
+        - auth
+      summary: Sign in
+      description: Sign in to sweat-mate
+      requestBody:
+        content:
+          "application/json":
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+              required:
+                - email
+                - password
+            example:
+              email: john@google.com
+              password: 1234
+        required: true
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+                example:
+                  message: Incorrect email format
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+                example:
+                  message: Invalid email or password
+  /auth/signout:
+    get:
+      tags:
+        - auth
+      summary: Sign out
+      description: Sign out of sweat-mate
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationMessage"
+  /auth/signup:
+    post:
+      tags:
+        - auth
+      summary: Sign up
+      description: Sign up to sweat-mate
+      requestBody:
+        content:
+          "application/json":
+            schema:
+              type: object
+              properties:
+                nickname:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+              required:
+                - nickname
+                - email
+                - password
+              example:
+                nickname: John
+                email: John@google.com
+                passowrd: 1234
+        required: true
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+                example:
+                  message: Incorrect format
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+                example:
+                  message: Already exists
+  /user/{userId}:
+    get:
+      tags:
+        - user
+      summary: Get user information.
+      description: Get user information.
+      parameters:
+        - name: userId
+          in: path
+          description: Modify user information by usersId
+          required: true
+          schema:
+            type: string
+      responses:
+        "201":
+          description: Successfully checked user information.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserInfomation"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationMessage"
+    put:
+      tags:
+        - user
+      summary: Modify user
+      description: Modify user information
+      parameters:
+        - name: userId
+          in: path
+          description: Modify user information by usersId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                nickname:
+                  type: string
+                areaName:
+                  type: string
+                age:
+                  type: integer
+                image:
+                  type: string
+                sports:
+                  type: string
+              example:
+                nickname: 축구왕
+                areaName: 노원구
+                age: 71
+                image: imageUrl
+                sports: [{ "sportName": "야구", "skill": "5" }]
+      responses:
+        "201":
+          description: Successfully checked user information.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserInfomation"
+        "400":
+          description: The nicknames are duplicated.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    default: Nickname already exists
+        "403":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationMessage"
+    delete:
+      tags:
+        - user
+      summary: Remove user
+      description: Remove user information
+      parameters:
+        - name: userId
+          in: path
+          description: Remove user information by usersId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successfully checked user information.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    default: User deleted
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationMessage"
+        "403":
+          description: You don't have permission.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    default: You don't have permission.
+
+  /gathering:
+    get:
+      tags:
+        - "gathering"
+      summary: get "gathering" informations.
+      description: gathering 조건 검색
+      parameters:
+        - name: sportName
+          in: query
+          description: gathering sport setting.
+          schema:
+            type: string
+          required: true
+        - name: areaName
+          in: query
+          description: gathering area setting.
+          schema:
+            type: string
+          required: true
+        - name: date
+          in: query
+          description: gathering date setting.
+          schema:
+            type: string
+        - name: time
+          in: query
+          description: gathering time setting.
+          schema:
+            type: string
+        - name: totalNum
+          in: query
+          description: gathering totalNum setting.
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  gatherings:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/gatheringInfomation"
+                  conditions:
+                    type: object
+                    $ref: "#/components/schemas/searchConditions"
+        "404":
+          description: Don't have data to send you.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Don't have data to send you."
+    post:
+      tags:
+        - "gathering"
+      summary: create "gathering"
+      description: 게더링 생성 해당 채팅방으로 이동 채팅방 room 이름은 게더링id(pk)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/createGathering"
+      responses:
+        "201":
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/gatheringInfomation"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+                example:
+                  message: Incorrect format
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationMessage"
+  /gathering/{gathering}:
+    post:
+      tags:
+        - "gathering"
+      summary: participate at "gathering"
+      description: 게더링 참여하기 위한 요청 (로그인/ 게스트)
+      parameters:
+        - name: gathering
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "201":
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/gatheringInfomation"
+        "400":
+          description: already full of people or ended gathering
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: already full of people or ended gathering
+
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationMessage"
+    patch:
+      tags:
+        - "gathering"
+      summary: End "gathering"
+      description: 게더링 (조기) 종료하기 위한 요청 (호스트)
+      parameters:
+        - name: gathering
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "201":
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/gatheringInfomation"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationMessage"
+        "403":
+          description: You don't have permission.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "You don't have permission."
+    delete:
+      tags:
+        - "gathering"
+      summary: participate at gathering
+      description: 게더링 참가 취소를 위한 요청 (로그인/ 게스트)
+      parameters:
+        - name: gathering
+          in: path
+
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/gatheringInfomation"
+        "400":
+          description: You are not in a state of participation.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: You are not in a state of participation.
+
+        "403":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationMessage"
+
+  /gathering/random:
+    get:
+      tags:
+        - "gathering"
+      summary: Initial recommendation schedule of gathering
+      description: 초기 홈 화면에서 "추천 모임" 목록 (마이페이지 운동, 지역 설정 유무)
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  gathering:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/gatheringInfomation"
+        "404":
+          description: Don't have data to send you.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Don't have data to send you."
+  /gathering/upcoming/{userId}:
+    get:
+      tags:
+        - "gathering"
+      summary: Check the user's upcoming schedule of "gathering"
+      parameters:
+        - name: userId
+          in: path
+          description: user information by usersId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  gathering:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/gatheringInfomation"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationMessage"
+        "404":
+          description: Don't have data to send you.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Don't have data to send you."
+  /gathering/passed/{userId}:
+    get:
+      tags:
+        - "gathering"
+      summary: Check the user's passed schedule of "gathering"
+      parameters:
+        - name: userId
+          in: path
+          description: user information by usersId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  gathering:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/gatheringInfomation"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationMessage"
+        "404":
+          description: Don't have data to send you.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Don't have data to send you."
+components:
+  schemas:
+    AuthenticationMessage:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+        - message
+      example:
+        message: Authentication Error
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        image:
+          type: string
+        nickname:
+          type: string
+      example:
+        id: "1"
+        image: "http://image.com"
+        nickname: "John"
+    UserInfomation:
+      type: object
+      properties:
+        nickname:
+          type: string
+        email:
+          type: string
+        image:
+          type: string
+        areaName:
+          type: string
+        gender:
+          type: string
+        age:
+          type: integer
+        type:
+          type: string
+        sports:
+          type: array
+          items:
+            type: object
+            properties:
+              sportEmoji:
+                type: string
+              sportName:
+                type: string
+              sportEngName:
+                type: string
+              skill:
+                type: integer
+      example:
+        nickname: 축구왕
+        email: local@local.com
+        image: imageUrl
+        areaName: 노원구
+        gender: 남
+        age: 71
+        type: local
+        sports:
+          - sportEmoji: ":baseball:"
+            sportName: 야구
+            sportEngName: baseball
+            skill: 5
+    gatheringInfomation:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        placeName:
+          type: string
+        latitude:
+          type: integer
+        longitude:
+          type: integer
+        date:
+          type: string
+        time:
+          type: string
+        timeDescription:
+          type: string
+        totalNum:
+          type: integer
+        currentNum:
+          type: integer
+        creator:
+          type: object
+          properties:
+            id:
+              type: string
+            nickname:
+              type: string
+            image:
+              type: string
+        areaName:
+          type: string
+        sportName:
+          type: string
+        sportEmoji:
+          type: string
+        done:
+          type: boolean
+        users:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              nickname:
+                type: string
+              image:
+                type: string
+      example:
+        id: 12
+        title: 농구 함 때려볼 용산러들~!
+        description: 용산에서 즐기면서 농구하는 사람들 한 판 같이 합시다~
+        creator:
+          id: uuid
+          nickname: 농구킹
+          image: imageUrl
+        areaName: 용산구
+        placeName: 운동장
+        latitude: 33.450701
+        longitude: 126.570667
+        date: "2021-10-27"
+        time: "저녁"
+        timeDescription: "19시"
+        totalNum: 4
+        currentNum: 2
+        sportName: basketball
+        sportEmoji: ":basketball:"
+        done: false
+        users:
+          - id: uuid
+            nickname: 농구킹
+            image: imageUrl
+    createGathering:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        placeName:
+          type: string
+        latitude:
+          type: integer
+        longitude:
+          type: integer
+        date:
+          type: string
+        time:
+          type: string
+        timeDescription:
+          type: string
+        totalNum:
+          type: integer
+        areaName:
+          type: string
+        sportName:
+          type: string
+      example:
+        title: 농구 함 때려볼 용산러들~!
+        description: 용산에서 즐기면서 농구하는 사람들 한 판 같이 합시다~
+        placeName: 운동장
+        latitude: 33.450701
+        longitude: 126.570667
+        date: "2021-10-27"
+        time: "저녁"
+        timeDescription: "19시"
+        totalNum: 4
+        areaName: 용산구
+        sportName: 농구
+    searchConditions:
+      type: object
+      properties:
+        sportName:
+          type: string
+        areaName:
+          type: string
+        date:
+          type: string
+        time:
+          type: integer
+        totalNum:
+          type: integer
+        sportEmoji:
+          type: string
+        sportEngName:
+          type: string
+      example:
+        sportName: 농구
+        areaName: 용산구
+        date: "2021-10-27"
+        time: "저녁"
+        totalNum: 4
+        sportEmoji: ":basketball:"
+        sportEngName: basketball

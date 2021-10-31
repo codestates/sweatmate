@@ -8,35 +8,44 @@ import Schedule from "./pages/Schedule";
 import Mypage from "./pages/Mypage";
 import Map from "./pages/Map";
 import Footer from "./components/Footer";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import Modal from "./components/Modal";
-// import GathCreate from "./components/GathCreate";
-import { gathCreateModalOnAction } from "./store/actions";
+import GathCreate from "./components/GathCreate";
+import MoveTopBtn from "./components/MoveTopBtn";
+import Signing from "./components/Signing";
 
 const App = () => {
-  const { isGathCreateModal } = useSelector(({ modalReducer }) => modalReducer);
-  const isModal = isGathCreateModal;
-  const dispatch = useDispatch();
-  const handleClick = (e) => {
-    dispatch(gathCreateModalOnAction);
-  };
+  const { isGathCreateModal, isGathDetailModal, isSignupModal, isSigninModal } = useSelector(
+    ({ modalReducer }) => modalReducer
+  );
+  const isModal = isGathCreateModal || isGathDetailModal || isSignupModal || isSigninModal;
   return (
     <BrowserRouter>
-      <div style={{ color: "red" }} onClick={handleClick}>
-        모달 띄우기
-      </div>
       <Header />
       <Switch>
         <Route path="/" exact component={Landing} />
         <Route path="/home" component={Home} />
-        <Route path="/chat/:id" component={Chat} />
+        <Route path="/chat" component={Chat} />
         <Route path="/schedule" component={Schedule} />
         <Route path="/users/:id" component={Mypage} />
         <Route path="/map" component={Map} />
         <Redirect from="*" to="/" />
       </Switch>
-      <Footer />
-      {isModal && <Modal>{/* isGathCreateModal && <GathCreate /> */}</Modal>}
+      <Route path="/" exact component={Footer} />
+      <Route path="/home" component={Footer} />
+      <Route path="/schedule" component={Footer} />
+      <Route path="/users/:id" component={Footer} />
+      <Route path="/home" component={MoveTopBtn} />
+      <Route path="/schedule" component={MoveTopBtn} />
+      <Route path="/users/:id" component={MoveTopBtn} />
+      {isModal && (
+        <Modal>
+          {isGathCreateModal && <GathCreate />}
+          {isGathDetailModal && <div>모임 상세 모달</div>}
+          {isSignupModal && <Signing type={"회원가입"} />}
+          {isSigninModal && <Signing type={"로그인"} />}
+        </Modal>
+      )}
     </BrowserRouter>
   );
 };
