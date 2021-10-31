@@ -14,7 +14,7 @@ module.exports = {
     return res.status(200).json({ message: "Valid nickname" });
   },
   validEmail: async (req, res) => {
-    return res.status(200).json({ message: "Valid nickname" });
+    return res.status(200).json({ message: "Valid Email" });
   },
   signup: async (req, res) => {
     const { email, password, nickname } = req.body;

@@ -8,7 +8,7 @@ module.exports = (server, app) => {
     cors: {
       origin: allowedOrigin,
     },
-    serveClient: true, //TODO: 클라이언트에서 socket 설치하면 false 로 바꿔주기
+    serveClient: false, //TODO: 클라이언트에서 socket 설치하면 false 로 바꿔주기
   });
   app.set("io", io);
   io.on("connection", (socket) => {

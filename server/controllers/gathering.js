@@ -6,7 +6,7 @@ const {
   findOrCreateUser_gathering,
   User_gatheringFindOne,
 } = require("./functions/sequelize");
-const creatChat = require("../schemas/chat");
+const mongooseChatModel = require("../schemas/chat");
 const { createValidObject, DBERROR, getCurrentTime } = require("./functions/utility");
 
 module.exports = {
@@ -49,7 +49,7 @@ module.exports = {
       //mongoDB chat 세팅
       const { id, creator, title } = createdGathering[0];
       const setChatInfo = { _id: id, chatInfo: { title, ...sportInfo }, creatorId: creator.id };
-      await creatChat.create(setChatInfo);
+      await mongooseChatModel.create(setChatInfo);
       //mongoDB
       return res.status(200).json(createdGathering[0]);
     } catch (err) {
@@ -87,6 +87,7 @@ module.exports = {
       const gatheringInfo = await gatheringFindOne({ id: gatheringId });
       const { totalNum, currentNum, done, date } = gatheringInfo;
       if (totalNum <= currentNum || done === 1 || new Date(date) + oneDay < getCurrentTime) {
+        // 게더링에 참여할 수 없는 조건입니다.
         return res.status(400).json({ message: "already full of people or ended gathering" });
       }
       // TODO: 유저가 게더링에 참여했다는 이벤트를 모든 참여자에게 알림
