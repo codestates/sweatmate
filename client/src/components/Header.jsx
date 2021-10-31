@@ -347,7 +347,7 @@ const Header = () => {
   const [isHamburgerBtnClicked, setIsHamburgerBtnClicked] = useState(false);
   const [isUserBtnClicked, setIsUserBtnClicked] = useState(false);
   const [isNotiBtnClicked, setIsNotiBtnClicked] = useState(false);
-  const user = useSelector(({ authReducer }) => authReducer);
+  const { id, nickname, image, isLogin } = useSelector(({ authReducer }) => authReducer);
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -396,18 +396,18 @@ const Header = () => {
         <LongLogo
           src={`${process.env.PUBLIC_URL}/assets/long-logo.png`}
           alt="long-logo"
-          isLogin={user.isLogin}
+          isLogin={isLogin}
         />
         <ShortLogo
           src={`${process.env.PUBLIC_URL}/assets/short-logo.png`}
           alt="short-logo"
-          isLogin={user.isLogin}
+          isLogin={isLogin}
         />
       </LogoLink>
-      {user.isLogin && (
+      {isLogin && (
         <Nav isNav={isHamburgerBtnClicked}>
           <MobileUserContainer>
-            <UserProfile size={1.2} user={user} isDisabled />
+            <UserProfile size={1.2} user={{ id, nickname, image }} isDisabled />
           </MobileUserContainer>
           <MobileStyledH4>Page</MobileStyledH4>
           <StyledNavLink to="/home" onClick={closeAll}>
@@ -433,7 +433,7 @@ const Header = () => {
           </MobileNavBtn>
         </Nav>
       )}
-      {!user.isLogin && (
+      {!isLogin && (
         <NonUserBtns>
           <NonUserBtn onClick={handleGuestSignin}>게스트 로그인</NonUserBtn>
           <NonUserBtn onClick={() => dispatch(signinOnAction)}>로그인</NonUserBtn>
@@ -442,7 +442,7 @@ const Header = () => {
           </NonUserBtn>
         </NonUserBtns>
       )}
-      {user.isLogin && (
+      {isLogin && (
         <UserBtns>
           <NotificationContainer>
             <NotificationBtn onClick={HandleNotiClick}>
@@ -464,7 +464,7 @@ const Header = () => {
             )}
           </NotificationContainer>
           <UserBtn onClick={HandleUserInfoClick}>
-            <UserProfile size={1} user={user} isDisabled />
+            <UserProfile size={1} user={{ id, nickname, image }} isDisabled />
           </UserBtn>
           <MobileHamburgerBtn onClick={handleHamburgerClick}>
             <HiMenu />
