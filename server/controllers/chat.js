@@ -1,5 +1,5 @@
 const mongooseChatModel = require("../schemas/chat");
-const { findGatheringOfUser } = require("./functions/sequelize");
+const { findGatheringOfUser, userFindOne } = require("./functions/sequelize");
 const { createValidObject, DBERROR, getCurrentTime } = require("./functions/utility");
 module.exports = {
   getUserChatList: async (req, res) => {
@@ -24,26 +24,32 @@ module.exports = {
         { _id: gatheringIdList },
         { chatLog: { $slice: -1 }, chatInfo: 1, creatorId: 1 }
       );
-      const chatsListToSend = chatsList.map((el) => {
-        const { chatLog: recentChat, _id: gatheringId, chatInfo, creatorId } = el;
-        console.log(recentChat);
-        const date = recentChat[0]?.date;
-        if (!date) {
+      const chatsListToSend = await Promise.all(
+        chatsList.map(async (el) => {
+          const { chatLog: recentChat, _id: gatheringId, chatInfo, creatorId } = el;
+          const date = recentChat[0]?.date;
+          if (!date) {
+            recentChat[0] = { userId: null, message: null, date: null };
+            return { gatheringId, chatInfo, creatorId, recentChat };
+          }
+          const { userId: recentUserId } = recentChat[0];
+          const userInfo = await userFindOne({ id: recentUserId });
+          const userNickname = userInfo.dataValues.nickname;
+          recentChat[0].user = userNickname;
+          delete recentChat[0].userId;
+          const currentDay = getCurrentTime().split(" ")[0];
+          const [day, time] = date.split(" ");
+          const oneDayToMillisecond = 86400000;
+          if (currentDay === day) {
+            recentChat[0].date = time;
+          } else if (new Date(currentDay) - new Date(day) === oneDayToMillisecond) {
+            recentChat[0].date = "어제";
+          } else {
+            recentChat[0].date = day;
+          }
           return { gatheringId, chatInfo, creatorId, recentChat };
-        }
-        const currentDay = getCurrentTime().split(" ")[0];
-        const [day, time] = date.split(" ");
-        const oneDayToMillisecond = 86400000;
-        console.log(new Date(currentDay) - new Date(day));
-        if (currentDay === day) {
-          recentChat[0].date = time;
-        } else if (new Date(currentDay) - new Date(day) === oneDayToMillisecond) {
-          recentChat[0].date = "어제";
-        } else {
-          recentChat[0].date = day;
-        }
-        return { gatheringId, chatInfo, creatorId, recentChat };
-      });
+        })
+      );
       res.status(200).json(chatsListToSend);
     } catch (err) {
       DBERROR(res, err);
