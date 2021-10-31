@@ -1,9 +1,33 @@
 import axios from "axios";
 import React, { useEffect } from "react";
 import PropTypes from "prop-types"; // ES6
+import { useDispatch } from "react-redux";
+import { useHistory } from "react-router";
+import authApi from "../api/auth";
+import { signInAction, signOutAction } from "../store/actions";
 const { kakao } = window;
 
 const Map = ({ keyword, lat, lng }) => {
+  const dispatch = useDispatch();
+  const history = useHistory();
+
+  useEffect(() => {
+    const checkValidUser = async () => {
+      try {
+        const res = await authApi.me();
+        if (res.status === 200) {
+          dispatch(signInAction(res.data.data));
+        }
+      } catch (error) {
+        if (error.response.status === 403) {
+          dispatch(signOutAction);
+          history.push("/");
+        }
+      }
+    };
+    checkValidUser();
+  }, [dispatch, history]);
+
   useEffect(() => {
     axios
       .get(`https://dapi.kakao.com/v2/local/search/keyword.json?query=${keyword}`, {

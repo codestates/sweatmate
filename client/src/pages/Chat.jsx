@@ -15,7 +15,8 @@ import PropTypes from "prop-types";
 import UserProfile from "../components/UserProfile";
 import ConfirmModal from "../components/ConfirmModal";
 import { useSelector, useDispatch } from "react-redux";
-import { confirmModalOnAction } from "../store/actions";
+import { confirmModalOnAction, signInAction, signOutAction } from "../store/actions";
+import authApi from "../api/auth";
 
 const Container = styled.div`
   display: flex;
@@ -154,6 +155,26 @@ const confirmContent = {
 const Chat = () => {
   const { path, url } = useRouteMatch();
   const { isConfirmModal } = useSelector(({ modalReducer }) => modalReducer);
+
+  const dispatch = useDispatch();
+  const history = useHistory();
+
+  useEffect(() => {
+    const checkValidUser = async () => {
+      try {
+        const res = await authApi.me();
+        if (res.status === 200) {
+          dispatch(signInAction(res.data.data));
+        }
+      } catch (error) {
+        if (error.response.status === 403) {
+          dispatch(signOutAction);
+          history.push("/");
+        }
+      }
+    };
+    checkValidUser();
+  }, [dispatch, history]);
 
   return (
     <>
