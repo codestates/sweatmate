@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
+import { useHistory } from "react-router";
 import styled, { css } from "styled-components";
 import media from "styled-media-query";
 import {
@@ -12,6 +13,9 @@ import {
 import { HiMenu } from "react-icons/hi";
 import { BsPerson } from "react-icons/bs";
 import UserProfile from "./UserProfile";
+import { useDispatch, useSelector } from "react-redux";
+import { signInAction, signinOnAction, signOutAction, signupOnAction } from "../store/actions";
+import authApi from "../api/auth";
 
 const StyledHeader = styled.header`
   background-color: var(--color-white);
@@ -343,7 +347,9 @@ const Header = () => {
   const [isHamburgerBtnClicked, setIsHamburgerBtnClicked] = useState(false);
   const [isUserBtnClicked, setIsUserBtnClicked] = useState(false);
   const [isNotiBtnClicked, setIsNotiBtnClicked] = useState(false);
-  const isLogin = true;
+  const user = useSelector(({ authReducer }) => authReducer);
+  const dispatch = useDispatch();
+  const history = useHistory();
 
   const handleHamburgerClick = () => {
     setIsHamburgerBtnClicked((prev) => !prev);
@@ -372,6 +378,17 @@ const Header = () => {
   // TODO: Nickname
   // TODO: 마이페이지 버튼 링크
   // TODO: Logout btn 기능 구현
+  const handleSignout = async () => {
+    const res = await authApi.signout();
+    dispatch(signOutAction);
+    if (res.status === 205) history.push("/");
+  };
+
+  const handleGuestSignin = async () => {
+    const res = await authApi.guestSignin();
+    dispatch(signInAction);
+    if (res.status === 200) history.push("/home");
+  };
 
   return (
     <StyledHeader>
@@ -379,26 +396,18 @@ const Header = () => {
         <LongLogo
           src={`${process.env.PUBLIC_URL}/assets/long-logo.png`}
           alt="long-logo"
-          isLogin={isLogin}
+          isLogin={user.isLogin}
         />
         <ShortLogo
           src={`${process.env.PUBLIC_URL}/assets/short-logo.png`}
           alt="short-logo"
-          isLogin={isLogin}
+          isLogin={user.isLogin}
         />
       </LogoLink>
-      {isLogin && (
+      {user.isLogin && (
         <Nav isNav={isHamburgerBtnClicked}>
           <MobileUserContainer>
-            <UserProfile
-              size={1.2}
-              user={{
-                id: "uuid",
-                nickname: "Unuuuuu",
-                image: "",
-              }}
-              isDisabled
-            />
+            <UserProfile size={1.2} user={user} isDisabled />
           </MobileUserContainer>
           <MobileStyledH4>Page</MobileStyledH4>
           <StyledNavLink to="/home" onClick={closeAll}>
@@ -424,14 +433,16 @@ const Header = () => {
           </MobileNavBtn>
         </Nav>
       )}
-      {!isLogin && (
+      {!user.isLogin && (
         <NonUserBtns>
-          <NonUserBtn>게스트 로그인</NonUserBtn>
-          <NonUserBtn>로그인</NonUserBtn>
-          <NonUserBtn main>회원가입</NonUserBtn>
+          <NonUserBtn onClick={handleGuestSignin}>게스트 로그인</NonUserBtn>
+          <NonUserBtn onClick={() => dispatch(signinOnAction)}>로그인</NonUserBtn>
+          <NonUserBtn main onClick={() => dispatch(signupOnAction)}>
+            회원가입
+          </NonUserBtn>
         </NonUserBtns>
       )}
-      {isLogin && (
+      {user.isLogin && (
         <UserBtns>
           <NotificationContainer>
             <NotificationBtn onClick={HandleNotiClick}>
@@ -453,15 +464,7 @@ const Header = () => {
             )}
           </NotificationContainer>
           <UserBtn onClick={HandleUserInfoClick}>
-            <UserProfile
-              size={1}
-              user={{
-                id: "uuid",
-                nickname: "Unuuuuu",
-                image: "",
-              }}
-              isDisabled
-            />
+            <UserProfile size={1} user={user} isDisabled />
           </UserBtn>
           <MobileHamburgerBtn onClick={handleHamburgerClick}>
             <HiMenu />
@@ -471,7 +474,7 @@ const Header = () => {
               <PcUserInfoMyPageBtn to="/users/1" onClick={HandleUserInfoClick}>
                 마이 페이지
               </PcUserInfoMyPageBtn>
-              <PcUserInfoLogoutBtn>로그아웃</PcUserInfoLogoutBtn>
+              <PcUserInfoLogoutBtn onClick={handleSignout}>로그아웃</PcUserInfoLogoutBtn>
             </PcUserInfo>
           )}
         </UserBtns>
