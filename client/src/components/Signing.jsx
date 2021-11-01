@@ -8,7 +8,12 @@ import media from "styled-media-query";
 import { ImGoogle } from "react-icons/im";
 import { SiKakao } from "react-icons/si";
 import { useDispatch } from "react-redux";
-import { modalOffAction, signinOnAction, signupOnAction } from "../store/actions";
+import {
+  modalOffAction,
+  signinAction,
+  signinModalOnAction,
+  signupModalOnAction,
+} from "../store/actions";
 import debounce from "lodash/debounce";
 import { useHistory } from "react-router-dom";
 import authApi from "../api/auth";
@@ -155,10 +160,10 @@ const Signing = ({ type }) => {
   const handleTypeChange = () => {
     if (type === "로그인") {
       dispatch(modalOffAction);
-      dispatch(signupOnAction);
+      dispatch(signupModalOnAction);
     } else {
       dispatch(modalOffAction);
-      dispatch(signinOnAction);
+      dispatch(signinModalOnAction);
     }
   };
 
@@ -235,8 +240,9 @@ const Signing = ({ type }) => {
         delete signInputValue.retypedPassword;
         delete signInputValue.nickname;
         try {
-          const res = await authApi.signin(signInputValue);
+          const res = await authApi.signin(signinputValue);
           if (res.status === 200) {
+            dispatch(signinAction(res.data));
             history.push("/home");
             dispatch(modalOffAction);
           }
