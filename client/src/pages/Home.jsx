@@ -9,6 +9,10 @@ import SearchInput from "../components/SearchInput";
 import InputDatepicker from "../components/InputDatepicker";
 import InputDatalist from "../components/InputDatalist";
 import InputTotalNum from "../components/InputTotalNum";
+import { useDispatch } from "react-redux";
+import { useHistory } from "react-router";
+import authApi from "../api/auth";
+import { signInAction, signOutAction } from "../store/actions";
 
 const HomeContainer = styled.div`
   width: 100%;
@@ -82,25 +86,6 @@ const SearchBtnContainer = styled.div`
   align-items: center;
   padding: 0.5rem;
 `;
-
-// const Input = styled.input`
-//   height: 100%;
-//   padding: 0 1rem 0.75rem;
-//   color: var(--color-black);
-//   ::placeholder {
-//     color: var(--color-gray);
-//     font-family: Interop-Light;
-//   }
-//   outline: none;
-//   font-family: Interop-Regular;
-//   font-size: 1rem;
-//   margin-top: 0.25rem;
-//   :focus {
-//     &.value-box {
-//       display: inline-block;
-//     }
-//   }
-// `;
 
 const ListContainer = styled.div`
   flex: 1 1 auto;
@@ -253,11 +238,6 @@ const Home = () => {
     totalNum: null,
   });
 
-  // const handleInputChange = (event) => {
-  //   const { id, value } = event.target;
-  //   setInputValue((prevState) => ({ ...prevState, [id]: value }));
-  // };
-
   const handleSubmit = (event) => {
     event.preventDefault();
     // TODO: 검색 요청 (비동기 함수로 전환 필요)
@@ -268,6 +248,25 @@ const Home = () => {
   const handleOnMapClick = () => {
     // TODO: 검색 실행 여부에 따른 별도의 조건으로 검색 및 지도에 표시 요청
   };
+  const dispatch = useDispatch();
+  const history = useHistory();
+
+  useEffect(() => {
+    const checkValidUser = async () => {
+      try {
+        const res = await authApi.me();
+        if (res.status === 200) {
+          dispatch(signInAction(res.data.data));
+        }
+      } catch (error) {
+        if (error.response.status === 403) {
+          dispatch(signOutAction);
+          history.push("/");
+        }
+      }
+    };
+    checkValidUser();
+  }, [dispatch, history]);
 
   /* 모임 정보 Dummy */
   const gatherings = [
@@ -438,13 +437,6 @@ const Home = () => {
             </SearchInput>
             <SearchInput name="인원" for="totalNum">
               <InputTotalNum inputId="totalNum" placeholder="인원 입력" />
-              {/* <Input
-                type="number"
-                id="totalNum"
-                value={inputValue.totalNum}
-                onChange={handleInputChange}
-                placeholder="인원을 정해주세요"
-              /> */}
             </SearchInput>
           </InputList>
           <SearchBtnContainer>

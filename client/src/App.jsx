@@ -12,17 +12,20 @@ import { useSelector } from "react-redux";
 import Modal from "./components/Modal";
 import GathCreate from "./components/GathCreate";
 import MoveTopBtn from "./components/MoveTopBtn";
+import Signing from "./components/Signing";
 
 const App = () => {
-  const { isGathCreateModal, isGathDetailModal } = useSelector(({ modalReducer }) => modalReducer);
-  const isModal = isGathCreateModal || isGathDetailModal;
+  const { isGathCreateModal, isGathDetailModal, isSignupModal, isSigninModal } = useSelector(
+    ({ modalReducer }) => modalReducer
+  );
+  const isModal = isGathCreateModal || isGathDetailModal || isSignupModal || isSigninModal;
   return (
     <BrowserRouter>
       <Header />
       <Switch>
         <Route path="/" exact component={Landing} />
         <Route path="/home" component={Home} />
-        <Route path="/chat/:id" component={Chat} />
+        <Route path="/chat" component={Chat} />
         <Route path="/schedule" component={Schedule} />
         <Route path="/users/:id" component={Mypage} />
         <Route path="/map" component={Map} />
@@ -39,6 +42,8 @@ const App = () => {
         <Modal>
           {isGathCreateModal && <GathCreate />}
           {isGathDetailModal && <div>모임 상세 모달</div>}
+          {isSignupModal && <Signing type={"회원가입"} />}
+          {isSigninModal && <Signing type={"로그인"} />}
         </Modal>
       )}
     </BrowserRouter>

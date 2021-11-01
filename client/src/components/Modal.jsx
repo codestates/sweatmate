@@ -32,14 +32,14 @@ const ModalContainer = styled.div`
   top: 50%;
   transform: translateY(-50%);
   margin: 0 auto;
-  width: 60rem;
+  width: fit-content;
   max-width: calc(100% - 8rem);
   height: 36rem;
   max-height: calc(100% - 8rem);
   border-radius: 1rem;
   color: var(--color-darkgray);
   background-color: var(--color-white);
-  padding: 2rem 1.5rem;
+  padding: 2rem 3rem;
   ${media.lessThan("medium")`
     position: fixed;
     top: 0;
@@ -54,7 +54,7 @@ const ModalContainer = styled.div`
   `};
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: center;
 `;
 
 const CloseBtn = styled.div`
@@ -114,5 +114,5 @@ const Modal = ({ children }) => {
 export default Modal;
 
 Modal.propTypes = {
-  children: PropTypes.oneOfType([PropTypes.bool, PropTypes.element]).isRequired,
+  children: PropTypes.oneOfType([PropTypes.bool, PropTypes.element, PropTypes.node]).isRequired,
 };

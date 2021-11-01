@@ -2,7 +2,11 @@ import {
   GATH_CREATE_MODAL_ON,
   GATH_DETAIL_MODAL_ON,
   CONFIRM_MODAL_ON,
+  SIGNUP_MODAL_ON,
+  SIGNIN_MODAL_ON,
   MODAL_OFF,
+  SIGN_IN,
+  SIGN_OUT,
 } from "./actionTypes";
 
 // // action
@@ -17,6 +21,15 @@ import {
 //   payload,
 // });
 
+// Auth
+export const signInAction = (data) => ({
+  type: SIGN_IN,
+  payload: { ...data },
+});
+export const signOutAction = {
+  type: SIGN_OUT,
+};
+
 // Modal
 export const gathCreateModalOnAction = {
   type: GATH_CREATE_MODAL_ON,
@@ -26,6 +39,12 @@ export const gathDetailModalOnAction = {
 };
 export const confirmModalOnAction = {
   type: CONFIRM_MODAL_ON,
+};
+export const signupOnAction = {
+  type: SIGNUP_MODAL_ON,
+};
+export const signinOnAction = {
+  type: SIGNIN_MODAL_ON,
 };
 export const modalOffAction = {
   type: MODAL_OFF,

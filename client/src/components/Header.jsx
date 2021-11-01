@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
+import { useHistory } from "react-router";
 import styled, { css } from "styled-components";
 import media from "styled-media-query";
 import {
@@ -12,13 +13,16 @@ import {
 import { HiMenu } from "react-icons/hi";
 import { BsPerson } from "react-icons/bs";
 import UserProfile from "./UserProfile";
+import { useDispatch, useSelector } from "react-redux";
+import { signInAction, signinOnAction, signOutAction, signupOnAction } from "../store/actions";
+import authApi from "../api/auth";
 
 const StyledHeader = styled.header`
   background-color: var(--color-white);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 2rem;
+  padding: 1rem 1rem 1rem 2rem;
   position: sticky;
   top: 0;
   width: 100%;
@@ -166,6 +170,7 @@ const MobileNavBtn = styled.button`
   margin-bottom: 0.5rem;
   border-radius: 0.5rem;
   color: var(--color-red);
+  border: 1px solid var(--color-red);
 
   ${media.greaterThan("medium")`
     display: none;
@@ -342,7 +347,9 @@ const Header = () => {
   const [isHamburgerBtnClicked, setIsHamburgerBtnClicked] = useState(false);
   const [isUserBtnClicked, setIsUserBtnClicked] = useState(false);
   const [isNotiBtnClicked, setIsNotiBtnClicked] = useState(false);
-  const isLogin = true;
+  const { id, nickname, image, isLogin } = useSelector(({ authReducer }) => authReducer);
+  const dispatch = useDispatch();
+  const history = useHistory();
 
   const handleHamburgerClick = () => {
     setIsHamburgerBtnClicked((prev) => !prev);
@@ -371,6 +378,17 @@ const Header = () => {
   // TODO: Nickname
   // TODO: 마이페이지 버튼 링크
   // TODO: Logout btn 기능 구현
+  const handleSignout = async () => {
+    const res = await authApi.signout();
+    dispatch(signOutAction);
+    if (res.status === 205) history.push("/");
+  };
+
+  const handleGuestSignin = async () => {
+    const res = await authApi.guestSignin();
+    dispatch(signInAction);
+    if (res.status === 200) history.push("/home");
+  };
 
   return (
     <StyledHeader>
@@ -389,22 +407,14 @@ const Header = () => {
       {isLogin && (
         <Nav isNav={isHamburgerBtnClicked}>
           <MobileUserContainer>
-            <UserProfile
-              size={1.2}
-              user={{
-                id: "uuid",
-                nickname: "Unuuuuu",
-                image: "",
-              }}
-              isDisabled
-            />
+            <UserProfile size={1.2} user={{ id, nickname, image }} isDisabled />
           </MobileUserContainer>
           <MobileStyledH4>Page</MobileStyledH4>
           <StyledNavLink to="/home" onClick={closeAll}>
             <IoHomeOutline />
             <Text>홈</Text>
           </StyledNavLink>
-          <StyledNavLink to="/chat/1" onClick={closeAll}>
+          <StyledNavLink to="/chat" onClick={closeAll}>
             <IoChatbubblesOutline />
             <Text>채팅</Text>
           </StyledNavLink>
@@ -425,9 +435,11 @@ const Header = () => {
       )}
       {!isLogin && (
         <NonUserBtns>
-          <NonUserBtn>게스트 로그인</NonUserBtn>
-          <NonUserBtn>로그인</NonUserBtn>
-          <NonUserBtn main>회원가입</NonUserBtn>
+          <NonUserBtn onClick={handleGuestSignin}>게스트 로그인</NonUserBtn>
+          <NonUserBtn onClick={() => dispatch(signinOnAction)}>로그인</NonUserBtn>
+          <NonUserBtn main onClick={() => dispatch(signupOnAction)}>
+            회원가입
+          </NonUserBtn>
         </NonUserBtns>
       )}
       {isLogin && (
@@ -452,15 +464,7 @@ const Header = () => {
             )}
           </NotificationContainer>
           <UserBtn onClick={HandleUserInfoClick}>
-            <UserProfile
-              size={1}
-              user={{
-                id: "uuid",
-                nickname: "Unuuuuu",
-                image: "",
-              }}
-              isDisabled
-            />
+            <UserProfile size={1} user={{ id, nickname, image }} isDisabled />
           </UserBtn>
           <MobileHamburgerBtn onClick={handleHamburgerClick}>
             <HiMenu />
@@ -470,7 +474,7 @@ const Header = () => {
               <PcUserInfoMyPageBtn to="/users/1" onClick={HandleUserInfoClick}>
                 마이 페이지
               </PcUserInfoMyPageBtn>
-              <PcUserInfoLogoutBtn>로그아웃</PcUserInfoLogoutBtn>
+              <PcUserInfoLogoutBtn onClick={handleSignout}>로그아웃</PcUserInfoLogoutBtn>
             </PcUserInfo>
           )}
         </UserBtns>

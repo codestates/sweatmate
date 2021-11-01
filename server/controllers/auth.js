@@ -14,7 +14,7 @@ module.exports = {
     return res.status(200).json({ message: "Valid nickname" });
   },
   validEmail: async (req, res) => {
-    return res.status(200).json({ message: "Valid nickname" });
+    return res.status(200).json({ message: "Valid Email" });
   },
   signup: async (req, res) => {
     const { email, password, nickname } = req.body;
@@ -56,11 +56,12 @@ module.exports = {
       const userInfo = await userFindOne({ authKey });
       if (!userInfo) return res.status(400).send("인증 시간이 초과되었습니다.");
       userInfo.update({ authStatus: 1, authKey: null });
-      return res.redirect(302, `${process.env.CLIENT_URL}`);
+      const token = generateAccessToken(userInfo.dataValues.id, userInfo.dataValues.type);
+      setCookie(res, token);
+      return res.redirect(`${process.env.CLIENT_URL}`);
     } catch (err) {
       DBERROR(res, err);
     }
-    //TODO: 클라이언트와 싱크 맞추기
   },
   signin: async (req, res) => {
     const { email, password } = req.body;
@@ -70,7 +71,7 @@ module.exports = {
         return res.status(401).json({ message: "Invalid email or password" });
       }
       if (!foundUserByEmail.dataValues.authStatus) {
-        return res.status(401).json({ message: "Need to verify your email first" });
+        return res.status(400).json({ message: "Need to verify your email first" });
       }
       const isValidPassword = await bcrypt.compare(password, foundUserByEmail.dataValues.password);
       if (!isValidPassword) {

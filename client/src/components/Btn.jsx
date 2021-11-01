@@ -55,7 +55,12 @@ Btn.propTypes = {
   color: PropTypes.string,
   bgColor: PropTypes.string,
   onClick: PropTypes.func,
-  children: PropTypes.oneOfType([PropTypes.bool, PropTypes.element, PropTypes.string]),
+  children: PropTypes.oneOfType([
+    PropTypes.bool,
+    PropTypes.element,
+    PropTypes.node,
+    PropTypes.string,
+  ]),
 };
 
 export default Btn;
