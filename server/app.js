@@ -7,10 +7,7 @@ const { sequelize } = require("./models");
 const config = require("./config");
 const mongooseConnect = require("./schemas");
 const SocketIO = require("./socket");
-const {
-  port,
-  cors: { allowedOrigin },
-} = require("./config");
+require("express-async-errors");
 const swaggerUi = require("swagger-ui-express");
 const YAML = require("yamljs");
 const swaggerDocument = YAML.load("./sweatmate.yaml");
@@ -23,7 +20,11 @@ const chatRouter = require("./router/chat");
 
 const app = express();
 
-const corsOption = { origin: allowedOrigin, optionsSuccessStatus: 200, credentials: true };
+const corsOption = {
+  origin: config.cors.allowedOrigin,
+  optionsSuccessStatus: 200,
+  credentials: true,
+};
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use(cors(corsOption));
 app.use(helmet());

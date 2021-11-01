@@ -148,7 +148,7 @@ paths:
                 - password
             example:
               email: john@google.com
-              password: 1234
+              password: "1234"
         required: true
       responses:
         "200":
@@ -192,7 +192,7 @@ paths:
       responses:
         "204":
           description: No Content
-        "401":
+        "403":
           description: Unauthorized
           content:
             application/json:
@@ -224,7 +224,7 @@ paths:
               example:
                 nickname: John
                 email: John@google.com
-                passowrd: 1234
+                password: "1234"
         required: true
       responses:
         "201":
@@ -279,7 +279,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/UserInfomation"
-        "401":
+        "403":
           description: Unauthorized
           content:
             application/json:
@@ -317,7 +317,7 @@ paths:
                 nickname: 축구왕
                 areaName: 노원구
                 age: 71
-                image: imageUrl
+                image: imageURL
                 sports: [{ "sportName": "야구", "skill": "5" }]
       responses:
         "201":
@@ -365,14 +365,8 @@ paths:
                   message:
                     type: string
                     default: User deleted
-        "401":
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AuthenticationMessage"
         "403":
-          description: You don't have permission.
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -483,7 +477,7 @@ paths:
                   - message
                 example:
                   message: Incorrect format
-        "401":
+        "403":
           description: Unauthorized
           content:
             application/json:
@@ -519,7 +513,7 @@ paths:
                     type: string
                     example: already full of people or ended gathering
 
-        "401":
+        "403":
           description: Unauthorized
           content:
             application/json:
@@ -543,12 +537,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/gatheringInfomation"
-        "401":
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AuthenticationMessage"
         "403":
           description: You don't have permission.
           content:
@@ -648,7 +636,7 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/gatheringInfomation"
-        "401":
+        "403":
           description: Unauthorized
           content:
             application/json:
@@ -688,7 +676,7 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/gatheringInfomation"
-        "401":
+        "403":
           description: Unauthorized
           content:
             application/json:
@@ -744,14 +732,90 @@ paths:
               example:
                 gatheringId: 14
                 chatInfo:
-                  user: "muyaho"
+                  title: "야구하실분~!"
                   sportEmoji: ":baseball:"
                   sportName: "야구"
                 recentChat:
-                  user: "무야호"
+                  nickname: "무야호"
                   message: "그만큼 좋다는 뜻이거든~"
                   date: "어제"
-
+        "404":
+          description: "There's no gathering participating"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "There's no gathering participating"
+  /chat/{gatheringId}:
+    get:
+      tags:
+        - "chat"
+      summary: get user's chatInfo
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  gatheringId:
+                    type: integer
+                  userList:
+                    type: array
+                    items:
+                      properties:
+                        userId:
+                          type: string
+                        image:
+                          type: string
+                        nickname:
+                          type: string
+                  chatLog:
+                    type: array
+                    items:
+                      properties:
+                        id:
+                          type: string
+                        nickname:
+                          type: string
+                        image:
+                          type: string
+                        message:
+                          type: string
+                        date:
+                          type: string
+                  chatInfo:
+                    type: object
+                    properties:
+                      title:
+                        title: string
+                      sportEmoji:
+                        type: string
+                      sportName:
+                        type: string
+                  creatorId:
+                    type: string
+              example:
+                gatheringId: 14
+                userList:
+                  - id: 62eaab6a-f80d-4570-aec7-f162d752d320
+                    image: imageURL
+                    nickname: "muyaho"
+                chatLog:
+                  - id: 62eaab6a-f80d-4570-aec7-f162d752d320
+                    nickname: "무야호"
+                    image: imageURL
+                    message: "그만큼 좋다는 뜻이거든~"
+                    date: "어제"
+                chatInfo:
+                  title: "야구하실분~!"
+                  sportEmoji: ":baseball:"
+                  sportName: "야구"
+                creatorId: 62eaab6a-f80d-4570-aec7-f162d752d320
         "404":
           description: "There's no gathering participating"
           content:
@@ -783,7 +847,7 @@ components:
         nickname:
           type: string
       example:
-        id: "1"
+        id: 62eaab6a-f80d-4570-aec7-f162d752d320
         image: "http://image.com"
         nickname: "John"
     UserInfomation:
@@ -819,7 +883,7 @@ components:
       example:
         nickname: 축구왕
         email: local@local.com
-        image: imageUrl
+        image: imageURL
         areaName: 노원구
         gender: 남
         age: 71
@@ -889,7 +953,7 @@ components:
         creator:
           id: uuid
           nickname: 농구킹
-          image: imageUrl
+          image: imageURL
         areaName: 용산구
         placeName: 운동장
         latitude: 33.450701
@@ -905,7 +969,7 @@ components:
         users:
           - id: uuid
             nickname: 농구킹
-            image: imageUrl
+            image: imageURL
     createGathering:
       type: object
       properties:

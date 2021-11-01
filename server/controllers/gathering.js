@@ -78,7 +78,6 @@ module.exports = {
     //유저가 이미 있는 모임에 참가 신청을 하는 Api 입니다.
     const { userId } = res.locals;
     const { gatheringId } = req.params;
-    const oneDay = 86400;
     try {
       const [_, result] = await findOrCreateUser_gathering({ userId, gatheringId });
       if (!result) {
@@ -86,7 +85,9 @@ module.exports = {
       }
       const gatheringInfo = await gatheringFindOne({ id: gatheringId });
       const { totalNum, currentNum, done, date } = gatheringInfo;
-      if (totalNum <= currentNum || done === 1 || new Date(date) + oneDay < getCurrentTime) {
+      const gatheringSetDay = +new Date(date);
+      const currentDay = +new Date(getCurrentTime());
+      if (totalNum <= currentNum || done === 1 || gatheringSetDay < currentDay) {
         // 게더링에 참여할 수 없는 조건입니다.
         return res.status(400).json({ message: "already full of people or ended gathering" });
       }
