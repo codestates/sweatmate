@@ -1,7 +1,9 @@
 import api from "./index";
 
 const gathApi = {
-  findGath: () => api.get("/gathering"),
+  getSportList: () => api.get("/sportList.json"),
+  getAreaList: () => api.get("/areaList.json"),
+  findGath: () => api.get("/gathering/"),
   createGath: () => api.post("/gathering"),
   joinGath: (gatheringId) => api.post(`/gathering/${gatheringId}`),
   endGath: (gatheringId) => api.patch(`/gathering/${gatheringId}`),
