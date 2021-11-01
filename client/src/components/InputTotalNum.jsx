@@ -1,0 +1,188 @@
+import React, { useState, useRef } from "react";
+import styled from "styled-components";
+import PropTypes from "prop-types";
+import { HiPlusSm, HiMinusSm } from "react-icons/hi";
+import { IoCloseCircle } from "react-icons/io5";
+
+const Container = styled.div`
+  width: 100%;
+`;
+
+const Input = styled.input`
+  width: 100%;
+  padding: 0 1rem 0.75rem;
+  color: var(--color-black);
+  ::placeholder {
+    color: var(--color-gray);
+    font-family: Interop-Light;
+  }
+  outline: none;
+  font-size: 1rem;
+  margin-top: 0.25rem;
+`;
+
+const Popper = styled.div`
+  position: absolute;
+  left: 0;
+  min-width: calc(100% + 4rem);
+  margin-top: 0.75rem;
+  padding: 1rem;
+  background-color: var(--color-white);
+  font-size: 1.125rem;
+  background-color: var(--color-white);
+  border-radius: 1rem;
+  overflow: auto;
+  filter: drop-shadow(0px 6px 10px var(--color-shadow));
+  /* display: none; */
+  visibility: hidden;
+  > div {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+`;
+
+const PlusBtn = styled(HiPlusSm)`
+  color: var(--color-gray);
+  width: 2rem;
+  height: 2rem;
+  font-size: 1.5rem;
+  padding: 0.25rem;
+  margin-left: 1.5rem;
+  border-radius: 50%;
+  border: 1px solid var(--color-gray);
+  :hover,
+  :active {
+    border: 1px solid var(--color-darkgray);
+    color: var(--color-darkgray);
+  }
+`;
+
+const MinusBtn = styled(HiMinusSm)`
+  color: var(--color-gray);
+  width: 2rem;
+  height: 2rem;
+  font-size: 1.5rem;
+  padding: 0.25rem;
+  margin-right: 1.5rem;
+  border-radius: 50%;
+  border: 1px solid var(--color-gray);
+  :hover,
+  :active {
+    border: 1px solid var(--color-darkgray);
+    color: var(--color-darkgray);
+  }
+`;
+
+const DisabledMinus = styled(MinusBtn)`
+  color: var(--color-lightgray);
+  border: 1px solid var(--color-lightgray);
+  :hover,
+  :active {
+    color: var(--color-lightgray);
+    border: 1px solid var(--color-lightgray);
+  }
+`;
+
+const ClearBtn = styled.button`
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1.25rem;
+  height: 1.25rem;
+  font-size: 1.25rem;
+  color: var(--color-lightgray);
+  :hover {
+    color: var(--color-gray);
+  }
+`;
+
+function InputTotalNum({ inputId, placeholder }) {
+  const [total, setTotal] = useState(0);
+  const hadleMinusClick = () => {
+    setTotal(total - 1);
+    console.log("minus clicked");
+  };
+  const hadlePlusClick = () => {
+    setTotal(total + 1);
+    console.log("plus clicked");
+  };
+  const handleClearClick = () => {
+    setTotal(0);
+  };
+  const showPopper = () => {
+    popper.current.style.cssText = `visibility: visible`;
+  };
+  const hidePopper = () => {
+    popper.current.style.cssText = `visibility: hidden`;
+  };
+  const container = useRef(null);
+  const input = useRef(null);
+  const popper = useRef(null);
+  return (
+    <Container
+      onFocus={() => {
+        showPopper();
+        console.log("container focused");
+      }}
+      onBlur={() => {
+        hidePopper();
+        console.log("container blured");
+      }}
+      ref={container}
+    >
+      <Input
+        id={inputId}
+        value={total > 0 ? `총 ${total}명` : ""}
+        placeholder={placeholder}
+        onFocus={() => {
+          console.log("input focused");
+        }}
+        onBlur={() => {
+          console.log("input blured");
+          // hidePopper();
+        }}
+        ref={input}
+        readOnly
+      />
+
+      <Popper
+        id="below-box"
+        tabIndex="-1"
+        ref={popper}
+        onFocusCapture={() => {
+          console.log("popper focused");
+        }}
+        onBlurCapture={() => {
+          console.log("popper blured");
+        }}
+        onClick={async (event) => {
+          event.stopPropagation();
+          await input.current.focus();
+          console.log("popper clicked");
+          // input.current.focus();
+        }}
+      >
+        <div>
+          {total > 0 ? <MinusBtn onClick={hadleMinusClick} /> : <DisabledMinus />}
+          <div>{total}</div>
+          <PlusBtn onClick={hadlePlusClick} />
+        </div>
+      </Popper>
+
+      {total > 0 && (
+        <ClearBtn onClick={handleClearClick}>
+          <IoCloseCircle />
+        </ClearBtn>
+      )}
+    </Container>
+  );
+}
+
+InputTotalNum.propTypes = {
+  inputId: PropTypes.string.isRequired,
+  placeholder: PropTypes.string.isRequired,
+};
+export default InputTotalNum;
