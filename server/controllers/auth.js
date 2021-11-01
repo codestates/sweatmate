@@ -8,6 +8,13 @@ const {
   bcrypt: { saltRounds },
 } = require("../config");
 const emailForm = require("../views/emailFormat");
+/*
+  스케줄러 구성요소, 매 24시간마다 모임일정이 지난 게더링들 done = 1;
+  매 24시간마다 예상하지 못한 서버 재실행에 의해서 사라진 셋타임함수들을 대비해서
+  게스트의 createdAt이 24시간이 지난 유저에 대해서 삭제 
+  이메일 인증이 1시간이 지난  유저 삭제
+*/
+const guestTable = {};
 
 module.exports = {
   validNickname: async (req, res) => {
@@ -23,7 +30,7 @@ module.exports = {
     const authKey = Math.random().toString(36).slice(2);
 
     try {
-      const createdUserInfo = await createUser({
+      await createUser({
         id: uuid(),
         nickname,
         email,
@@ -93,6 +100,15 @@ module.exports = {
     try {
       const userInfo = await userFindOne({ id: userId });
       const { id, image, nickname } = userInfo;
+      // 유저가 만약 2시간동안 아무런 요청이 없다면 자동으로 관련 정보 삭제
+      if (type === "guest") {
+        const setTimeOutId = guestTable[userId];
+        clearTimeout(setTimeOutId);
+        guestTable[userId] = setTimeout(() => {
+          delete guestTable[guestUUID];
+          userInfo.destroy();
+        }, 7200000);
+      }
       return res.status(200).json({ id, image, nickname });
     } catch (err) {
       DBERROR(res, err);
@@ -101,5 +117,24 @@ module.exports = {
   signout: (req, res) => {
     clearCookie(res);
     return res.status(205).json({ message: "Signed out" });
+  },
+  guestSignin: async (req, res) => {
+    const guestUUID = uuid();
+    const guestUser = await createUser({
+      id: guestUUID,
+      email: guestUUID,
+      nickname: guestUUID.split("-")[0],
+      authStatus: 1,
+      type: "guest",
+    });
+    const token = generateAccessToken(guestUser.dataValues.id, guestUser.dataValues.type);
+    setCookie(res, token);
+    const { id, nickname } = guestUser.dataValues;
+    guestTable[guestUUID] = setTimeout(() => {
+      delete guestTable[guestUUID];
+      guestUser.destroy();
+    }, 7200000);
+    //게스트로그인에 nickname는 UUID 의 첫 번째, 이미지는 미설정시 null 이기 때문에 null을 추가로 넣어줌
+    return res.status(200).json({ id, image: null, nickname });
   },
 };
