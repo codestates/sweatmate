@@ -7,7 +7,12 @@ const {
   User_gatheringFindOne,
 } = require("./functions/sequelize");
 const mongooseChatModel = require("../schemas/chat");
-const { createValidObject, DBERROR, getCurrentTime } = require("./functions/utility");
+const {
+  createValidObject,
+  DBERROR,
+  getCurrentTime,
+  modifyGatheringFormat,
+} = require("./functions/utility");
 
 module.exports = {
   getGatheringList: async (req, res) => {
@@ -15,7 +20,7 @@ module.exports = {
     const conditions = createValidObject(res.locals.conditions);
     try {
       const gatheringList = await findAllGathering({ ...searchCondition, done: 0 });
-      return res.status(200).json({ conditions, gathering: gatheringList });
+      return res.status(200).json({ conditions, gathering: modifyGatheringFormat(gatheringList) });
     } catch (err) {
       DBERROR(res, err);
     }
@@ -29,7 +34,7 @@ module.exports = {
       const user_gatheringsOfUser = await findGatheringOfUser({ userId }, ["id", "userId"]);
       const gatheringId = user_gatheringsOfUser.map((el) => el.gatheringId);
       const gatheringList = await findAllGathering({ id: gatheringId, done });
-      return res.status(200).json({ gathering: gatheringList });
+      return res.status(200).json({ gathering: modifyGatheringFormat(gatheringList) });
     } catch (err) {
       DBERROR(res, err);
     }
@@ -37,7 +42,7 @@ module.exports = {
   getRandomGathering: async (req, res) => {
     try {
       const gatheringList = await findAllGathering({ done: 0 });
-      return res.status(200).json({ gatherings: gatheringList });
+      return res.status(200).json({ gatherings: modifyGatheringFormat(gatheringList) });
     } catch (err) {
       DBERROR(res, err);
     }
