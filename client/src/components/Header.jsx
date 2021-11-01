@@ -14,7 +14,12 @@ import { HiMenu } from "react-icons/hi";
 import { BsPerson } from "react-icons/bs";
 import UserProfile from "./UserProfile";
 import { useDispatch, useSelector } from "react-redux";
-import { signInAction, signinOnAction, signOutAction, signupOnAction } from "../store/actions";
+import {
+  signinAction,
+  signinModalOnAction,
+  signoutAction,
+  signupModalOnAction,
+} from "../store/actions";
 import authApi from "../api/auth";
 
 const StyledHeader = styled.header`
@@ -380,13 +385,13 @@ const Header = () => {
   // TODO: Logout btn 기능 구현
   const handleSignout = async () => {
     const res = await authApi.signout();
-    dispatch(signOutAction);
+    dispatch(signoutAction);
     if (res.status === 205) history.push("/");
   };
 
   const handleGuestSignin = async () => {
     const res = await authApi.guestSignin();
-    dispatch(signInAction);
+    dispatch(signinAction);
     if (res.status === 200) history.push("/home");
   };
 
@@ -436,8 +441,8 @@ const Header = () => {
       {!isLogin && (
         <NonUserBtns>
           <NonUserBtn onClick={handleGuestSignin}>게스트 로그인</NonUserBtn>
-          <NonUserBtn onClick={() => dispatch(signinOnAction)}>로그인</NonUserBtn>
-          <NonUserBtn main onClick={() => dispatch(signupOnAction)}>
+          <NonUserBtn onClick={() => dispatch(signinModalOnAction)}>로그인</NonUserBtn>
+          <NonUserBtn main onClick={() => dispatch(signupModalOnAction)}>
             회원가입
           </NonUserBtn>
         </NonUserBtns>

@@ -15,7 +15,7 @@ import PropTypes from "prop-types";
 import UserProfile from "../components/UserProfile";
 import ConfirmModal from "../components/ConfirmModal";
 import { useSelector, useDispatch } from "react-redux";
-import { confirmModalOnAction, signInAction, signOutAction } from "../store/actions";
+import { confirmModalOnAction, signinAction, signoutAction } from "../store/actions";
 import authApi from "../api/auth";
 
 const Container = styled.div`
@@ -164,11 +164,11 @@ const Chat = () => {
       try {
         const res = await authApi.me();
         if (res.status === 200) {
-          dispatch(signInAction(res.data.data));
+          dispatch(signinAction(res.data));
         }
       } catch (error) {
         if (error.response.status === 403) {
-          dispatch(signOutAction);
+          dispatch(signoutAction);
           history.push("/");
         }
       }

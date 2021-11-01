@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import GathCard from "../components/GathCard";
 import media from "styled-media-query";
@@ -12,7 +12,7 @@ import InputTotalNum from "../components/InputTotalNum";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router";
 import authApi from "../api/auth";
-import { signInAction, signOutAction } from "../store/actions";
+import { signinAction, signoutAction } from "../store/actions";
 
 const HomeContainer = styled.div`
   width: 100%;
@@ -256,11 +256,11 @@ const Home = () => {
       try {
         const res = await authApi.me();
         if (res.status === 200) {
-          dispatch(signInAction(res.data.data));
+          dispatch(signinAction(res.data));
         }
       } catch (error) {
         if (error.response.status === 403) {
-          dispatch(signOutAction);
+          dispatch(signoutAction);
           history.push("/");
         }
       }
