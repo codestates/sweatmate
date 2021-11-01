@@ -23,7 +23,7 @@ module.exports = {
     const authKey = Math.random().toString(36).slice(2);
 
     try {
-      const createdUserInfo = await createUser({
+      await createUser({
         id: uuid(),
         nickname,
         email,
