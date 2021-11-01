@@ -381,7 +381,19 @@ paths:
                   message:
                     type: string
                     default: You don't have permission.
-
+  /auth/guest:
+    post:
+      tags:
+        - auth
+      summary: Guest sign in
+      description: Guest sign information. to sweat-mate
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
   /gathering:
     get:
       tags:
