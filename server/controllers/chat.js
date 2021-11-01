@@ -3,40 +3,42 @@ const { findGatheringOfUser, userFindOne, gatheringFindOne } = require("./functi
 const { DBERROR, getCurrentTime } = require("./functions/utility");
 module.exports = {
   getUserChatList: async (req, res) => {
-    /*
-      userId로 유저가 참여중인 게더링 id 들을 
-      몽구스chat 스키마에서 최근 메시지1개를 현재 날짜와 비교 (오늘: 12:12, 어제: 어제, 그 이후는 날짜로 보내주기)
-     */
     const { userId } = res.locals;
     try {
+      //유저 아이디로 참여중인 게더링을 찾는 로직입니다.
       const gatheringListOfUser = await findGatheringOfUser({ userId }, ["userId", "id"]);
       const gatheringValidList = await Promise.all(
         gatheringListOfUser.map(async (el) => {
           return await el.getGathering({ where: { done: 0 }, attributes: ["id"] });
         })
       );
+      //참여중인 게더링이 없을 경우에 응답입니다.
       if (!gatheringValidList[0]) {
         return res.status(404).json({ message: "There's no gathering participating" });
       }
+      // 게더링 아이디로 mongoDB에서 채팅 인포를 가져옵니다.
       const gatheringIdList = gatheringValidList.map((el) => el?.id);
-      // 몽구스
       const chatsList = await mongooseChatModel.find(
         { _id: gatheringIdList },
         { chatLog: { $slice: -1 }, chatInfo: 1, creatorId: 1 }
       );
+      // 응답으로 보내줄 데이터를 api문서에 맞게 가공하는 로직입니다.
       const chatsListToSend = await Promise.all(
         chatsList.map(async (el) => {
           const { chatLog: recentChat, _id: gatheringId, chatInfo, creatorId } = el;
           const date = recentChat[0]?.date;
+          // 채팅로그가 비어있을 경우에 응답입니다.
           if (!date) {
             recentChat[0] = { userId: null, message: null, date: null };
             return { gatheringId, chatInfo, creatorId, recentChat };
           }
+          // 유저 아이디로 MYSQL에서 user테이블의 유저 정보를 조회합니다.
           const { userId: recentUserId } = recentChat[0];
           const userInfo = await userFindOne({ id: recentUserId });
           const userNickname = userInfo.dataValues.nickname;
-          recentChat[0].user = userNickname;
+          recentChat[0].nickname = userNickname;
           delete recentChat[0].userId;
+          // 최근에 대화한 시간에 따라서 "날짜", "시간", "어제" 로 나눠서 보내주는 로직입니다.
           const currentDay = getCurrentTime().split(" ")[0];
           const [day, time] = date.split(" ");
           const oneDayToMillisecond = 86400000;
@@ -88,14 +90,23 @@ module.exports = {
           return { id, image, nickname };
         })
       );
-      const chatInfo = await mongooseChatModel.findOne({ _id: gatheringId });
-      chatInfo.chatLog = chatInfo.chatLog.map((el) => {
+      // mongoDB 에서 게더링 채팅방을 불러와 채팅 내역 요소들에 유저의 닉네임, 이미지, 아이디를 추가로 부여합니다.
+      const chatInfobyGatheringId = await mongooseChatModel.findOne({ _id: gatheringId });
+      const { _id, chatInfo, chatLog, creatorId } = chatInfobyGatheringId;
+      const translatedChatLog = chatLog.map((el) => {
         const userInfo = participatingUserList.filter((userInfo) => userInfo.id === el.userId);
         delete el.userId;
-        return { ...el, ...userInfo[0] };
+        return { ...userInfo[0], ...el };
       });
-      res.status(200).json({ userList: participatingUserList, chatInfo });
+      res.status(200).json({
+        gatheringId: _id,
+        userList: participatingUserList,
+        chatLog: translatedChatLog,
+        chatInfo,
+        creatorId,
+      });
     } catch (err) {
+      console.log(err);
       DBERROR(res, err);
     }
   },
