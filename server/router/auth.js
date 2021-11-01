@@ -8,6 +8,7 @@ const {
   signin,
   me,
   signout,
+  guestSignin,
 } = require("../controllers/auth");
 const { isAuth, checkEmail, checkNickname } = require("../middlewares");
 
@@ -18,4 +19,5 @@ router.post("/signin", signin);
 router.get("/signout", signout);
 router.post("/signup", checkEmail, checkNickname, signup);
 router.get("/certification/:authKey", certifyEmail);
+router.post("/guestsignin", guestSignin);
 module.exports = router;
