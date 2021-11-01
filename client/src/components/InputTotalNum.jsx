@@ -33,14 +33,18 @@ const Popper = styled.div`
   border-radius: 1rem;
   overflow: auto;
   filter: drop-shadow(0px 6px 10px var(--color-shadow));
-  /* display: none; */
   visibility: hidden;
-  > div {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
+`;
+
+const PopperInner = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const PopperInput = styled.input`
+  width: calc(100% - 7rem);
+  text-align: center;
 `;
 
 const PlusBtn = styled(HiPlusSm)`
@@ -101,13 +105,12 @@ const ClearBtn = styled.button`
 
 function InputTotalNum({ inputId, placeholder }) {
   const [total, setTotal] = useState(0);
+  const popper = useRef(null);
   const hadleMinusClick = () => {
     setTotal(total - 1);
-    console.log("minus clicked");
   };
   const hadlePlusClick = () => {
     setTotal(total + 1);
-    console.log("plus clicked");
   };
   const handleClearClick = () => {
     setTotal(0);
@@ -118,60 +121,29 @@ function InputTotalNum({ inputId, placeholder }) {
   const hidePopper = () => {
     popper.current.style.cssText = `visibility: hidden`;
   };
-  const container = useRef(null);
-  const input = useRef(null);
-  const popper = useRef(null);
   return (
     <Container
+      tabIndex={5}
       onFocus={() => {
         showPopper();
-        console.log("container focused");
       }}
       onBlur={() => {
         hidePopper();
-        console.log("container blured");
       }}
-      ref={container}
     >
       <Input
         id={inputId}
         value={total > 0 ? `총 ${total}명` : ""}
         placeholder={placeholder}
-        onFocus={() => {
-          console.log("input focused");
-        }}
-        onBlur={() => {
-          console.log("input blured");
-          // hidePopper();
-        }}
-        ref={input}
         readOnly
       />
-
-      <Popper
-        id="below-box"
-        tabIndex="-1"
-        ref={popper}
-        onFocusCapture={() => {
-          console.log("popper focused");
-        }}
-        onBlurCapture={() => {
-          console.log("popper blured");
-        }}
-        onClick={async (event) => {
-          event.stopPropagation();
-          await input.current.focus();
-          console.log("popper clicked");
-          // input.current.focus();
-        }}
-      >
-        <div>
+      <Popper ref={popper}>
+        <PopperInner>
           {total > 0 ? <MinusBtn onClick={hadleMinusClick} /> : <DisabledMinus />}
-          <div>{total}</div>
+          <PopperInput value={total} readOnly />
           <PlusBtn onClick={hadlePlusClick} />
-        </div>
+        </PopperInner>
       </Popper>
-
       {total > 0 && (
         <ClearBtn onClick={handleClearClick}>
           <IoCloseCircle />
