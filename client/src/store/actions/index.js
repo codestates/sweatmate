@@ -22,11 +22,11 @@ import {
 // });
 
 // Auth
-export const signInAction = (data) => ({
+export const signinAction = (data) => ({
   type: SIGN_IN,
   payload: { ...data },
 });
-export const signOutAction = {
+export const signoutAction = {
   type: SIGN_OUT,
 };
 
@@ -40,10 +40,10 @@ export const gathDetailModalOnAction = {
 export const confirmModalOnAction = {
   type: CONFIRM_MODAL_ON,
 };
-export const signupOnAction = {
+export const signupModalOnAction = {
   type: SIGNUP_MODAL_ON,
 };
-export const signinOnAction = {
+export const signinModalOnAction = {
   type: SIGNIN_MODAL_ON,
 };
 export const modalOffAction = {

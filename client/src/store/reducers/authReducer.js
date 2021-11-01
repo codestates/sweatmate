@@ -1,11 +1,10 @@
 import { SIGN_IN, SIGN_OUT } from "../actions/actionTypes";
 
 const initialState = {
+  id: "",
   isLogin: false,
-  email: null,
   nickname: "",
   image: null,
-  gathering: [],
 };
 
 const authReducer = (prevState = initialState, action) => {

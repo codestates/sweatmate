@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router";
 import authApi from "../api/auth";
-import { signInAction, signOutAction } from "../store/actions";
+import { signinAction, signoutAction } from "../store/actions";
 
 const Landing = () => {
   const dispatch = useDispatch();
@@ -13,11 +13,11 @@ const Landing = () => {
       try {
         const res = await authApi.me();
         if (res.status === 200) {
-          dispatch(signInAction(res.data.data));
+          dispatch(signinAction(res.data));
         }
       } catch (error) {
         if (error.response.status === 403) {
-          dispatch(signOutAction);
+          dispatch(signoutAction);
           history.push("/");
         }
       }
