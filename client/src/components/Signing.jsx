@@ -240,7 +240,7 @@ const Signing = ({ type }) => {
         delete signInputValue.retypedPassword;
         delete signInputValue.nickname;
         try {
-          const res = await authApi.signin(signinputValue);
+          const res = await authApi.signin(signInputValue);
           if (res.status === 200) {
             dispatch(signinAction(res.data));
             history.push("/home");
