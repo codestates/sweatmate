@@ -5,6 +5,7 @@ import { modalOffAction } from "../store/actions";
 import { useDispatch } from "react-redux";
 import { IoClose } from "react-icons/io5";
 import media from "styled-media-query";
+import Portal from "../Portal";
 
 const ModalWrapper = styled.div`
   position: fixed;
@@ -97,7 +98,7 @@ const Modal = ({ children }) => {
     };
   }, []);
   return (
-    <>
+    <Portal elementId="root-dimmed">
       <ModalOverlay />
       <ModalWrapper onClick={handleBackgroundClick} tabIndex="-1">
         <ModalContainer tabIndex="0">
@@ -107,7 +108,7 @@ const Modal = ({ children }) => {
           {children}
         </ModalContainer>
       </ModalWrapper>
-    </>
+    </Portal>
   );
 };
 
