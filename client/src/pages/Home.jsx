@@ -423,16 +423,16 @@ const Home = () => {
         <SearchTitle>💦 어떤 운동 모임을 찾으시나요? 🔍</SearchTitle>
         <InputContainer onSubmit={handleSubmit}>
           <InputList>
-            <SearchInput isLong name="운동" for="sport">
+            <SearchInput isSport name="운동" for="sport">
               <InputDatalist id="sport" values={sport} placeholder="어떤 운동하세요?" />
             </SearchInput>
             <SearchInput name="지역" for="area">
               <InputDatalist id="area" values={area} placeholder="지역 입력" />
             </SearchInput>
-            <SearchInput isLong name="날짜" for="date">
+            <SearchInput isDate name="날짜" for="date">
               <InputDatepicker id="date" placeholder="날짜 입력" />
             </SearchInput>
-            <SearchInput name="시간" for="time">
+            <SearchInput isTime name="시간" for="time">
               <InputDatalist id="time" values={time} placeholder="시간 입력" />
             </SearchInput>
             <SearchInput name="인원" for="totalNum">
