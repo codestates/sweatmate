@@ -2,7 +2,8 @@ const AWS = require("aws-sdk");
 const s3 = new AWS.S3();
 const areaList = require("../../resource/areaList");
 const sportsList = require("../../resource/sportList");
-
+const areaListById = require("../../resource/areaListById");
+const sportListById = require("../../resource/sportListById");
 module.exports = {
   DBERROR: (res, err) => {
     return res.status(500).json({ message: `Error occured in database: ${err}` });
@@ -40,5 +41,16 @@ module.exports = {
     today.setHours(today.getHours() + 9);
     const date = today.toISOString().replace("T", " ").substring(0, 19);
     return date.split(" ")[0];
+  },
+  modifyGatheringFormat: (gatheringList) => {
+    return gatheringList.map((el) => {
+      el.areaName = areaListById[el.areaId];
+      delete el.areaId;
+      const { sportName, sportEmoji } = sportListById[el.sportId];
+      delete el.sportId;
+      el.sportName = sportName;
+      el.sportEmoji = sportEmoji;
+      return el;
+    });
   },
 };

@@ -1,4 +1,4 @@
-//비밀번호 1111
+//비밀번호 "qwe123"
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.bulkInsert(
@@ -8,7 +8,7 @@ module.exports = {
           id: "59117a45-6b95-4c2e-a19e-accb9b267f9c",
           email: "wjdrlfgg@naver.com",
           areaId: 1,
-          password: "$2b$12$DX3oLVJY2DiP8.LlYwAgheTPhWc.BmUrUAuUD92Ua9O2Yd7ajCH.O",
+          password: "$2b$12$9PYxnIgGVxjyDGKqDH1o6ONxj7onOnZqK3HIgX6TKfvaB4.USUU2.",
           age: 27,
           gender: "남",
           nickname: "muyaho",
@@ -21,7 +21,7 @@ module.exports = {
           id: "59117a45-6b95-4c2e-a19e-ackie019rhfi",
           email: "local@local.com",
           areaId: 3,
-          password: "$2b$12$DX3oLVJY2DiP8.LlYwAgheTPhWc.BmUrUAuUD92Ua9O2Yd7ajCH.O",
+          password: "$2b$12$9PYxnIgGVxjyDGKqDH1o6ONxj7onOnZqK3HIgX6TKfvaB4.USUU2.",
           age: 23,
           gender: "남",
           nickname: "bear",
