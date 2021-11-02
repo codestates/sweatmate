@@ -8,6 +8,16 @@ const authApi = {
   signout: () => api.get("/auth/signout"),
   signup: (info) => api.post("/auth/signup", info),
   me: () => api.get("/auth/me"),
+  kakao: (authorizationCode) =>
+    api.post(
+      "/auth/kakao",
+      { authorizationCode },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    ),
 };
 
 export default authApi;
