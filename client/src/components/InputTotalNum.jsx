@@ -109,10 +109,11 @@ function InputTotalNum({ inputId, placeholder, total, setTotal }) {
     setTotal(total - 1);
   };
   const hadlePlusClick = () => {
-    setTotal(total + 1);
+    if (!total) setTotal(2);
+    else setTotal(total + 1);
   };
   const handleClearClick = () => {
-    setTotal(0);
+    setTotal(null);
   };
   const showPopper = () => {
     popper.current.style.cssText = `visibility: visible`;
@@ -130,15 +131,15 @@ function InputTotalNum({ inputId, placeholder, total, setTotal }) {
         hidePopper();
       }}
     >
-      <Input value={total > 0 ? `총 ${total}명` : ""} placeholder={placeholder} readOnly />
+      <Input value={total ? `총 ${total}명` : ""} placeholder={placeholder} readOnly />
       <Popper ref={popper}>
         <PopperInner>
-          {total > 0 ? <MinusBtn onClick={hadleMinusClick} /> : <DisabledMinus />}
-          <PopperInput id={inputId} value={total} readOnly />
+          {total && total > 2 ? <MinusBtn onClick={hadleMinusClick} /> : <DisabledMinus />}
+          <PopperInput id={inputId} type="number" value={total || 2} readOnly />
           <PlusBtn onClick={hadlePlusClick} />
         </PopperInner>
       </Popper>
-      {total > 0 && (
+      {total && (
         <ClearBtn onClick={handleClearClick}>
           <IoCloseCircle />
         </ClearBtn>
@@ -150,7 +151,7 @@ function InputTotalNum({ inputId, placeholder, total, setTotal }) {
 InputTotalNum.propTypes = {
   inputId: PropTypes.string.isRequired,
   placeholder: PropTypes.string.isRequired,
-  total: PropTypes.number.isRequired,
+  total: PropTypes.number,
   setTotal: PropTypes.func.isRequired,
 };
 export default InputTotalNum;
