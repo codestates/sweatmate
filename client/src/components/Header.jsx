@@ -384,6 +384,7 @@ const Header = () => {
   // TODO: 마이페이지 버튼 링크
   // TODO: Logout btn 기능 구현
   const handleSignout = async () => {
+    closeAll();
     const res = await authApi.signout();
     dispatch(signoutAction);
     if (res.status === 205) history.push("/");
