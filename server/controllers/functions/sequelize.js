@@ -65,4 +65,16 @@ module.exports = {
   User_gatheringFindOne: async (queries) => {
     return User_gathering.findOne({ where: queries });
   },
+  getUniqueNickname: async (nick, num = 1) => {
+    let tempNick = nick;
+    const foundUserByNickname = await User.findOne({ where: { nickname: nick } });
+    if (foundUserByNickname) {
+      if (num !== 1) {
+        [tempNick] = tempNick.split("_");
+      }
+      tempNick = `${tempNick}_${num}`;
+      return getUniqueNickname(tempNick, num + 1);
+    }
+    return nick;
+  },
 };

@@ -34,4 +34,12 @@ module.exports = {
     password: required("MONGO_PASSWORD"),
   },
   nodeEnv: required("NODE_ENV"),
+  google: {
+    googleClientId: required("GOOGLE_CLIENT_ID"),
+    googleClientSecret: required("GOOGLE_CLIENT_SECRET"),
+  },
+  kakao: {
+    kakaoClientId: required("KAKAO_CLIENT_ID"),
+    kakaoClientSecret: required("KAKAO_CLIENT_SECRET"),
+  },
 };
