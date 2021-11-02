@@ -36,27 +36,13 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                required:
-                  - message
-                example:
-                  message: Valid nickname
-        "409":
+                $ref: "#/components/schemas/checkValidNickname"
+        "400":
           description: Conflict
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                required:
-                  - message
-                example:
-                  message: Nickname already exists
+                $ref: "#/components/schemas/checkInvalidNickname"
   /auth/email/{email}:
     get:
       tags:
@@ -76,30 +62,13 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                required:
-                  - message
-                example:
-                  message: Valid email
-        "409":
+                $ref: "#/components/schemas/checkValidEmail"
+        "400":
           description: Conflict
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                  type:
-                    type: string
-                required:
-                  - message
-                example:
-                  message: Email already exists
-                  type: local
+                $ref: "#/components/schemas/checkInvalidEmail"
   /auth/me:
     get:
       tags:
@@ -190,8 +159,17 @@ paths:
       summary: Sign out
       description: Sign out of sweat-mate
       responses:
-        "204":
+        "200":
           description: No Content
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Signed out
+
         "403":
           description: Unauthorized
           content:
@@ -232,33 +210,20 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UserResponse"
+                type: object
+                properties:
+                  message:
+                    type: string
+                    default: complete the email authentication within an hour
         "400":
           description: Bad Request
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                required:
-                  - message
-                example:
-                  message: Incorrect format
-        "409":
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                required:
-                  - message
-                example:
-                  message: Already exists
+                oneOf:
+                  - $ref: "#/components/schemas/incorrectFormat"
+                  - $ref: "#/components/schemas/checkInvalidNickname"
+                  - $ref: "#/components/schemas/checkInvalidEmail"
   /user/{userId}:
     get:
       tags:
@@ -273,12 +238,18 @@ paths:
           schema:
             type: string
       responses:
-        "201":
+        "200":
           description: Successfully checked user information.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/UserInfomation"
+        "400":
+          description: permission Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/permissionError"
         "403":
           description: Unauthorized
           content:
@@ -331,11 +302,9 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    default: Nickname already exists
+                oneOf:
+                  - $ref: "#/components/schemas/checkInvalidNickname"
+                  - $ref: "#/components/schemas/permissionError"
         "403":
           description: Unauthorized
           content:
@@ -365,7 +334,19 @@ paths:
                   message:
                     type: string
                     default: User deleted
+        "400":
+          description: permission Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/permissionError"
         "403":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationMessage"
+        "404":
           description: Unauthorized
           content:
             application/json:
@@ -374,7 +355,7 @@ paths:
                 properties:
                   message:
                     type: string
-                    default: You don't have permission.
+                    default: "User not found"
   /auth/guest:
     post:
       tags:
@@ -388,6 +369,56 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/UserResponse"
+  /auth/google:
+    post:
+      tags:
+        - auth
+      summary: google social sign in
+      description: google sign information. to sweat-mate
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+        "400":
+          description: social login error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/socialLoginError"
+  /auth/kakao:
+    post:
+      tags:
+        - auth
+      summary: Guest sign in
+      description: Guest sign information. to sweat-mate
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+        "400":
+          description: social login error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/socialLoginError"
   /gathering:
     get:
       tags:
@@ -537,16 +568,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/gatheringInfomation"
-        "403":
-          description: You don't have permission.
+        "400":
+          description: permission Error
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "You don't have permission."
+                $ref: "#/components/schemas/permissionError"
     delete:
       tags:
         - "gathering"
@@ -739,6 +766,12 @@ paths:
                   nickname: "무야호"
                   message: "그만큼 좋다는 뜻이거든~"
                   date: "어제"
+        "403":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationMessage"
         "404":
           description: "There's no gathering participating"
           content:
@@ -816,7 +849,7 @@ paths:
                   sportEmoji: ":baseball:"
                   sportName: "야구"
                 creatorId: 62eaab6a-f80d-4570-aec7-f162d752d320
-        "404":
+        "400":
           description: "There's no gathering participating"
           content:
             application/json:
@@ -825,7 +858,23 @@ paths:
                 properties:
                   message:
                     type: string
-                    example: "There's no gathering participating"
+                    example: "already ended gathering"
+        "403":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationMessage"
+        "404":
+          description: not participating in this gathering
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    default: not participating in this gathering
 components:
   schemas:
     AuthenticationMessage:
@@ -1032,3 +1081,57 @@ components:
         totalNum: 4
         sportEmoji: ":basketball:"
         sportEngName: basketball
+    checkValidEmail:
+      type: object
+      properties:
+        message:
+          type: string
+      example:
+        message: Valid email
+    checkInvalidEmail:
+      type: object
+      properties:
+        message:
+          type: string
+      example:
+        message: Email already exists
+        type: local
+    checkValidNickname:
+      type: object
+      properties:
+        message:
+          type: string
+      example:
+        message: Valid nickname
+    checkInvalidNickname:
+      type: object
+      properties:
+        message:
+          type: string
+      example:
+        message: Nickname already exists
+    incorrectFormat:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+        - message
+      example:
+        message: Incorrect format
+    socialLoginError:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+        - message
+      example:
+        message: Error occured during social login
+    permissionError:
+      type: object
+      properties:
+        message:
+          type: string
+      example:
+        message: You don't have permission

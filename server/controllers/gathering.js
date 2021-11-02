@@ -20,7 +20,10 @@ module.exports = {
     const conditions = createValidObject(res.locals.conditions);
     try {
       const gatheringList = await findAllGathering({ ...searchCondition, done: 0 });
-      return res.status(200).json({ conditions, gathering: modifyGatheringFormat(gatheringList) });
+      if (!gatheringList.length) {
+        return res.status(404).json({ message: "Don't have data to send you." });
+      }
+      return res.status(200).json({ conditions, gatherings: modifyGatheringFormat(gatheringList) });
     } catch (err) {
       DBERROR(res, err);
     }
@@ -34,7 +37,10 @@ module.exports = {
       const user_gatheringsOfUser = await findGatheringOfUser({ userId }, ["id", "userId"]);
       const gatheringId = user_gatheringsOfUser.map((el) => el.gatheringId);
       const gatheringList = await findAllGathering({ id: gatheringId, done });
-      return res.status(200).json({ gathering: modifyGatheringFormat(gatheringList) });
+      if (!gatheringList.length) {
+        return res.status(404).json({ message: "Don't have data to send you." });
+      }
+      return res.status(200).json({ gatherings: modifyGatheringFormat(gatheringList) });
     } catch (err) {
       DBERROR(res, err);
     }
@@ -42,6 +48,9 @@ module.exports = {
   getRandomGathering: async (req, res) => {
     try {
       const gatheringList = await findAllGathering({ done: 0 });
+      if (!gatheringList.length) {
+        return res.status(404).json({ message: "Don't have data to send you." });
+      }
       return res.status(200).json({ gatherings: modifyGatheringFormat(gatheringList) });
     } catch (err) {
       DBERROR(res, err);
@@ -118,7 +127,7 @@ module.exports = {
       await User_gatheringInfo.destroy();
       gatheringInfo.update({ currentNum: currentNum - 1 });
       const leftGatheringInfo = await findAllGathering({ id: gatheringId });
-      return res.status(201).json(leftGatheringInfo[0]);
+      return res.status(200).json(leftGatheringInfo[0]);
     } catch (err) {
       DBERROR(res, err);
     }

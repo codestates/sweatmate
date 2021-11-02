@@ -54,7 +54,7 @@ module.exports = {
   },
   checkPermission: async (req, res, next) => {
     if (res.locals.userId !== req.params.userId) {
-      return res.status(403).json({ message: "You don't have permission" });
+      return res.status(400).json({ message: "You don't have permission" });
     }
     next();
   },

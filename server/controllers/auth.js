@@ -28,7 +28,9 @@ module.exports = {
   },
   signup: async (req, res) => {
     const { email, password, nickname } = req.body;
-
+    if (!(email && password && nickname)) {
+      return res.status(400).json({ message: "Incorrect format" });
+    }
     const hashed = await bcrypt.hash(password, saltRounds);
     const authKey = Math.random().toString(36).slice(2);
 
@@ -119,7 +121,7 @@ module.exports = {
   },
   signout: (req, res) => {
     clearCookie(res);
-    return res.status(205).json({ message: "Signed out" });
+    return res.status(200).json({ message: "Signed out" });
   },
   guestSignin: async (req, res) => {
     const guestUUID = uuid();

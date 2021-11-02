@@ -21,7 +21,7 @@ router.post("/signin", signin);
 router.get("/signout", signout);
 router.post("/signup", checkEmail, checkNickname, signup);
 router.get("/certification/:authKey", certifyEmail);
-router.post("/guestsignin", guestSignin);
+router.post("/guest", guestSignin);
 router.post("/google", googleSignin);
 router.post("/kakao", kakaoSignin);
 module.exports = router;
