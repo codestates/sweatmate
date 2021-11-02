@@ -38,14 +38,14 @@ const MovePageButtons = styled.div`
   justify-content: space-between;
   width: 50rem;
   height: 12rem;
-  z-index: -1;
+  z-index: ${(props) => props.isOnSearch && -1};
   ${media.between("medium", "large")`
-    /* screen width is between 768px (medium) and 1170px (large) */
-    width: 35rem;
+  /* screen width is between 768px (medium) and 1170px (large) */
+  width: 35rem;
   `}
   ${media.lessThan("medium")`
-    /* screen width is between 768px (medium) and 1170px (large) */
-    width: 20rem;
+  /* screen width is between 768px (medium) and 1170px (large) */
+  width: 20rem;
   `}
 `;
 
@@ -271,7 +271,7 @@ const GathCreate = () => {
         />
         <GathCard gathering={gathering} disabled={true} />
       </Container>
-      <MovePageButtons>
+      <MovePageButtons isOnSearch={isOnSearch}>
         <Button name="prev" onClick={handlePrevClick}>
           {step > 1 && (
             <>
