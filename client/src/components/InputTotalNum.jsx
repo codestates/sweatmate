@@ -45,6 +45,7 @@ const PopperInner = styled.div`
 const PopperInput = styled.input`
   width: calc(100% - 7rem);
   text-align: center;
+  color: ${(props) => props.disabled && "var(--color-gray)"};
 `;
 
 const PlusBtn = styled(HiPlusSm)`
@@ -114,6 +115,7 @@ function InputTotalNum({ inputId, placeholder, total, setTotal }) {
   };
   const handleClearClick = () => {
     setTotal(null);
+    hidePopper();
   };
   const showPopper = () => {
     popper.current.style.cssText = `visibility: visible`;
@@ -135,7 +137,7 @@ function InputTotalNum({ inputId, placeholder, total, setTotal }) {
       <Popper ref={popper}>
         <PopperInner>
           {total && total > 2 ? <MinusBtn onClick={hadleMinusClick} /> : <DisabledMinus />}
-          <PopperInput id={inputId} type="number" value={total || 2} readOnly />
+          <PopperInput id={inputId} type="number" value={total || 1} disabled={!total} readOnly />
           <PlusBtn onClick={hadlePlusClick} />
         </PopperInner>
       </Popper>
