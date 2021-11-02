@@ -1,4 +1,3 @@
-// import axios from "axios";
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router";
@@ -13,12 +12,17 @@ const Landing = () => {
     const url = new URL(window.location.href);
     const code = url.searchParams.get("code");
     const state = url.searchParams.get("state");
-    console.dir(url);
-    console.dir(code);
-    console.dir(state);
 
     const getKakaoSignin = async (authorizationCode) => {
       const res = await authApi.kakao(authorizationCode);
+      if (res.status === 200 || res.status === 201) {
+        dispatch(signinAction(res.data));
+        history.push("/home");
+      }
+    };
+
+    const getGoogleSignin = async (authorizationCode) => {
+      const res = await authApi.google(authorizationCode);
       if (res.status === 200 || res.status === 201) {
         dispatch(signinAction(res.data));
         history.push("/home");
@@ -29,7 +33,7 @@ const Landing = () => {
       if (state === "kakao") {
         getKakaoSignin(code);
       } else {
-        // getGoogleLogin(code);
+        getGoogleSignin(code);
       }
     } else {
       const checkValidUser = async () => {

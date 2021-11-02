@@ -108,7 +108,7 @@ module.exports = {
         const setTimeOutId = guestTable[userId];
         clearTimeout(setTimeOutId);
         guestTable[userId] = setTimeout(() => {
-          delete guestTable[guestUUID];
+          delete guestTable[userId];
           userInfo.destroy();
         }, 7200000);
       }
@@ -137,7 +137,7 @@ module.exports = {
       delete guestTable[guestUUID];
       guestUser.destroy();
     }, 7200000);
-    //게스트로그인에 nickname는 UUID 의 첫 번째, 이미지는 미설정시 null 이기 때문에 null을 추가로 넣어줌
+    // 게스트로그인에 nickname는 UUID 의 첫 번째, 이미지는 미설정시 null 이기 때문에 null을 추가로 넣어줌
     return res.status(200).json({ id, image: null, nickname });
   },
   googleSignin: async (req, res) => {
@@ -149,22 +149,24 @@ module.exports = {
         client_id: googleClientId,
         client_secret: googleClientSecret,
         code: authorizationCode,
-        redirect_uri: "http://localhost:3000/mypage",
+        redirect_uri: "http://localhost:3000",
       };
+
       const axiosRes = await axios({
         method: "post",
         url: "https://oauth2.googleapis.com/token",
         params,
       });
-      const { access_token } = axiosRes.data;
+
+      const { access_token: accessToken } = axiosRes.data;
       const profileRes = await axios({
         method: "get",
         url: "https://www.googleapis.com/oauth2/v2/userinfo",
         headers: {
-          Authorization: `Bearer ${access_token}`,
+          Authorization: `Bearer ${accessToken}`,
         },
       });
-      const { name: nickname, email } = profileRes.data; // TODO: 구글은 프로필이미지 있나없나
+      const { name: nickname, email, picture: image } = profileRes.data; // TODO: 구글은 프로필이미지 있나없나
       const checkUserByEmail = await userFindOne({ email });
       // 가입은 이메일 인증을 통해서만 가입이 가능하기 때문에 따로 type을 신경쓰지 않아도 됨
       // 이메일이 있다면 그 유저로 로그인
@@ -175,21 +177,22 @@ module.exports = {
         return res.status(200).json({ id, image, nickname });
       }
       // 이 이메일로 가입된 정보가 없다면 정보를 바탕으로 회원가입을 진행
-      //닉네임 중복체크 함수
+      // 닉네임 중복체크 함수
       const notDuplicationNickname = await getUniqueNickname(nickname);
       const createdUserInfo = await createUser({
         id: uuid(),
         email,
+        image,
         nickname: notDuplicationNickname,
         authStatus: 1,
         type: "google",
       });
-      const { id, type, image } = createdUserInfo.dataValues;
+      const { id, type } = createdUserInfo.dataValues;
       const token = generateAccessToken(id, type);
       setCookie(res, token);
-      return res.status(201).json({ id, nickname: notDuplicationNickname, image: null });
+      return res.status(201).json({ id, nickname: notDuplicationNickname, image });
     } catch (err) {
-      DBERROR(res, err);
+      return res.status(400).json({ message: "Error occured during social login" });
     }
   },
   kakaoSignin: async (req, res) => {
@@ -209,16 +212,16 @@ module.exports = {
           code: authorizationCode,
         },
       });
-      const { access_token } = tokenResponse.data;
+      const { access_token: accessToken } = tokenResponse.data;
       const kakaoUserInfo = await axios({
         method: "GET",
         url: "https://kapi.kakao.com/v2/user/me",
         headers: {
-          Authorization: `Bearer ${access_token}`,
+          Authorization: `Bearer ${accessToken}`,
         },
       });
       const {
-        profile: { profile_image_url, nickname },
+        profile: { profile_image_url: image, nickname },
         email,
       } = kakaoUserInfo.data.kakao_account;
       const checkUserByEmail = await userFindOne({ email });
@@ -231,22 +234,22 @@ module.exports = {
         return res.status(200).json({ id, image, nickname });
       }
       // 이 이메일로 가입된 정보가 없다면 정보를 바탕으로 회원가입을 진행
-      //닉네임 중복체크 함수
+      // 닉네임 중복체크 함수
       const notDuplicationNickname = await getUniqueNickname(nickname);
       const createdUserInfo = await createUser({
         id: uuid(),
         email,
         nickname: notDuplicationNickname,
-        image: profile_image_url,
+        image,
         authStatus: 1,
         type: "kakao",
       });
-      const { id, type, image } = createdUserInfo.dataValues;
+      const { id, type } = createdUserInfo.dataValues;
       const token = generateAccessToken(id, type);
       setCookie(res, token);
       return res.status(201).json({ id, nickname: notDuplicationNickname, image });
     } catch (err) {
-      DBERROR(res, err);
+      return res.status(400).json({ message: "Error occured during social login" });
     }
   },
 };

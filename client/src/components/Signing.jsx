@@ -262,9 +262,14 @@ const Signing = ({ type }) => {
   };
 
   const handleSignKakao = () => {
-    console.log(process.env.REDIRECT_URI);
     window.location.assign(
-      `https://kauth.kakao.com/oauth/authorize?client_id=${process.env.REACT_APP_KAKAO_REST_KEY}&redirect_uri=${process.env.REACT_APP_REDIRECT_URI}/&response_type=code&state=kakao`
+      `https://kauth.kakao.com/oauth/authorize?client_id=${process.env.REACT_APP_KAKAO_REST_KEY}&redirect_uri=${process.env.REACT_APP_REDIRECT_URI}&response_type=code&state=kakao`
+    );
+  };
+
+  const handleSignGoogle = () => {
+    window.location.assign(
+      `https://accounts.google.com/o/oauth2/v2/auth?client_id=${process.env.REACT_APP_GOOGLE_REST_KEY}&redirect_uri=${process.env.REACT_APP_REDIRECT_URI}&response_type=code&scope=https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email&state=google`
     );
   };
 
@@ -317,7 +322,12 @@ const Signing = ({ type }) => {
           <SiKakao />
           로그인
         </Button>
-        <Button className="google" bgColor={"var(--color-white)"} color={"#4384f3 !important"}>
+        <Button
+          className="google"
+          bgColor={"var(--color-white)"}
+          color={"#4384f3 !important"}
+          onClick={handleSignGoogle}
+        >
           <ImGoogle fontSize="0.5rem" />
           로그인
         </Button>
