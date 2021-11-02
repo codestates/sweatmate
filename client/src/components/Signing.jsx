@@ -43,20 +43,6 @@ const Form = styled.form`
   button {
     color: var(--color-darkgray);
   }
-  .kakao {
-    * {
-      width: 3rem;
-      padding: 0;
-      margin-right: 0.5rem;
-    }
-  }
-  .google {
-    * {
-      width: 1rem;
-      padding: 0;
-      margin-right: 0.5rem;
-    }
-  }
 `;
 
 const Logo = styled.img`
@@ -117,19 +103,27 @@ const FlexGuideContainer = styled.div`
 const FlexContainer = styled.div`
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
 
   .kakao {
-    max-width: 9.5rem;
+    width: 10rem;
     height: 3rem;
     border: 1.5px solid #f7e600;
     margin-right: 0.5rem;
+    * {
+      width: 2.5rem;
+      height: auto;
+    }
   }
 
   .google {
-    max-width: 9.5rem;
+    width: 10rem;
     height: 3rem;
     border: 1.5px solid #4384f3;
+    * {
+      width: 1rem;
+      height: auto;
+    }
   }
 `;
 
@@ -267,49 +261,58 @@ const Signing = ({ type }) => {
     }
   };
 
+  const handleSignKakao = () => {
+    console.log(process.env.REDIRECT_URI);
+    window.location.assign(
+      `https://kauth.kakao.com/oauth/authorize?client_id=${process.env.REACT_APP_KAKAO_REST_KEY}&redirect_uri=${process.env.REACT_APP_REDIRECT_URI}/&response_type=code&state=kakao`
+    );
+  };
+
   return (
-    <Form>
-      <Logo src={`${process.env.PUBLIC_URL}/assets/long-logo.png`} />
-      <InputContainer type={type}>
-        <Input name="email" placeholder="이메일" onChange={handleInputChange}></Input>
-        <Input
-          name="password"
-          type="password"
-          placeholder="비밀번호"
-          onChange={handleInputChange}
-        ></Input>
-        {type === "로그인" && <ErrorMessage>{errorMsg}</ErrorMessage>}
-        {type === "회원가입" && (
-          <>
-            <Input
-              name="retypedPassword"
-              type="password"
-              placeholder="비밀번호 재입력"
-              onChange={handleInputChange}
-            ></Input>
-            <Input name="nickname" placeholder="닉네임" onChange={handleInputChange}></Input>
-            <ErrorMessage>{errorMsg}</ErrorMessage>
-          </>
-        )}
-      </InputContainer>
-      <Button
-        bgColor={"var(--color-white)"}
-        color={"var(--color-maingreen--100) !important"}
-        onClick={handleSign}
-      >
-        {type === "로그인" ? "로그인" : "회원가입"}
-      </Button>
-      {type === "로그인" && <button>비밀번호를 잊어버리셨나요?</button>}
-      <FlexGuideContainer>
-        <span>{type === "로그인" ? "계정이 없으신가요?" : "이미 가입하셨나요?"}</span>
-        <button onClick={handleTypeChange}>{type === "로그인" ? "회원가입" : "로그인"}</button>
-      </FlexGuideContainer>
+    <>
+      <Form>
+        <Logo src={`${process.env.PUBLIC_URL}/assets/long-logo.png`} />
+        <InputContainer type={type}>
+          <Input name="email" placeholder="이메일" onChange={handleInputChange}></Input>
+          <Input
+            name="password"
+            type="password"
+            placeholder="비밀번호"
+            onChange={handleInputChange}
+          ></Input>
+          {type === "로그인" && <ErrorMessage>{errorMsg}</ErrorMessage>}
+          {type === "회원가입" && (
+            <>
+              <Input
+                name="retypedPassword"
+                type="password"
+                placeholder="비밀번호 재입력"
+                onChange={handleInputChange}
+              ></Input>
+              <Input name="nickname" placeholder="닉네임" onChange={handleInputChange}></Input>
+              <ErrorMessage>{errorMsg}</ErrorMessage>
+            </>
+          )}
+        </InputContainer>
+        <Button
+          bgColor={"var(--color-white)"}
+          color={"var(--color-maingreen--100) !important"}
+          onClick={handleSign}
+        >
+          {type === "로그인" ? "로그인" : "회원가입"}
+        </Button>
+        {type === "로그인" && <button>비밀번호를 잊어버리셨나요?</button>}
+        <FlexGuideContainer>
+          <span>{type === "로그인" ? "계정이 없으신가요?" : "이미 가입하셨나요?"}</span>
+          <button onClick={handleTypeChange}>{type === "로그인" ? "회원가입" : "로그인"}</button>
+        </FlexGuideContainer>
+      </Form>
       <FlexContainer>
         <Button
           className="kakao"
           bgColor={"var(--color-white)"}
           color={"#F7E600 !important"}
-          onClick={handleSign}
+          onClick={handleSignKakao}
         >
           <SiKakao />
           로그인
@@ -319,7 +322,7 @@ const Signing = ({ type }) => {
           로그인
         </Button>
       </FlexContainer>
-    </Form>
+    </>
   );
 };
 

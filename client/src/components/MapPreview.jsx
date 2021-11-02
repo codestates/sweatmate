@@ -26,7 +26,7 @@ const MapPreview = ({ sportName, place, latitude, longitude }) => {
     axios
       .get(`https://dapi.kakao.com/v2/local/search/keyword.json?query=${place}`, {
         headers: {
-          Authorization: `KakaoAK ${process.env.REACT_APP_KAKAOMAP_REST_KEY}`,
+          Authorization: `KakaoAK ${process.env.REACT_APP_KAKAO_REST_KEY}`,
         },
       })
       .then((res) => {
