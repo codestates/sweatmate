@@ -13,6 +13,7 @@ const initialState = {
   isConfirmModal: false,
   isSignupModal: false,
   isSigninModal: false,
+  gathInfo: {},
 };
 
 const modalReducer = (prevState = initialState, action) => {
@@ -22,7 +23,7 @@ const modalReducer = (prevState = initialState, action) => {
       state = { ...prevState, isGathCreateModal: true };
       break;
     case GATH_DETAIL_MODAL_ON:
-      state = { ...prevState, isGathDetailModal: true };
+      state = { ...prevState, isGathDetailModal: true, gathInfo: action.payload };
       break;
     case CONFIRM_MODAL_ON:
       state = { ...prevState, isConfirmModal: true };

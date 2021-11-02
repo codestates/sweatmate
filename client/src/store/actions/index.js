@@ -34,9 +34,10 @@ export const signoutAction = {
 export const gathCreateModalOnAction = {
   type: GATH_CREATE_MODAL_ON,
 };
-export const gathDetailModalOnAction = {
+export const gathDetailModalOnAction = (gathering) => ({
   type: GATH_DETAIL_MODAL_ON,
-};
+  payload: { ...gathering },
+});
 export const confirmModalOnAction = {
   type: CONFIRM_MODAL_ON,
 };
