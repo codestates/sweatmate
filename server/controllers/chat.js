@@ -80,7 +80,7 @@ module.exports = {
         }
       });
       if (!checkParticipating) {
-        return res.status(400).json({ message: "not participating in this gathering" });
+        return res.status(404).json({ message: "not participating in this gathering" });
       }
       //채팅의 유저 리스트 (아이디, 닉네임, 이미지)를 불러옵니다.
       const participatingUserList = await Promise.all(
