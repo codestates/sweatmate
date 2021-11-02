@@ -35,8 +35,7 @@ const ModalContainer = styled.div`
   margin: 0 auto;
   width: fit-content;
   max-width: calc(100% - 8rem);
-  height: 36rem;
-  max-height: calc(100% - 8rem);
+  height: auto;
   border-radius: 1rem;
   color: var(--color-darkgray);
   background-color: var(--color-white);
