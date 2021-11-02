@@ -27,7 +27,7 @@ const StyledHeader = styled.header`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 1rem 1rem 2rem;
+  padding: 1rem 2rem;
   position: sticky;
   top: 0;
   width: 100%;
@@ -428,11 +428,11 @@ const Header = () => {
             <Text>일정</Text>
           </StyledNavLink>
           <MobileStyledH4>Account</MobileStyledH4>
-          <MobileStyledNavLink to="/users/1" onClick={closeAll}>
+          <MobileStyledNavLink to={`/users/${id}`} onClick={closeAll}>
             <BsPerson />
             <Text>마이 페이지</Text>
           </MobileStyledNavLink>
-          <MobileNavBtn>
+          <MobileNavBtn onClick={handleSignout}>
             <IoPowerOutline />
             <Text>로그아웃</Text>
           </MobileNavBtn>
@@ -476,7 +476,7 @@ const Header = () => {
           </MobileHamburgerBtn>
           {isUserBtnClicked && (
             <PcUserInfo>
-              <PcUserInfoMyPageBtn to="/users/1" onClick={HandleUserInfoClick}>
+              <PcUserInfoMyPageBtn to={`/users/${id}`} onClick={HandleUserInfoClick}>
                 마이 페이지
               </PcUserInfoMyPageBtn>
               <PcUserInfoLogoutBtn onClick={handleSignout}>로그아웃</PcUserInfoLogoutBtn>
