@@ -24,7 +24,6 @@ const Landing = () => {
     const getGoogleSignin = async (authorizationCode) => {
       const res = await authApi.google(authorizationCode);
       if (res.status === 200 || res.status === 201) {
-        console.log(111);
         dispatch(signinAction(res.data));
         history.push("/home");
       }
