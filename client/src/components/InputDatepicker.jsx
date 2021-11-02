@@ -27,6 +27,9 @@ const Container = styled.div`
         font-family: Interop-Light;
       }
     }
+    > button {
+      display: none;
+    }
   }
   .react-datepicker-popper {
     padding-top: 0.75rem;
@@ -167,6 +170,7 @@ const HomeDatepicker = ({ placeholder, selectedDate, setSelectedDate }) => {
         locale={ko}
         placeholderText={placeholder}
         disabledKeyboardNavigation
+        isClearable
         renderCustomHeader={({
           date,
           decreaseMonth,
@@ -207,7 +211,7 @@ const HomeDatepicker = ({ placeholder, selectedDate, setSelectedDate }) => {
 
 HomeDatepicker.propTypes = {
   placeholder: PropTypes.string.isRequired,
-  selectedDate: PropTypes.string.isRequired,
+  selectedDate: PropTypes.any.isRequired,
   setSelectedDate: PropTypes.func.isRequired,
 };
 
