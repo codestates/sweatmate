@@ -1,11 +1,14 @@
 const bcrypt = require("bcrypt");
 const { v4: uuid } = require("uuid");
-const { userFindOne, createUser } = require("./functions/sequelize");
+const axios = require("axios");
+const { userFindOne, createUser, getUniqueNickname } = require("./functions/sequelize");
 const { sendGmail } = require("./functions/mail");
 const { DBERROR } = require("./functions/utility");
 const { generateAccessToken, setCookie, clearCookie } = require("./functions/token");
 const {
   bcrypt: { saltRounds },
+  google,
+  kakao,
 } = require("../config");
 const emailForm = require("../views/emailFormat");
 /*
@@ -136,5 +139,69 @@ module.exports = {
     }, 7200000);
     //게스트로그인에 nickname는 UUID 의 첫 번째, 이미지는 미설정시 null 이기 때문에 null을 추가로 넣어줌
     return res.status(200).json({ id, image: null, nickname });
+  },
+  googleSignin: async (req, res) => {
+    axios({
+      method: "GET",
+      data: "",
+    });
+  },
+  kakaoSignin: async (req, res) => {
+    const { kakaoClientId, kakaoClientSecret } = kakao;
+    const { authorizationCode } = req.body;
+    try {
+      const tokenResponse = await axios({
+        method: "POST",
+        url: "https://kauth.kakao.com/oauth/token",
+        headers: {
+          "Content-type": "application/x-www-form-urlencoded;charset=utf-8",
+        },
+        params: {
+          grant_type: "authorization_code",
+          client_id: kakaoClientId,
+          client_secret: kakaoClientSecret,
+          code: authorizationCode,
+        },
+      });
+      const { access_token } = tokenResponse.data;
+      const kakaoUserInfo = await axios({
+        method: "GET",
+        url: "https://kapi.kakao.com/v2/user/me",
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      });
+      const {
+        profile: { profile_image_url, nickname },
+        email,
+      } = kakaoUserInfo.data.kakao_account;
+      const checkUserByEmail = await userFindOne({ email });
+      // 가입은 이메일 인증을 통해서만 가입이 가능하기 때문에 따로 type을 신경쓰지 않아도 됨
+      // 이메일이 있다면 그 유저로 로그인
+      console.log(checkUserByEmail);
+      if (checkUserByEmail) {
+        const { id, image, nickname, type } = checkUserByEmail;
+        const token = generateAccessToken(id, type);
+        setCookie(res, token);
+        return res.status(200).json({ id, image, nickname });
+      }
+      // 이 이메일로 가입된 정보가 없다면 정보를 바탕으로 회원가입을 진행
+      //닉네임 중복체크 함수
+      const notDuplicationNickname = await getUniqueNickname(nickname);
+      const createdUserInfo = await createUser({
+        id: uuid(),
+        email,
+        nickname: notDuplicationNickname,
+        image: profile_image_url,
+        authStatus: 1,
+        type: "kakao",
+      });
+      const { id, type, image } = createdUserInfo.dataValues;
+      const token = generateAccessToken(id, type);
+      setCookie(res, token);
+      return res.status(201).json({ id, nickname, image });
+    } catch (err) {
+      DBERROR(res, err);
+    }
   },
 };
