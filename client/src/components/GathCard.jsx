@@ -84,8 +84,8 @@ const InfoFooter = styled.div`
 
 const GathCard = ({ gathering }) => {
   const dispatch = useDispatch();
-  const handleGathDetailModalOn = (e) => {
-    dispatch(gathDetailModalOnAction);
+  const handleGathDetailModalOn = () => {
+    dispatch(gathDetailModalOnAction(gathering));
   };
   return (
     <CardContainer onClick={handleGathDetailModalOn}>
