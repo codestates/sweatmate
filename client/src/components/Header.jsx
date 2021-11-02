@@ -391,8 +391,11 @@ const Header = () => {
 
   const handleGuestSignin = async () => {
     const res = await authApi.guestSignin();
-    dispatch(signinAction);
-    if (res.status === 200) history.push("/home");
+
+    if (res.status === 200) {
+      dispatch(signinAction(res.data));
+      history.push("/home");
+    }
   };
 
   return (
