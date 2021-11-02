@@ -299,12 +299,7 @@ const Home = () => {
               />
             </SearchInput>
             <SearchInput isDate name="날짜" for="date">
-              <InputDatepicker
-                id="date"
-                placeholder="날짜 입력"
-                selectedDate={dateInput}
-                setSelectedDate={setDateInput}
-              />
+              <InputDatepicker id="date" placeholder="날짜 입력" setDisplayedDate={setDateInput} />
             </SearchInput>
             <SearchInput isTime name="시간" for="time">
               <InputDatalist
