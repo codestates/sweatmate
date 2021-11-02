@@ -5,8 +5,9 @@ import GathCard from "../components/GathCard";
 import { MdOutlinePending, MdOutlineCheckCircle } from "react-icons/md";
 import { signinAction, signoutAction } from "../store/actions";
 import authApi from "../api/auth";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router";
+import gatheringApi from "../api/gathering";
 
 const Container = styled.div`
   min-height: calc(100vh - 73px - 343.72px);
@@ -67,7 +68,7 @@ const Gatherings = styled.div`
   display: grid;
   grid-gap: 1rem;
   gap: 1rem;
-  grid-template-columns: repeat(auto-fit, minmax(20rem, auto));
+  grid-template-columns: repeat(auto-fill, minmax(20rem, auto));
 `;
 const EmptyContainer = styled.div`
   height: 20rem;
@@ -80,157 +81,11 @@ const EmptyContainer = styled.div`
   opacity: 0.4;
 `;
 
-const gatherings = [
-  {
-    gatheringId: 12,
-    title: "농구 함 때려볼 용산러들~!",
-    description: "용산에서 즐기면서 농구하는 사람들 한 판 같이 합시다~",
-    creator: {
-      id: "uuid",
-      nickname: "농구에 미친 사람",
-      image: null,
-    },
-    areaName: "용산구",
-    placeName: "운동장",
-    latitude: 33.450701,
-    longitude: 126.570667,
-    date: "2021-10-27",
-    time: "저녁",
-    timeDescription: "19시",
-    totalNum: 4,
-    currentNum: 2,
-    sportName: "농구",
-    sportEmoji: "🏀",
-    done: false,
-    users: [
-      {
-        id: "uuid",
-        nickname: "농구킹",
-        image: null,
-      },
-    ],
-  },
-  {
-    gatheringId: 12,
-    title: "농구 함 때려볼 용산러들~!",
-    description: "용산에서 즐기면서 농구하는 사람들 한 판 같이 합시다~",
-    creator: {
-      id: "uuid",
-      nickname: "농구에 미친 사람",
-      image: null,
-    },
-    areaName: "용산구",
-    placeName: "운동장",
-    latitude: 33.450701,
-    longitude: 126.570667,
-    date: "2021-10-27",
-    time: "저녁",
-    timeDescription: "19시",
-    totalNum: 4,
-    currentNum: 2,
-    sportName: "농구",
-    sportEmoji: "🏀",
-    done: false,
-    users: [
-      {
-        id: "uuid",
-        nickname: "농구킹",
-        image: null,
-      },
-    ],
-  },
-  {
-    gatheringId: 12,
-    title: "농구 함 때려볼 용산러들~!",
-    description: "용산에서 즐기면서 농구하는 사람들 한 판 같이 합시다~",
-    creator: {
-      id: "uuid",
-      nickname: "농구에 미친 사람",
-      image: null,
-    },
-    areaName: "용산구",
-    placeName: "운동장",
-    latitude: 33.450701,
-    longitude: 126.570667,
-    date: "2021-10-27",
-    time: "저녁",
-    timeDescription: "19시",
-    totalNum: 4,
-    currentNum: 2,
-    sportName: "농구",
-    sportEmoji: "🏀",
-    done: false,
-    users: [
-      {
-        id: "uuid",
-        nickname: "농구킹",
-        image: null,
-      },
-    ],
-  },
-  {
-    gatheringId: 12,
-    title: "농구 함 때려볼 용산러들~!",
-    description: "용산에서 즐기면서 농구하는 사람들 한 판 같이 합시다~",
-    creator: {
-      id: "uuid",
-      nickname: "농구에 미친 사람",
-      image: null,
-    },
-    areaName: "용산구",
-    placeName: "운동장",
-    latitude: 33.450701,
-    longitude: 126.570667,
-    date: "2021-10-27",
-    time: "저녁",
-    timeDescription: "19시",
-    totalNum: 4,
-    currentNum: 2,
-    sportName: "농구",
-    sportEmoji: "🏀",
-    done: false,
-    users: [
-      {
-        id: "uuid",
-        nickname: "농구킹",
-        image: null,
-      },
-    ],
-  },
-  {
-    gatheringId: 12,
-    title: "농구 함 때려볼 용산러들~!",
-    description: "용산에서 즐기면서 농구하는 사람들 한 판 같이 합시다~",
-    creator: {
-      id: "uuid",
-      nickname: "농구에 미친 사람",
-      image: null,
-    },
-    areaName: "용산구",
-    placeName: "운동장",
-    latitude: 33.450701,
-    longitude: 126.570667,
-    date: "2021-10-27",
-    time: "저녁",
-    timeDescription: "19시",
-    totalNum: 4,
-    currentNum: 2,
-    sportName: "농구",
-    sportEmoji: "🏀",
-    done: false,
-    users: [
-      {
-        id: "uuid",
-        nickname: "농구킹",
-        image: null,
-      },
-    ],
-  },
-];
-
 const Schedule = () => {
   const [isUpcoming, setIsUpcoming] = useState(true);
   const [isPassed, setIsPassed] = useState(false);
+  const [gatherings, setGatherings] = useState([]);
+  const { id } = useSelector(({ authReducer }) => authReducer);
 
   const dispatch = useDispatch();
   const history = useHistory();
@@ -261,6 +116,35 @@ const Schedule = () => {
     setIsPassed(true);
   };
 
+  useEffect(() => {
+    const getGatherings = async () => {
+      if (isUpcoming) {
+        try {
+          const res = await gatheringApi.upcoming(id);
+          if (res.status === 200) {
+            setGatherings(res.data.gathering);
+          }
+        } catch (err) {
+          if (err.response.status === 404) {
+            setGatherings([]);
+          }
+        }
+      } else if (isPassed) {
+        try {
+          const res = await gatheringApi.passed(id);
+          if (res.status === 200) {
+            setGatherings(res.data.gathering);
+          }
+        } catch (err) {
+          if (err.response.status === 404) {
+            setGatherings([]);
+          }
+        }
+      }
+    };
+    id && getGatherings();
+  }, [isUpcoming, isPassed, id]);
+
   return (
     <Container>
       <BtnContainer>
@@ -273,20 +157,14 @@ const Schedule = () => {
           지나간 일정
         </Passed>
       </BtnContainer>
-      {
-        // gatherings.length !== 0 && //
-        isUpcoming && (
-          <Gatherings>
-            {gatherings.map((gath, idx) => (
-              <GathCard key={idx} gathering={gath} />
-            ))}
-          </Gatherings>
-        )
-      }
-      {
-        // gatherings.length === 0 && //
-        isPassed && <EmptyContainer>지나간 일정이 없어요 💦</EmptyContainer>
-      }
+      {gatherings.length !== 0 && (
+        <Gatherings>
+          {gatherings.map((gath) => (
+            <GathCard key={gath.id} gathering={gath} />
+          ))}
+        </Gatherings>
+      )}
+      {gatherings.length === 0 && <EmptyContainer>일정이 없어요 💦</EmptyContainer>}
     </Container>
   );
 };
