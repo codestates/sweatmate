@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import DatePicker from "react-datepicker";
@@ -26,6 +26,9 @@ const Container = styled.div`
         color: var(--color-gray);
         font-family: Interop-Light;
       }
+    }
+    > button {
+      display: none;
     }
   }
   .react-datepicker-popper {
@@ -153,22 +156,49 @@ const ClearBtn = styled.button`
   }
 `;
 
-const HomeDatepicker = ({ placeholder }) => {
-  // const [selectedDate, setSelectedDate] = useState(new Date());
-  const [selectedDate, setSelectedDate] = useState("");
+const HomeDatepicker = ({ placeholder, setDisplayedDate }) => {
+  const display = useRef(null);
+  const [selectedDate, setSelectedDate] = useState(null);
   const handleClearClick = () => {
-    setSelectedDate("");
+    setSelectedDate(null);
   };
+  const months = {
+    Jan: 1,
+    Feb: 2,
+    Mar: 3,
+    Apr: 4,
+    May: 5,
+    Jun: 6,
+    Jul: 7,
+    Aug: 8,
+    Sep: 9,
+    Oct: 10,
+    Nov: 11,
+    Dec: 12,
+  };
+  useEffect(() => {
+    if (!selectedDate) return setDisplayedDate("");
+    const formatedArr = `${selectedDate}`.split(" ").slice(1, 4);
+    const formatedDate = `${formatedArr[2]}년 ${months[formatedArr[0]]}월 ${
+      formatedArr[1][0] === "0" ? formatedArr[1].slice(1) : formatedArr[1]
+    }일`;
+    setDisplayedDate(formatedDate);
+  }, [selectedDate]);
   return (
     <Container>
       <DatePicker
+        ref={display}
         showPopperArrow={false}
+        minDate={new Date()}
         dateFormat="yyyy년 MM월 dd일"
         selected={selectedDate}
-        onChange={(date) => setSelectedDate(date)}
+        onChange={(date) => {
+          setSelectedDate(date);
+        }}
         locale={ko}
         placeholderText={placeholder}
         disabledKeyboardNavigation
+        isClearable
         renderCustomHeader={({
           date,
           decreaseMonth,
@@ -186,7 +216,7 @@ const HomeDatepicker = ({ placeholder }) => {
             </button>
             <MonthYearContainer>
               <span>{`${getYear(date)}년`}</span>
-              <span>{`${getMonth(date)}월`}</span>
+              <span>{`${getMonth(date) + 1}월`}</span>
             </MonthYearContainer>
             <button
               onClick={increaseMonth}
@@ -209,6 +239,7 @@ const HomeDatepicker = ({ placeholder }) => {
 
 HomeDatepicker.propTypes = {
   placeholder: PropTypes.string.isRequired,
+  setDisplayedDate: PropTypes.func.isRequired,
 };
 
 export default HomeDatepicker;

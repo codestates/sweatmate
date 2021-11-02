@@ -124,26 +124,23 @@ const GathCard = ({ gathering }) => {
 
 GathCard.propTypes = {
   gathering: PropTypes.exact({
-    gatheringId: PropTypes.number,
-    title: PropTypes.string,
-    description: PropTypes.string,
-    creator: PropTypes.exact({
-      id: PropTypes.string,
-      nickname: PropTypes.string,
-      image: PropTypes.string,
-    }),
-    areaName: PropTypes.string,
+    id: PropTypes.number,
     placeName: PropTypes.string,
-    latitude: PropTypes.number,
-    longitude: PropTypes.number,
+    latitude: PropTypes.string,
+    longitude: PropTypes.string,
     date: PropTypes.string,
     time: PropTypes.string,
     timeDescription: PropTypes.string,
     totalNum: PropTypes.number,
     currentNum: PropTypes.number,
-    sportName: PropTypes.string,
-    sportEmoji: PropTypes.string,
+    title: PropTypes.string,
+    description: PropTypes.string,
     done: PropTypes.bool,
+    creator: PropTypes.exact({
+      id: PropTypes.string,
+      nickname: PropTypes.string,
+      image: PropTypes.string,
+    }),
     users: PropTypes.arrayOf(
       PropTypes.exact({
         id: PropTypes.string,
@@ -151,6 +148,9 @@ GathCard.propTypes = {
         image: PropTypes.string,
       })
     ),
+    areaName: PropTypes.string,
+    sportName: PropTypes.string,
+    sportEmoji: PropTypes.string,
   }).isRequired,
 };
 
