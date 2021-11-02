@@ -150,7 +150,7 @@ function InputTotalNum({ inputId, placeholder, total, setTotal }) {
 InputTotalNum.propTypes = {
   inputId: PropTypes.string.isRequired,
   placeholder: PropTypes.string.isRequired,
-  total: PropTypes.string.isRequired,
+  total: PropTypes.number.isRequired,
   setTotal: PropTypes.func.isRequired,
 };
 export default InputTotalNum;
