@@ -199,7 +199,7 @@ module.exports = {
       const { id, type, image } = createdUserInfo.dataValues;
       const token = generateAccessToken(id, type);
       setCookie(res, token);
-      return res.status(201).json({ id, nickname, image });
+      return res.status(201).json({ id, nickname: notDuplicationNickname, image });
     } catch (err) {
       DBERROR(res, err);
     }
