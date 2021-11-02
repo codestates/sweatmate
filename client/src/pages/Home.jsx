@@ -12,6 +12,7 @@ import InputTotalNum from "../components/InputTotalNum";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router";
 import authApi from "../api/auth";
+import gathApi from "../api/gath";
 import { signinAction, signoutAction } from "../store/actions";
 
 const HomeContainer = styled.div`
@@ -65,7 +66,7 @@ const InputList = styled.div`
   display: flex;
 `;
 
-const SearchBtn = styled(IoSearch)`
+const SearchBtnView = styled(IoSearch)`
   background-color: var(--color-maingreen--75);
   color: var(--color-white);
   padding: 0.75rem;
@@ -74,9 +75,11 @@ const SearchBtn = styled(IoSearch)`
   font-size: 1.5rem;
   text-align: center;
   border-radius: 0.6rem;
-  :hover {
-    opacity: 0.8;
-  }
+  cursor: not-allowed;
+  ${(props) =>
+    props.disabled &&
+    `opacity : 0.5;
+    cursor: not-allowed;`}
 `;
 
 const SearchBtnContainer = styled.div`
@@ -85,6 +88,23 @@ const SearchBtnContainer = styled.div`
   justify-content: center;
   align-items: center;
   padding: 0.5rem;
+  position: relative;
+`;
+
+const SubmitInput = styled.input`
+  position: absolute;
+  left: 0.5rem;
+  top: 0.5rem;
+  right: 0.5rem;
+  bottom: 0.5rem;
+  width: calc(100% - 1rem);
+  border-radius: 0.6rem;
+  z-index: 1;
+  :hover {
+    cursor: pointer;
+    background-color: var(--color-white);
+    opacity: 0.2;
+  }
 `;
 
 const ListContainer = styled.div`
@@ -131,125 +151,36 @@ const Gatherings = styled.div`
   display: grid;
   grid-gap: 1rem;
   gap: 1rem;
-  grid-template-columns: repeat(auto-fit, minmax(20rem, auto));
+  grid-template-columns: repeat(auto-fill, minmax(20rem, auto));
 `;
 
 const Home = () => {
-  const sport = [
-    {
-      id: 1,
-      sportEmoji: "⚽",
-      sportName: "축구",
-      sportEngName: "soccer",
-    },
-    {
-      id: 2,
-      sportEmoji: "🏀",
-      sportName: "농구",
-      sportEngName: "basketball",
-    },
-    {
-      id: 3,
-      sportEmoji: "⚾",
-      sportName: "야구",
-      sportEngName: "baseball",
-    },
-    {
-      id: 4,
-      sportEmoji: "🎾",
-      sportName: "테니스",
-      sportEngName: "tennis",
-    },
-    {
-      id: 5,
-      sportEmoji: "🎱",
-      sportName: "당구",
-      sportEngName: "pool",
-    },
-    {
-      id: 6,
-      sportEmoji: "🎳",
-      sportName: "볼링",
-      sportEngName: "bowling",
-    },
-    {
-      id: 7,
-      sportEmoji: "🏐",
-      sportName: "배구",
-      sportEngName: "volleyball",
-    },
-    {
-      id: 8,
-      sportEmoji: "🏓",
-      sportName: "탁구",
-      sportEngName: "Ping-Pong",
-    },
-    {
-      id: 9,
-      sportEmoji: "🏸",
-      sportName: "배드민턴",
-      sportEngName: "badminton",
-    },
-    {
-      id: 10,
-      sportEmoji: "⛳",
-      sportName: "골프",
-      sportEngName: "golf",
-    },
-  ];
-  const area = [
-    { id: 1, areaName: "강남구" },
-    { id: 2, areaName: "강동구" },
-    { id: 3, areaName: "강서구" },
-    { id: 4, areaName: "강북구" },
-    { id: 5, areaName: "관악구" },
-    { id: 6, areaName: "광진구" },
-    { id: 7, areaName: "구로구" },
-    { id: 8, areaName: "금천구" },
-    { id: 9, areaName: "동대문구" },
-    { id: 10, areaName: "도봉구" },
-    { id: 11, areaName: "동작구" },
-    { id: 12, areaName: "마포구" },
-    { id: 13, areaName: "서대문구" },
-    { id: 14, areaName: "성동구" },
-    { id: 15, areaName: "성북구" },
-    { id: 16, areaName: "서초구" },
-    { id: 17, areaName: "송파구" },
-    { id: 18, areaName: "영등포구" },
-    { id: 19, areaName: "용산구" },
-    { id: 20, areaName: "양천구" },
-    { id: 21, areaName: "은평구" },
-    { id: 22, areaName: "종로구" },
-    { id: 23, areaName: "중구" },
-    { id: 24, areaName: "중랑구" },
-    { id: 25, areaName: "노원구" },
-  ];
-  const time = [
-    { id: 1, timeName: "오전" },
-    { id: 2, timeName: "오후" },
-    { id: 3, timeName: "저녁" },
-  ];
-  const [isSearched, setIsSearched] = useState(false);
-  const [conditions, setConditions] = useState({
-    sport: null,
-    area: null,
-    date: null,
-    time: null,
-    totalNum: null,
-  });
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    // TODO: 검색 요청 (비동기 함수로 전환 필요)
-    setIsSearched(true);
-    setConditions({ ...conditions, ...event.target.value });
-  };
-
-  const handleOnMapClick = () => {
-    // TODO: 검색 실행 여부에 따른 별도의 조건으로 검색 및 지도에 표시 요청
-  };
   const dispatch = useDispatch();
   const history = useHistory();
+  const [list, setList] = useState({
+    sport: [],
+    area: [],
+    time: [
+      { id: 1, timeName: "오전" },
+      { id: 2, timeName: "오후" },
+      { id: 3, timeName: "저녁" },
+    ],
+  });
+  const [gathList, setGathList] = useState([]);
+  const [isSearched, setIsSearched] = useState(false);
+  const [sportInput, setSportInput] = useState("");
+  const [areaInput, setAreaInput] = useState("");
+  const [dateInput, setDateInput] = useState("");
+  const [timeInput, setTimeInput] = useState("");
+  const [totalNumInput, setTotalNumInput] = useState(null);
+  const [conditions, setConditions] = useState({
+    sport: sportInput,
+    area: areaInput,
+    date: dateInput,
+    time: timeInput,
+    totalNum: totalNumInput,
+  });
+  const [searchable, setSearchable] = useState(false);
 
   useEffect(() => {
     const checkValidUser = async () => {
@@ -268,154 +199,80 @@ const Home = () => {
     checkValidUser();
   }, [dispatch, history]);
 
-  /* 모임 정보 Dummy */
-  const gatherings = [
-    {
-      gatheringId: 12,
-      title: "농구 함 때려볼 용산러들~!",
-      description: "용산에서 즐기면서 농구하는 사람들 한 판 같이 합시다~",
-      creator: {
-        id: "uuid",
-        nickname: "농구에 미친 사람",
-        image: null,
-      },
-      areaName: "용산구",
-      placeName: "운동장",
-      latitude: 33.450701,
-      longitude: 126.570667,
-      date: "2021-10-27",
-      time: "저녁",
-      timeDescription: "19시",
-      totalNum: 4,
-      currentNum: 2,
-      sportName: "농구",
-      sportEmoji: "🏀",
-      done: false,
-      users: [
-        {
-          id: "uuid",
-          nickname: "농구킹",
-          image: null,
-        },
-      ],
-    },
-    {
-      gatheringId: 12,
-      title: "농구 함 때려볼 용산러들~!",
-      description: "용산에서 즐기면서 농구하는 사람들 한 판 같이 합시다~",
-      creator: {
-        id: "uuid",
-        nickname: "농구에 미친 사람",
-        image: null,
-      },
-      areaName: "용산구",
-      placeName: "운동장",
-      latitude: 33.450701,
-      longitude: 126.570667,
-      date: "2021-10-27",
-      time: "저녁",
-      timeDescription: "19시",
-      totalNum: 4,
-      currentNum: 2,
-      sportName: "농구",
-      sportEmoji: "🏀",
-      done: false,
-      users: [
-        {
-          id: "uuid",
-          nickname: "농구킹",
-          image: null,
-        },
-      ],
-    },
-    {
-      gatheringId: 12,
-      title: "농구 함 때려볼 용산러들~!",
-      description: "용산에서 즐기면서 농구하는 사람들 한 판 같이 합시다~",
-      creator: {
-        id: "uuid",
-        nickname: "농구에 미친 사람",
-        image: null,
-      },
-      areaName: "용산구",
-      placeName: "운동장",
-      latitude: 33.450701,
-      longitude: 126.570667,
-      date: "2021-10-27",
-      time: "저녁",
-      timeDescription: "19시",
-      totalNum: 4,
-      currentNum: 2,
-      sportName: "농구",
-      sportEmoji: "🏀",
-      done: false,
-      users: [
-        {
-          id: "uuid",
-          nickname: "농구킹",
-          image: null,
-        },
-      ],
-    },
-    {
-      gatheringId: 12,
-      title: "농구 함 때려볼 용산러들~!",
-      description: "용산에서 즐기면서 농구하는 사람들 한 판 같이 합시다~",
-      creator: {
-        id: "uuid",
-        nickname: "농구에 미친 사람",
-        image: null,
-      },
-      areaName: "용산구",
-      placeName: "운동장",
-      latitude: 33.450701,
-      longitude: 126.570667,
-      date: "2021-10-27",
-      time: "저녁",
-      timeDescription: "19시",
-      totalNum: 4,
-      currentNum: 2,
-      sportName: "농구",
-      sportEmoji: "🏀",
-      done: false,
-      users: [
-        {
-          id: "uuid",
-          nickname: "농구킹",
-          image: null,
-        },
-      ],
-    },
-    {
-      gatheringId: 12,
-      title: "농구 함 때려볼 용산러들~!",
-      description: "용산에서 즐기면서 농구하는 사람들 한 판 같이 합시다~",
-      creator: {
-        id: "uuid",
-        nickname: "농구에 미친 사람",
-        image: null,
-      },
-      areaName: "용산구",
-      placeName: "운동장",
-      latitude: 33.450701,
-      longitude: 126.570667,
-      date: "2021-10-27",
-      time: "저녁",
-      timeDescription: "19시",
-      totalNum: 4,
-      currentNum: 2,
-      sportName: "농구",
-      sportEmoji: "🏀",
-      done: false,
-      users: [
-        {
-          id: "uuid",
-          nickname: "농구킹",
-          image: null,
-        },
-      ],
-    },
-  ];
+  useEffect(() => {
+    // 운동, 지역 리스트 받아오기
+    const getList = async () => {
+      try {
+        const sportList = await gathApi.getSportList();
+        const areaList = await gathApi.getAreaList();
+        setList({ ...list, sport: sportList.data, area: areaList.data });
+      } catch (err) {
+        // console.error(err);
+      }
+    };
+    getList();
+    // 모임 전체 리스트 받아오기
+    const getAllGathering = async () => {
+      try {
+        const res = await gathApi.getAllGath();
+        setGathList(res.data.gatherings);
+      } catch (err) {
+        // console.error(err);
+      }
+    };
+    getAllGathering();
+  }, []);
+
+  useEffect(() => {
+    if (sportInput && areaInput) {
+      setSearchable(true);
+    } else {
+      setSearchable(false);
+    }
+  }, [sportInput, areaInput]);
+
+  useEffect(() => {
+    setIsSearched(false);
+  }, [sportInput, areaInput, dateInput, timeInput, totalNumInput]);
+
+  useEffect(() => {
+    // 모임 검색
+    const findGathering = async () => {
+      try {
+        // 검색 조건 정제 (운동, 날짜)
+        const refinedSportInput = conditions.sport.match(/[A-Za-z가-힣]*/).join("");
+        const refinedDateInput = conditions.date.match(/[0-9]*/).join("-");
+        console.log({ ...conditions, sport: refinedSportInput, date: refinedDateInput });
+        const res = await gathApi.findGath({
+          ...conditions,
+          sport: refinedSportInput,
+          date: refinedDateInput,
+        });
+        setGathList(res.data.gathering);
+      } catch (err) {
+        // console.error(err);
+      }
+    };
+    if (isSearched) findGathering();
+  }, [isSearched]);
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    // 검색 조건 업데이트
+    setConditions({
+      sport: sportInput,
+      area: areaInput,
+      date: dateInput,
+      time: timeInput,
+      totalNum: totalNumInput,
+    });
+    // 검색 완료로 상태 변경
+    setIsSearched(true);
+  };
+
+  const handleOnMapClick = () => {
+    // TODO: 검색 실행 여부에 따른 별도의 조건으로 검색 및 지도에 표시 요청
+  };
 
   return (
     <HomeContainer>
@@ -424,23 +281,52 @@ const Home = () => {
         <InputContainer onSubmit={handleSubmit}>
           <InputList>
             <SearchInput isSport name="운동" for="sport">
-              <InputDatalist id="sport" values={sport} placeholder="어떤 운동하세요?" />
+              <InputDatalist
+                id="sport"
+                values={list.sport}
+                placeholder="어떤 운동하세요?"
+                item={sportInput}
+                setItem={setSportInput}
+              />
             </SearchInput>
             <SearchInput name="지역" for="area">
-              <InputDatalist id="area" values={area} placeholder="지역 입력" />
+              <InputDatalist
+                id="area"
+                values={list.area}
+                placeholder="지역 입력"
+                item={areaInput}
+                setItem={setAreaInput}
+              />
             </SearchInput>
             <SearchInput isDate name="날짜" for="date">
-              <InputDatepicker id="date" placeholder="날짜 입력" />
+              <InputDatepicker
+                id="date"
+                placeholder="날짜 입력"
+                selectedDate={dateInput}
+                setSelectedDate={setDateInput}
+              />
             </SearchInput>
             <SearchInput isTime name="시간" for="time">
-              <InputDatalist id="time" values={time} placeholder="시간 입력" />
+              <InputDatalist
+                id="time"
+                values={list.time}
+                placeholder="시간 입력"
+                item={timeInput}
+                setItem={setTimeInput}
+              />
             </SearchInput>
             <SearchInput name="인원" for="totalNum">
-              <InputTotalNum inputId="totalNum" placeholder="인원 입력" />
+              <InputTotalNum
+                inputId="totalNum"
+                placeholder="인원 입력"
+                total={totalNumInput}
+                setTotal={setTotalNumInput}
+              />
             </SearchInput>
           </InputList>
           <SearchBtnContainer>
-            <SearchBtn type="submit" value="Submit" className="search-gathering" />
+            {searchable && <SubmitInput type="submit" value="" />}
+            <SearchBtnView className="search-gathering" disabled={!searchable} />
           </SearchBtnContainer>
         </InputContainer>
         <SearchTitle>💪🏻 운동 모임, 직접 만들어 보실래요? 🔥</SearchTitle>
@@ -449,13 +335,13 @@ const Home = () => {
         </Btn>
       </SearchContainer>
       <ListContainer>
-        {isSearched ? (
+        {conditions.sport && conditions.area ? (
           <ListSubTitle>검색 결과</ListSubTitle>
         ) : (
           <ListSubTitle>스웻메이트에는 지금</ListSubTitle>
         )}
         <ListHeader>
-          {isSearched ? (
+          {conditions.sport && conditions.area ? (
             <ListTitle>
               {conditions.date && `${conditions.date} `}
               {conditions.time && `${conditions.time} `}
@@ -469,7 +355,7 @@ const Home = () => {
           <OnMapBtn id="onMapBtn" onClick={handleOnMapClick} />
         </ListHeader>
         <Gatherings>
-          {gatherings.map((gath, idx) => (
+          {gathList.map((gath, idx) => (
             <GathCard key={idx} gathering={gath} />
           ))}
         </Gatherings>
