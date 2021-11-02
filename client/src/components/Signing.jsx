@@ -17,6 +17,7 @@ import {
 import debounce from "lodash/debounce";
 import { useHistory } from "react-router-dom";
 import authApi from "../api/auth";
+import { HiOutlineMail } from "react-icons/hi";
 
 const Form = styled.form`
   display: flex;
@@ -105,6 +106,9 @@ const FlexContainer = styled.div`
   align-items: center;
   justify-content: center;
 
+  div {
+    width: 20rem;
+  }
   .kakao {
     width: 10rem;
     height: 3rem;
@@ -134,6 +138,22 @@ const ErrorMessage = styled.div`
   height: 0.5rem;
 `;
 
+const VerificationNotice = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 20rem;
+    margin-top: 1rem;
+    text-align: center;
+  }
+`;
+
 const Signing = ({ type }) => {
   const dispatch = useDispatch();
   const history = useHistory();
@@ -150,6 +170,7 @@ const Signing = ({ type }) => {
     nickname: true,
   });
   const [errorMsg, setErrorMsg] = useState("");
+  const [isOnVerification, setIsOnVerification] = useState(false);
 
   const handleTypeChange = () => {
     if (type === "로그인") {
@@ -251,7 +272,7 @@ const Signing = ({ type }) => {
         delete signInputValue.retypedPassword;
         try {
           const res = await authApi.signup(signInputValue);
-          res.status === 201 && dispatch(modalOffAction);
+          res.status === 201 && setIsOnVerification(true);
         } catch (error) {
           setErrorMsg("정보를 확인해주세요.");
         }
@@ -273,7 +294,25 @@ const Signing = ({ type }) => {
     );
   };
 
-  return (
+  return isOnVerification ? (
+    <>
+      <VerificationNotice>
+        <Logo src={`${process.env.PUBLIC_URL}/assets/long-logo.png`} />
+        <div>
+          {inputValue.nickname
+            ? `${inputValue.nickname}님 인증 메일을 보내드렸어요.`
+            : `인증 메일을 보내드렸어요.`}
+        </div>
+        <div> {`인증을 마치신 후 다시 로그인하시면 스웻메이트를 시작하실 수 있어요!`}</div>
+        {inputValue.email && (
+          <div>
+            <HiOutlineMail fontSize="1.5rem" />
+            {inputValue.email}
+          </div>
+        )}
+      </VerificationNotice>
+    </>
+  ) : (
     <>
       <Form>
         <Logo src={`${process.env.PUBLIC_URL}/assets/long-logo.png`} />

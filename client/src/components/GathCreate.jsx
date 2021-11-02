@@ -31,12 +31,12 @@ const Info = styled.div`
 `;
 
 const MovePageButtons = styled.div`
-  position: absolute;
+  position: relative;
   display: flex;
+  align-items: end;
   justify-content: space-between;
   width: 50rem;
-  height: 5rem;
-  bottom: 1rem;
+  height: 12rem;
   ${media.between("medium", "large")`
     /* screen width is between 768px (medium) and 1170px (large) */
     width: 35rem;
