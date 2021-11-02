@@ -38,6 +38,7 @@ const MovePageButtons = styled.div`
   justify-content: space-between;
   width: 50rem;
   height: 12rem;
+  z-index: -1;
   ${media.between("medium", "large")`
     /* screen width is between 768px (medium) and 1170px (large) */
     width: 35rem;
