@@ -3,7 +3,7 @@ import styled from "styled-components";
 import PropTypes from "prop-types";
 import UserProfile from "./UserProfile";
 import { FaMapMarkerAlt } from "react-icons/fa";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { gathDetailModalOnAction } from "../store/actions";
 
 const CardContainer = styled.div`
@@ -83,9 +83,11 @@ const InfoFooter = styled.div`
 `;
 
 const GathCard = ({ gathering }) => {
+  const isGathCreateModal = useSelector(({ modalReducer }) => modalReducer);
+
   const dispatch = useDispatch();
   const handleGathDetailModalOn = () => {
-    dispatch(gathDetailModalOnAction(gathering));
+    if (!isGathCreateModal) dispatch(gathDetailModalOnAction(gathering));
   };
   return (
     <CardContainer onClick={handleGathDetailModalOn}>
