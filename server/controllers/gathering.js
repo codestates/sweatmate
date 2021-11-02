@@ -20,7 +20,7 @@ module.exports = {
     const conditions = createValidObject(res.locals.conditions);
     try {
       const gatheringList = await findAllGathering({ ...searchCondition, done: 0 });
-      return res.status(200).json({ conditions, gathering: modifyGatheringFormat(gatheringList) });
+      return res.status(200).json({ conditions, gatherings: modifyGatheringFormat(gatheringList) });
     } catch (err) {
       DBERROR(res, err);
     }
@@ -34,7 +34,7 @@ module.exports = {
       const user_gatheringsOfUser = await findGatheringOfUser({ userId }, ["id", "userId"]);
       const gatheringId = user_gatheringsOfUser.map((el) => el.gatheringId);
       const gatheringList = await findAllGathering({ id: gatheringId, done });
-      return res.status(200).json({ gathering: modifyGatheringFormat(gatheringList) });
+      return res.status(200).json({ gatherings: modifyGatheringFormat(gatheringList) });
     } catch (err) {
       DBERROR(res, err);
     }

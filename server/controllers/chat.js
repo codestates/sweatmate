@@ -91,12 +91,21 @@ module.exports = {
         })
       );
       // mongoDB 에서 게더링 채팅방을 불러와 채팅 내역 요소들에 유저의 닉네임, 이미지, 아이디를 추가로 부여합니다.
+      const userList = {}; // 가져온 유저정보의 id값을 키로 nickname과 image 를 저장합니다.
+      participatingUserList.forEach((el) => {
+        userList[el.id] = { image: el.image, nickname: el.nickname };
+      });
       const chatInfobyGatheringId = await mongooseChatModel.findOne({ _id: gatheringId });
       const { _id, chatInfo, chatLog, creatorId } = chatInfobyGatheringId;
       const translatedChatLog = chatLog.map((el) => {
-        const userInfo = participatingUserList.filter((userInfo) => userInfo.id === el.userId);
+        let userInfo = userList[el.userId];
+        el.id = el.userId;
         delete el.userId;
-        return { ...userInfo[0], ...el };
+        if (!userInfo) {
+          el.id = null;
+          userInfo = { image: null, nickname: "모임을 나간 유저" };
+        }
+        return { ...userInfo, ...el };
       });
       res.status(200).json({
         gatheringId: _id,

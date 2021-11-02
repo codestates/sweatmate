@@ -388,6 +388,44 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/UserResponse"
+  /auth/google:
+    post:
+      tags:
+        - auth
+      summary: google social sign in
+      description: google sign information. to sweat-mate
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+  /auth/kakao:
+    post:
+      tags:
+        - auth
+      summary: Guest sign in
+      description: Guest sign information. to sweat-mate
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
   /gathering:
     get:
       tags:
