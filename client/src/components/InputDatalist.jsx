@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useMemo, useCallback } from "react";
 import styled from "styled-components";
 import DataListInput from "react-plain-datalist-input";
 import PropTypes from "prop-types";
@@ -63,8 +63,7 @@ const ClearBtn = styled.button`
   }
 `;
 
-const HomeDatalist = ({ values, placeholder }) => {
-  const [item, setItem] = useState("");
+const HomeDatalist = ({ values, placeholder, item, setItem }) => {
   const onSelect = useCallback((selectedItem) => {
     setItem(selectedItem.label);
   }, []);
@@ -117,6 +116,8 @@ const HomeDatalist = ({ values, placeholder }) => {
 HomeDatalist.propTypes = {
   values: PropTypes.arrayOf(PropTypes.any).isRequired,
   placeholder: PropTypes.string.isRequired,
+  item: PropTypes.string.isRequired,
+  setItem: PropTypes.func.isRequired,
 };
 
 export default HomeDatalist;

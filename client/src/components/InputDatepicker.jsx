@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import DatePicker from "react-datepicker";
@@ -153,9 +153,7 @@ const ClearBtn = styled.button`
   }
 `;
 
-const HomeDatepicker = ({ placeholder }) => {
-  // const [selectedDate, setSelectedDate] = useState(new Date());
-  const [selectedDate, setSelectedDate] = useState("");
+const HomeDatepicker = ({ placeholder, selectedDate, setSelectedDate }) => {
   const handleClearClick = () => {
     setSelectedDate("");
   };
@@ -209,6 +207,8 @@ const HomeDatepicker = ({ placeholder }) => {
 
 HomeDatepicker.propTypes = {
   placeholder: PropTypes.string.isRequired,
+  selectedDate: PropTypes.string.isRequired,
+  setSelectedDate: PropTypes.func.isRequired,
 };
 
 export default HomeDatepicker;

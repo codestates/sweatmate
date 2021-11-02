@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useRef } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import { HiPlusSm, HiMinusSm } from "react-icons/hi";
@@ -103,8 +103,7 @@ const ClearBtn = styled.button`
   }
 `;
 
-function InputTotalNum({ inputId, placeholder }) {
-  const [total, setTotal] = useState(0);
+function InputTotalNum({ inputId, placeholder, total, setTotal }) {
   const popper = useRef(null);
   const hadleMinusClick = () => {
     setTotal(total - 1);
@@ -156,5 +155,7 @@ function InputTotalNum({ inputId, placeholder }) {
 InputTotalNum.propTypes = {
   inputId: PropTypes.string.isRequired,
   placeholder: PropTypes.string.isRequired,
+  total: PropTypes.string.isRequired,
+  setTotal: PropTypes.func.isRequired,
 };
 export default InputTotalNum;
