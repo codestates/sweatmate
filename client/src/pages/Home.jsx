@@ -13,7 +13,7 @@ import { useDispatch } from "react-redux";
 import { useHistory } from "react-router";
 import authApi from "../api/auth";
 import gathApi from "../api/gath";
-import { signinAction, signoutAction } from "../store/actions";
+import { gathCreateModalOnAction, signinAction, signoutAction } from "../store/actions";
 
 const HomeContainer = styled.div`
   width: 100%;
@@ -273,6 +273,9 @@ const Home = () => {
   const handleOnMapClick = () => {
     // TODO: 검색 실행 여부에 따른 별도의 조건으로 검색 및 지도에 표시 요청
   };
+  const handleCreateGath = () => {
+    dispatch(gathCreateModalOnAction);
+  };
 
   return (
     <HomeContainer>
@@ -325,7 +328,7 @@ const Home = () => {
           </SearchBtnContainer>
         </InputContainer>
         <SearchTitle>💪🏻 운동 모임, 직접 만들어 보실래요? 🔥</SearchTitle>
-        <Btn className="create-gathering" onClick={() => {}}>
+        <Btn className="create-gathering" onClick={handleCreateGath}>
           모임 만들기
         </Btn>
       </SearchContainer>

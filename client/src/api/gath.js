@@ -10,7 +10,7 @@ const gathApi = {
     if (queries.totalNum) query += `&totalNum=${queries.totalNum}`;
     return api.get(`/gathering?${query}`);
   },
-  createGath: () => api.post("/gathering"),
+  createGath: (gath) => api.post("/gathering", gath),
   joinGath: (gatheringId) => api.post(`/gathering/${gatheringId}`),
   endGath: (gatheringId) => api.patch(`/gathering/${gatheringId}`),
   leaveGath: (gatheringId) => api.delete(`/gathering/${gatheringId}`),
