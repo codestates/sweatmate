@@ -18,6 +18,16 @@ const authApi = {
         },
       }
     ),
+  google: (authorizationCode) =>
+    api.post(
+      "/auth/google",
+      { authorizationCode },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    ),
 };
 
 export default authApi;
