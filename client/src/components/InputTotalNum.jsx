@@ -122,7 +122,7 @@ function InputTotalNum({ inputId, placeholder, total, setTotal }) {
   };
   return (
     <Container
-      tabIndex={5}
+      tabIndex={-1}
       onFocus={() => {
         showPopper();
       }}
@@ -130,16 +130,11 @@ function InputTotalNum({ inputId, placeholder, total, setTotal }) {
         hidePopper();
       }}
     >
-      <Input
-        id={inputId}
-        value={total > 0 ? `총 ${total}명` : ""}
-        placeholder={placeholder}
-        readOnly
-      />
+      <Input value={total > 0 ? `총 ${total}명` : ""} placeholder={placeholder} readOnly />
       <Popper ref={popper}>
         <PopperInner>
           {total > 0 ? <MinusBtn onClick={hadleMinusClick} /> : <DisabledMinus />}
-          <PopperInput value={total} readOnly />
+          <PopperInput id={inputId} value={total} readOnly />
           <PlusBtn onClick={hadlePlusClick} />
         </PopperInner>
       </Popper>
