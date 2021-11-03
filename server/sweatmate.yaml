@@ -717,15 +717,15 @@ paths:
                     creatorId:
                       type: string
               example:
-                gatheringId: 14
-                chatInfo:
-                  title: "야구하실분~!"
-                  sportEmoji: ":baseball:"
-                  sportName: "야구"
-                recentChat:
-                  nickname: "무야호"
-                  message: "그만큼 좋다는 뜻이거든~"
-                  date: "어제"
+                - gatheringId: 14
+                  chatInfo:
+                    title: "야구하실분~!"
+                    sportEmoji: ":baseball:"
+                    sportName: "야구"
+                  recentChat:
+                    nickname: "무야호"
+                    message: "그만큼 좋다는 뜻이거든~"
+                    date: "어제"
         "403":
           description: Unauthorized
           content:
@@ -737,6 +737,12 @@ paths:
       tags:
         - "chat"
       summary: get user's chatInfo
+      parameters:
+        - name: gatheringId
+          in: path
+          required: true
+          schema:
+            type: string
       responses:
         "200":
           description: ok
@@ -761,6 +767,8 @@ paths:
                     type: array
                     items:
                       properties:
+                        _id:
+                          type: object
                         id:
                           type: string
                         nickname:
@@ -789,7 +797,8 @@ paths:
                     image: imageURL
                     nickname: "muyaho"
                 chatLog:
-                  - id: 62eaab6a-f80d-4570-aec7-f162d752d320
+                  - _id: ObjectId("6182a230c728124b6a41e638")
+                    id: 62eaab6a-f80d-4570-aec7-f162d752d320
                     nickname: "무야호"
                     image: imageURL
                     message: "그만큼 좋다는 뜻이거든~"
@@ -932,6 +941,8 @@ components:
           type: string
         sportEmoji:
           type: string
+        sportEngName:
+          type: string
         done:
           type: boolean
         users:
@@ -962,8 +973,9 @@ components:
         timeDescription: "19시"
         totalNum: 4
         currentNum: 2
-        sportName: basketball
+        sportName: 농구
         sportEmoji: ":basketball:"
+        sportEngName: "basketball"
         done: false
         users:
           - id: uuid

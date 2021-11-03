@@ -56,7 +56,7 @@ module.exports = {
       const setChatInfo = { _id: id, chatInfo: { title, ...sportInfo }, creatorId: creator.id };
       await mongooseChatModel.create(setChatInfo);
       //mongoDB
-      return res.status(200).json(createdGathering[0]);
+      return res.status(200).json(modifyGatheringFormat(createdGathering)[0]);
     } catch (err) {
       DBERROR(res, err);
     }
@@ -74,7 +74,7 @@ module.exports = {
       gatheringInfo.update({ done: 1 });
       //TODO: 게더링이 조기종료 했다고 모든 참여자에게 알림 또는 노드스케줄러에 의해 종료되었음을 알림
       const endedGatheringInfo = await findAllGathering({ id: gatheringId });
-      return res.status(200).json(endedGatheringInfo[0]);
+      return res.status(200).json(modifyGatheringFormat(endedGatheringInfo)[0]);
     } catch (err) {
       DBERROR(res, err);
     }
@@ -91,7 +91,7 @@ module.exports = {
       const gatheringInfo = await gatheringFindOne({ id: gatheringId });
       const { totalNum, currentNum, done, date } = gatheringInfo;
       const gatheringSetDay = +new Date(date);
-      const currentDay = +new Date(getCurrentTime());
+      const currentDay = +new Date(getCurrentTime().split(" ")[0]);
       if (totalNum <= currentNum || done === 1 || gatheringSetDay < currentDay) {
         // 게더링에 참여할 수 없는 조건입니다.
         return res.status(400).json({ message: "already full of people or ended gathering" });
@@ -99,7 +99,7 @@ module.exports = {
       // TODO: 유저가 게더링에 참여했다는 이벤트를 모든 참여자에게 알림
       await gatheringInfo.update({ currentNum: currentNum + 1 });
       const joinedGatheringInfo = await findAllGathering({ id: gatheringId });
-      return res.status(201).json(joinedGatheringInfo[0]);
+      return res.status(201).json(modifyGatheringFormat(joinedGatheringInfo)[0]);
     } catch (err) {
       DBERROR(res, err);
     }
@@ -118,7 +118,7 @@ module.exports = {
       await User_gatheringInfo.destroy();
       gatheringInfo.update({ currentNum: currentNum - 1 });
       const leftGatheringInfo = await findAllGathering({ id: gatheringId });
-      return res.status(200).json(leftGatheringInfo[0]);
+      return res.status(200).json(modifyGatheringFormat(leftGatheringInfo)[0]);
     } catch (err) {
       DBERROR(res, err);
     }

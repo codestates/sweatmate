@@ -36,17 +36,17 @@ module.exports = {
   getCurrentTime: function timestamp() {
     const today = new Date();
     today.setHours(today.getHours() + 9);
-    const date = today.toISOString().replace("T", " ").substring(0, 19);
-    return date.split(" ")[0];
+    return today.toISOString().replace("T", " ").substring(0, 19);
   },
   modifyGatheringFormat: (gatheringList) => {
     return gatheringList.map((el) => {
       el.areaName = areaListById[el.areaId];
       delete el.areaId;
-      const { sportName, sportEmoji } = sportListById[el.sportId];
+      const { sportName, sportEmoji, sportEngName } = sportListById[el.sportId];
       delete el.sportId;
       el.sportName = sportName;
       el.sportEmoji = sportEmoji;
+      el.sportEngName = sportEngName;
       return el;
     });
   },

@@ -68,7 +68,7 @@ module.exports = {
       const gatheringInfo = await gatheringFindOne({ id: gatheringId });
       const { done, date } = gatheringInfo;
       const gatheringSetDay = +new Date(date);
-      const currentDay = +new Date(getCurrentTime());
+      const currentDay = +new Date(getCurrentTime().split(" ")[0]);
       if (done === 1 || gatheringSetDay < currentDay) {
         return res.status(400).json({ message: "already ended gathering" });
       }
