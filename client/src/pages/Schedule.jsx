@@ -8,6 +8,7 @@ import authApi from "../api/auth";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router";
 import gatheringApi from "../api/gathering";
+import Loading from "../components/Loading";
 
 const Container = styled.div`
   min-height: calc(100vh - 73px - 343.72px);
@@ -63,6 +64,10 @@ const Passed = styled(Btn)`
       color: var(--color-green);
     }
   }
+`;
+const LoadingContainer = styled.div`
+  width: 100%;
+  height: 20rem;
 `;
 const Gatherings = styled.div`
   display: grid;
@@ -128,8 +133,6 @@ const Schedule = () => {
           }
         } catch (err) {
           console.log(err);
-        } finally {
-          setIsLoading(false);
         }
       } else if (isPassed) {
         try {
@@ -139,13 +142,17 @@ const Schedule = () => {
           }
         } catch (err) {
           console.log(err);
-        } finally {
-          setIsLoading(false);
         }
       }
     };
     id && getGatherings();
   }, [isUpcoming, isPassed, id]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+  }, [gatherings]);
 
   return (
     <Container>
@@ -160,23 +167,21 @@ const Schedule = () => {
         </Passed>
       </BtnContainer>
       {isLoading && (
-        <Gatherings>
-          {/* TODO: Gath Card Loader */}
-          <h1>loader</h1>
-          <h1>loader</h1>
-          <h1>loader</h1>
-          <h1>loader</h1>
-        </Gatherings>
+        <LoadingContainer>
+          <Loading isTransparent />
+        </LoadingContainer>
       )}
-      {!isLoading && gatherings.length === 0 ? (
-        <EmptyContainer>일정이 없어요 💦</EmptyContainer>
-      ) : (
-        <Gatherings>
-          {gatherings.map((gath) => (
-            <GathCard key={gath.id} gathering={gath} />
-          ))}
-        </Gatherings>
-      )}
+
+      {!isLoading &&
+        (gatherings.length === 0 ? (
+          <EmptyContainer>일정이 없어요 💦</EmptyContainer>
+        ) : (
+          <Gatherings>
+            {gatherings.map((gath) => (
+              <GathCard key={gath.id} gathering={gath} />
+            ))}
+          </Gatherings>
+        ))}
     </Container>
   );
 };
