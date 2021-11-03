@@ -7,6 +7,7 @@ import {
   MODAL_OFF,
   SIGN_IN,
   SIGN_OUT,
+  SEARCH_GATH,
 } from "./actionTypes";
 
 // // action
@@ -50,3 +51,9 @@ export const signinModalOnAction = {
 export const modalOffAction = {
   type: MODAL_OFF,
 };
+
+// Auth
+export const searchAction = (data) => ({
+  type: SEARCH_GATH,
+  payload: { ...data },
+});

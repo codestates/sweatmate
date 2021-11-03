@@ -13,7 +13,12 @@ import { useDispatch } from "react-redux";
 import { useHistory } from "react-router";
 import authApi from "../api/auth";
 import gathApi from "../api/gath";
-import { gathCreateModalOnAction, signinAction, signoutAction } from "../store/actions";
+import {
+  gathCreateModalOnAction,
+  searchAction,
+  signinAction,
+  signoutAction,
+} from "../store/actions";
 
 const HomeContainer = styled.div`
   width: 100%;
@@ -173,6 +178,7 @@ const Home = () => {
   const [dateInput, setDateInput] = useState("");
   const [timeInput, setTimeInput] = useState("");
   const [totalNumInput, setTotalNumInput] = useState(null);
+  const [searchable, setSearchable] = useState(false);
   const [conditions, setConditions] = useState({
     sport: sportInput,
     area: areaInput,
@@ -180,7 +186,6 @@ const Home = () => {
     time: timeInput,
     totalNum: totalNumInput,
   });
-  const [searchable, setSearchable] = useState(false);
 
   useEffect(() => {
     const checkValidUser = async () => {
@@ -217,7 +222,7 @@ const Home = () => {
         const res = await gathApi.getAllGath();
         setGathList(res.data.gatherings);
       } catch (err) {
-        // console.error(err);
+        console.error(err);
       }
     };
     getAllGathering();
@@ -233,6 +238,20 @@ const Home = () => {
 
   useEffect(() => {
     setIsSearched(false);
+    const refinedSportInput = sportInput.match(/[A-Za-z가-힣]*/).join("");
+    const refinedDateInput = dateInput
+      .match(/[0-9]*/g)
+      .filter((el) => el.length > 0)
+      .join("-");
+
+    setConditions((prevState) => ({
+      ...prevState,
+      sport: refinedSportInput,
+      area: areaInput,
+      date: refinedDateInput,
+      time: timeInput,
+      totalNum: totalNumInput,
+    }));
   }, [sportInput, areaInput, dateInput, timeInput, totalNumInput]);
 
   useEffect(() => {
@@ -241,8 +260,10 @@ const Home = () => {
       try {
         // 검색 조건 정제 (운동, 날짜)
         const refinedSportInput = conditions.sport.match(/[A-Za-z가-힣]*/).join("");
-        const refinedDateInput = conditions.date.match(/[0-9]*/).join("-");
-        console.log({ ...conditions, sport: refinedSportInput, date: refinedDateInput });
+        const refinedDateInput = conditions.date
+          .match(/[0-9]*/g)
+          .filter((el) => el.length > 0)
+          .join("-");
         const res = await gathApi.findGath({
           ...conditions,
           sport: refinedSportInput,
@@ -250,29 +271,25 @@ const Home = () => {
         });
         setGathList(res.data.gatherings);
       } catch (err) {
-        // console.error(err);
+        console.error(err);
       }
     };
     if (isSearched) findGathering();
   }, [isSearched]);
 
+  useEffect(() => {
+    dispatch(searchAction(conditions));
+  }, [conditions]);
+
   const handleSubmit = (event) => {
     event.preventDefault();
-    // 검색 조건 업데이트
-    setConditions({
-      sport: sportInput,
-      area: areaInput,
-      date: dateInput,
-      time: timeInput,
-      totalNum: totalNumInput,
-    });
-    // 검색 완료로 상태 변경
     setIsSearched(true);
   };
 
   const handleOnMapClick = () => {
     // TODO: 검색 실행 여부에 따른 별도의 조건으로 검색 및 지도에 표시 요청
   };
+
   const handleCreateGath = () => {
     dispatch(gathCreateModalOnAction);
   };
