@@ -146,6 +146,7 @@ GathCard.propTypes = {
     ),
     areaName: PropTypes.string,
     sportName: PropTypes.string,
+    sportEngName: PropTypes.string,
     sportEmoji: PropTypes.string,
   }).isRequired,
 };
