@@ -8,7 +8,7 @@ const Portal = ({ children, elementId }) => {
 };
 
 Portal.propTypes = {
-  children: PropTypes.oneOfType([PropTypes.bool, PropTypes.element]).isRequired,
+  children: PropTypes.oneOfType([PropTypes.bool, PropTypes.element, PropTypes.node]).isRequired,
   elementId: PropTypes.string.isRequired,
 };
 
