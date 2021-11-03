@@ -39,7 +39,7 @@ const App = () => {
       <Route path="/schedule" component={MoveTopBtn} />
       <Route path="/users/:id" component={MoveTopBtn} />
       {isModal && (
-        <Modal>
+        <Modal bgColor={isGathDetailModal && "var(--color-darkwhite)"}>
           {isGathCreateModal && <GathCreate />}
           {isGathDetailModal && <GathDetail gathering={currentGathInfo} />}
           {isSignupModal && <Signing type={"회원가입"} />}

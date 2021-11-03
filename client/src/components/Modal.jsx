@@ -34,12 +34,10 @@ const ModalContainer = styled.div`
   transform: translateY(-50%);
   margin: 0 auto;
   width: fit-content;
-  max-width: calc(100% - 8rem);
-  height: auto;
+  height: fit-content;
   border-radius: 1rem;
   color: var(--color-darkgray);
-  background-color: var(--color-white);
-  padding: 2rem;
+  background-color: ${(props) => (props.bgColor ? props.bgColor : "var(--color-white)")};
   ${media.lessThan("medium")`
     position: fixed;
     top: 0;
@@ -47,7 +45,6 @@ const ModalContainer = styled.div`
     bottom: 0;
     right: 0;
     transform: translateY(0);
-    padding: 4rem 1rem;
     min-height: 100%;
     min-width: 100%;
     border-radius: 0;
@@ -75,12 +72,13 @@ const CloseBtn = styled.div`
   `};
   color: var(--color-gray);
   :hover {
-    color: var(--color-darkgray);
-    background-color: var(--color-darkwhite);
+    color: var(--color-black);
+    background-color: var(--color-lightgray);
+    opacity: 0.8;
   }
 `;
 
-const Modal = ({ children }) => {
+const Modal = ({ children, bgColor }) => {
   const dispatch = useDispatch();
   const handleBackgroundClick = (e) => {
     if (e.target === e.currentTarget) dispatch(modalOffAction);
@@ -100,7 +98,7 @@ const Modal = ({ children }) => {
     <Portal elementId="root-dimmed">
       <ModalOverlay />
       <ModalWrapper onClick={handleBackgroundClick} tabIndex="-1">
-        <ModalContainer tabIndex="0">
+        <ModalContainer tabIndex="0" bgColor={bgColor}>
           <CloseBtn onClick={handleCloseClick}>
             <IoClose />
           </CloseBtn>
@@ -111,8 +109,9 @@ const Modal = ({ children }) => {
   );
 };
 
-export default Modal;
-
 Modal.propTypes = {
   children: PropTypes.oneOfType([PropTypes.bool, PropTypes.element, PropTypes.node]).isRequired,
+  bgColor: PropTypes.string,
 };
+
+export default Modal;
