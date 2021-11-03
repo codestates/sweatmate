@@ -248,7 +248,7 @@ const Home = () => {
           sport: refinedSportInput,
           date: refinedDateInput,
         });
-        setGathList(res.data.gathering);
+        setGathList(res.data.gatherings);
       } catch (err) {
         // console.error(err);
       }
