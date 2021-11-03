@@ -19,11 +19,20 @@ const GlobalStyle = createGlobalStyle`
     font-size: var(--fontSize-root--big);
     font-family: var(--fontFamily);
     color: var(--color-black);
-    background-color: var(--color-white);
+    background-color: var(--color-darkwhite);
     
     ${media.lessThan("medium")`
       font-size: var(--fontSize-root--small);
     `}
+
+    * {
+      /* 스크롤 바 제거 */
+      -ms-overflow-style: none; /* IE and Edge */
+      scrollbar-width: none; /* Firefox */
+      ::-webkit-scrollbar {
+        display: none; /* Chrome, Safari, Opera*/
+      }
+    }
   }
 
   button, input, textarea {
@@ -112,13 +121,13 @@ const GlobalStyle = createGlobalStyle`
     --color-green: #278400;
     --color-green--10: #E9F2E5;
     --color-blue: #2762F4;
-    --color-black: #1D1D21;
-    --color-darkgray: #474751;
-    --color-gray: #969699;
-    --color-lightgray: #DCDCDD;
-    --color-darkwhite: #f5f5f5;
-    --color-white: #FFFFFF;
-    --color-shadow: #1D1D2140;
+    --color-black: #3A3A42; /* 변경 전 : #1D1D21 */
+    --color-darkgray: #62626A; /* 변경 전 : #474751 */
+    --color-gray: #919196; /* 변경 전 : #969699 */
+    --color-lightgray: #DCDCE0; /* 변경 전 : #DCDCDD */ 
+    --color-darkwhite: #F6F6FA;
+    --color-white: #FCFCFF;
+    --color-shadow: #1D1D2133;
     --color-modalbg: #1D1D21E5;
   }
 `;
