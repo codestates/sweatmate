@@ -85,6 +85,7 @@ const Schedule = () => {
   const [isUpcoming, setIsUpcoming] = useState(true);
   const [isPassed, setIsPassed] = useState(false);
   const [gatherings, setGatherings] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const { id } = useSelector(({ authReducer }) => authReducer);
 
   const dispatch = useDispatch();
@@ -118,27 +119,28 @@ const Schedule = () => {
 
   useEffect(() => {
     const getGatherings = async () => {
+      setIsLoading(true);
       if (isUpcoming) {
         try {
           const res = await gatheringApi.upcoming(id);
           if (res.status === 200) {
-            setGatherings(res.data.gathering);
+            setGatherings(res.data.gatherings);
           }
         } catch (err) {
-          if (err.response.status === 404) {
-            setGatherings([]);
-          }
+          console.log(err);
+        } finally {
+          setIsLoading(false);
         }
       } else if (isPassed) {
         try {
           const res = await gatheringApi.passed(id);
           if (res.status === 200) {
-            setGatherings(res.data.gathering);
+            setGatherings(res.data.gatherings);
           }
         } catch (err) {
-          if (err.response.status === 404) {
-            setGatherings([]);
-          }
+          console.log(err);
+        } finally {
+          setIsLoading(false);
         }
       }
     };
@@ -157,14 +159,24 @@ const Schedule = () => {
           지나간 일정
         </Passed>
       </BtnContainer>
-      {gatherings.length !== 0 && (
+      {isLoading && (
+        <Gatherings>
+          {/* TODO: Gath Card Loader */}
+          <h1>loader</h1>
+          <h1>loader</h1>
+          <h1>loader</h1>
+          <h1>loader</h1>
+        </Gatherings>
+      )}
+      {!isLoading && gatherings.length === 0 ? (
+        <EmptyContainer>일정이 없어요 💦</EmptyContainer>
+      ) : (
         <Gatherings>
           {gatherings.map((gath) => (
             <GathCard key={gath.id} gathering={gath} />
           ))}
         </Gatherings>
       )}
-      {gatherings.length === 0 && <EmptyContainer>일정이 없어요 💦</EmptyContainer>}
     </Container>
   );
 };
