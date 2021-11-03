@@ -767,6 +767,8 @@ paths:
                     type: array
                     items:
                       properties:
+                        _id:
+                          type: object
                         id:
                           type: string
                         nickname:
@@ -795,7 +797,8 @@ paths:
                     image: imageURL
                     nickname: "muyaho"
                 chatLog:
-                  - id: 62eaab6a-f80d-4570-aec7-f162d752d320
+                  - _id: ObjectId("6182a230c728124b6a41e638")
+                    id: 62eaab6a-f80d-4570-aec7-f162d752d320
                     nickname: "무야호"
                     image: imageURL
                     message: "그만큼 좋다는 뜻이거든~"
