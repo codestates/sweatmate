@@ -264,15 +264,15 @@ const Home = () => {
           .match(/[0-9]*/g)
           .filter((el) => el.length > 0)
           .join("-");
-        console.log({ ...conditions, sport: refinedSportInput, date: refinedDateInput });
         const res = await gathApi.findGath({
           ...conditions,
           sport: refinedSportInput,
           date: refinedDateInput,
         });
-        setGathList(res.data.gatherings);
+        if (res.status === 200) setGathList(res.data.gatherings);
+        else setGathList([]);
       } catch (err) {
-        if (err.response.status === 404) setGathList([]);
+        console.error(err);
       }
     };
     if (isSearched) findGathering();
