@@ -91,7 +91,7 @@ module.exports = {
       const gatheringInfo = await gatheringFindOne({ id: gatheringId });
       const { totalNum, currentNum, done, date } = gatheringInfo;
       const gatheringSetDay = +new Date(date);
-      const currentDay = +new Date(getCurrentTime());
+      const currentDay = +new Date(getCurrentTime().split(" ")[0]);
       if (totalNum <= currentNum || done === 1 || gatheringSetDay < currentDay) {
         // 게더링에 참여할 수 없는 조건입니다.
         return res.status(400).json({ message: "already full of people or ended gathering" });
