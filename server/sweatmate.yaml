@@ -941,6 +941,8 @@ components:
           type: string
         sportEmoji:
           type: string
+        sportEngName:
+          type: string
         done:
           type: boolean
         users:
@@ -971,8 +973,9 @@ components:
         timeDescription: "19시"
         totalNum: 4
         currentNum: 2
-        sportName: basketball
+        sportName: 농구
         sportEmoji: ":basketball:"
+        sportEngName: "basketball"
         done: false
         users:
           - id: uuid
