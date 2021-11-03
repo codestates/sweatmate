@@ -42,10 +42,11 @@ module.exports = {
     return gatheringList.map((el) => {
       el.areaName = areaListById[el.areaId];
       delete el.areaId;
-      const { sportName, sportEmoji } = sportListById[el.sportId];
+      const { sportName, sportEmoji, sportEngName } = sportListById[el.sportId];
       delete el.sportId;
       el.sportName = sportName;
       el.sportEmoji = sportEmoji;
+      el.sportEngName = sportEngName;
       return el;
     });
   },
