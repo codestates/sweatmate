@@ -468,16 +468,6 @@ paths:
                   conditions:
                     type: object
                     $ref: "#/components/schemas/searchConditions"
-        "204":
-          description: Don't have data to send you.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Don't have data to send you."
     post:
       tags:
         - "gathering"
@@ -629,16 +619,6 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/gatheringInfomation"
-        "204":
-          description: Don't have data to send you.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Don't have data to send you."
   /gathering/upcoming/{userId}:
     get:
       tags:
@@ -669,16 +649,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/AuthenticationMessage"
-        "204":
-          description: Don't have data to send you.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Don't have data to send you."
   /gathering/passed/{userId}:
     get:
       tags:
@@ -703,16 +673,6 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/gatheringInfomation"
-        "204":
-          description: Don't have data to send you.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Don't have data to send you."
         "403":
           description: Unauthorized
           content:
@@ -772,16 +732,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/AuthenticationMessage"
-        "204":
-          description: "There's no gathering participating"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "There's no gathering participating"
   /chat/{gatheringId}:
     get:
       tags:
@@ -849,7 +799,7 @@ paths:
                   sportEmoji: ":baseball:"
                   sportName: "야구"
                 creatorId: 62eaab6a-f80d-4570-aec7-f162d752d320
-        "204":
+        "400":
           description: not participating in this gathering
           content:
             application/json:
@@ -859,16 +809,16 @@ paths:
                   message:
                     type: string
                     default: not participating in this gathering
-        "400":
-          description: "There's no gathering participating"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "already ended gathering"
+        # "400":
+        #   description: "There's no gathering participating"
+        #   content:
+        #     application/json:
+        #       schema:
+        #         type: object
+        #         properties:
+        #           message:
+        #             type: string
+        #             example: "already ended gathering"
         "403":
           description: Unauthorized
           content:
