@@ -27,9 +27,6 @@ module.exports = {
         return { ...acc, [cur]: queries[cur] };
       }, {});
   },
-  creatRandomNumber: (startRange, endRange) => {
-    return Math.floor(Math.random() * endRange + startRange);
-  },
   TranslateFromSportNameToSportInfo: (sportName) => {
     return sportsList.filter((el) => el.sportName === sportName)[0];
   },

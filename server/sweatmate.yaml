@@ -468,7 +468,7 @@ paths:
                   conditions:
                     type: object
                     $ref: "#/components/schemas/searchConditions"
-        "404":
+        "204":
           description: Don't have data to send you.
           content:
             application/json:
@@ -629,7 +629,7 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/gatheringInfomation"
-        "404":
+        "204":
           description: Don't have data to send you.
           content:
             application/json:
@@ -669,7 +669,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/AuthenticationMessage"
-        "404":
+        "204":
           description: Don't have data to send you.
           content:
             application/json:
@@ -703,13 +703,7 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/gatheringInfomation"
-        "403":
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AuthenticationMessage"
-        "404":
+        "204":
           description: Don't have data to send you.
           content:
             application/json:
@@ -719,6 +713,12 @@ paths:
                   message:
                     type: string
                     example: "Don't have data to send you."
+        "403":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationMessage"
   /chat:
     get:
       tags:
@@ -772,7 +772,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/AuthenticationMessage"
-        "404":
+        "204":
           description: "There's no gathering participating"
           content:
             application/json:
@@ -849,6 +849,16 @@ paths:
                   sportEmoji: ":baseball:"
                   sportName: "야구"
                 creatorId: 62eaab6a-f80d-4570-aec7-f162d752d320
+        "204":
+          description: not participating in this gathering
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    default: not participating in this gathering
         "400":
           description: "There's no gathering participating"
           content:
@@ -865,16 +875,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/AuthenticationMessage"
-        "404":
-          description: not participating in this gathering
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    default: not participating in this gathering
 components:
   schemas:
     AuthenticationMessage:
