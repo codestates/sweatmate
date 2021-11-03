@@ -16,15 +16,16 @@ const LoadingWrapper = styled.div`
   position: relative;
   width: 100%;
   height: 100%;
+  overflow: hidden;
   ${(props) =>
     props.isFullscreen &&
     `position: fixed;
   left: 0;
   top: 0;
   right: 0;
-  bottom: 0;`}
+  bottom: 0;
+  overflow: auto;`}
   padding-top: 7.5%;
-  overflow: auto;
   outline: 0;
   z-index: 1000;
 `;
@@ -138,12 +139,14 @@ const Shadow = styled.div`
 
 const Loading = ({ isTransparent, isFullscreen }) => {
   useEffect(() => {
-    document.body.style.cssText = `position: fixed; top: -${window.scrollY}px`;
-    return () => {
-      const scrollY = document.body.style.top;
-      document.body.style.cssText = `position: ""; top: "";`;
-      window.scrollTo(0, parseInt(scrollY || "0") * -1);
-    };
+    if (isFullscreen) {
+      document.body.style.cssText = `position: fixed; top: -${window.scrollY}px`;
+      return () => {
+        const scrollY = document.body.style.top;
+        document.body.style.cssText = `position: ""; top: "";`;
+        window.scrollTo(0, parseInt(scrollY || "0") * -1);
+      };
+    }
   }, []);
   return (
     <>
