@@ -39,7 +39,7 @@ const ModalContainer = styled.div`
   border-radius: 1rem;
   color: var(--color-darkgray);
   background-color: var(--color-white);
-  padding: 2rem 3rem;
+  padding: 2rem;
   ${media.lessThan("medium")`
     position: fixed;
     top: 0;
