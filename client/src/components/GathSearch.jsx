@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import axios from "axios";
 import styled from "styled-components";
@@ -6,6 +6,7 @@ import MapPreview from "./MapPreview";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import media from "styled-media-query";
+import gathApi from "../api/gath";
 
 const Container = styled.div`
   width: 50rem;
@@ -290,68 +291,14 @@ const GathSearch = ({
   selectedOptions,
   setSelectedOptions,
 }) => {
-  const sports = [
-    {
-      id: 1,
-      sportEmoji: "⚽",
-      sportName: "축구",
-      sportEngName: "soccer",
-    },
-    {
-      id: 2,
-      sportEmoji: "🏀",
-      sportName: "농구",
-      sportEngName: "basketball",
-    },
-    {
-      id: 3,
-      sportEmoji: "⚾",
-      sportName: "야구",
-      sportEngName: "baseball",
-    },
-    {
-      id: 4,
-      sportEmoji: "🎾",
-      sportName: "테니스",
-      sportEngName: "tennis",
-    },
-    {
-      id: 5,
-      sportEmoji: "🎱",
-      sportName: "당구",
-      sportEngName: "pool",
-    },
-    {
-      id: 6,
-      sportEmoji: "🎳",
-      sportName: "볼링",
-      sportEngName: "bowling",
-    },
-    {
-      id: 7,
-      sportEmoji: "🏐",
-      sportName: "배구",
-      sportEngName: "volleyball",
-    },
-    {
-      id: 8,
-      sportEmoji: "🏓",
-      sportName: "탁구",
-      sportEngName: "Ping-Pong",
-    },
-    {
-      id: 9,
-      sportEmoji: "🏸",
-      sportName: "배드민턴",
-      sportEngName: "badminton",
-    },
-    {
-      id: 10,
-      sportEmoji: "⛳",
-      sportName: "골프",
-      sportEngName: "golf",
-    },
-  ];
+  const [sports, setSports] = useState([]);
+  useEffect(() => {
+    const getSports = async () => {
+      const { data: sportList } = await gathApi.getSportList();
+      setSports(sportList);
+    };
+    getSports();
+  }, []);
 
   const time = [
     {
@@ -419,9 +366,8 @@ const GathSearch = ({
     }
     if (selectedOptions.length === 3) {
       setInputValue(el);
-      console.log(el.split(" ")[1]);
-      const filtered = time.filter((a) => a.krName.includes(el.split(" ")[1]))[0].enName;
-      setSelectedOptions([...selectedOptions, filtered]);
+      const filtered = time.filter((a) => a.krName.includes(el.split(" ")[1]))[0].krName;
+      setSelectedOptions([...selectedOptions, filtered.split(" ")[1]]);
     }
     if (
       selectedOptions.length === 4 ||
@@ -460,7 +406,7 @@ const GathSearch = ({
       {((step >= 1 && step <= 5) || step === 7 || step === 8) && (
         <Search
           value={inputValue}
-          placeholder={step === 5 ? "오후 2시" : "작성해주세요 :)"}
+          placeholder={step === 1 ? "선택해주세요 :)" : step === 5 ? "오후 2시" : "작성해주세요 :)"}
           onClick={handleInputClick}
           onChange={handleInputChange}
           isOnSearch={isOnSearch}

@@ -11,6 +11,7 @@ const MapContainer = styled.div`
   border-radius: 1rem;
   margin-top: 1rem;
   filter: drop-shadow(2px 2px 6px var(--color-shadow));
+  z-index: 1;
   ${media.between("medium", "large")`
     /* screen width is between 768px (medium) and 1170px (large) */
     width: 16rem;
@@ -71,7 +72,7 @@ const MapPreview = ({ sportName, place, latitude, longitude }) => {
           infowindow.open(map, marker);
         });
       });
-  }, []);
+  }, [latitude]);
 
   return (
     <>

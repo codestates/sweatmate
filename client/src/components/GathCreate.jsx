@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { modalOffAction } from "../store/actions";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import GathSearch from "./GathSearch";
 import GathCard from "./GathCard";
 import media from "styled-media-query";
 import { MdOutlineKeyboardArrowLeft, MdOutlineKeyboardArrowRight } from "react-icons/md";
+import gathApi from "../api/gath";
 
 const GathCreateContainer = styled.div`
   display: flex;
@@ -37,13 +38,14 @@ const MovePageButtons = styled.div`
   justify-content: space-between;
   width: 50rem;
   height: 12rem;
+  z-index: ${(props) => props.isOnSearch && -1};
   ${media.between("medium", "large")`
-    /* screen width is between 768px (medium) and 1170px (large) */
-    width: 35rem;
+  /* screen width is between 768px (medium) and 1170px (large) */
+  width: 35rem;
   `}
   ${media.lessThan("medium")`
-    /* screen width is between 768px (medium) and 1170px (large) */
-    width: 20rem;
+  /* screen width is between 768px (medium) and 1170px (large) */
+  width: 20rem;
   `}
 `;
 
@@ -82,10 +84,11 @@ const GathCreate = () => {
   const [list, setList] = useState([]);
   const [isSelected, setIsSelected] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState([]);
+  const user = useSelector(({ authReducer }) => authReducer);
   const dispatch = useDispatch();
 
   const [gathering, setGathering] = useState({
-    gatheringId: 12,
+    id: 12,
     title: "농구 함 때려볼 용산러들~!",
     description: "용산에서 즐기면서 농구하는 사람들 한 판 같이 합시다~",
     creator: {
@@ -95,8 +98,8 @@ const GathCreate = () => {
     },
     areaName: "용산구",
     placeName: "이촌한강공원 농구대",
-    latitude: 33.450701,
-    longitude: 126.570667,
+    latitude: "33.450701",
+    longitude: "126.570667",
     date: "2021-10-27",
     time: "evening",
     timeDescription: "19시",
@@ -147,24 +150,22 @@ const GathCreate = () => {
       setInputValue(2);
     }
     setGathering({
-      gatheringId: 12,
+      id: 12,
       title: selectedOptions[6]
         ? selectedOptions[6]
         : selectedOptions[0] && `${selectedOptions[0].split(" ")[0]} 함께 즐겨요!`,
       description: selectedOptions[7] || "용산에서 즐기면서 농구하는 사람들 한 판 같이 합시다~",
       creator: {
         id: "uuid",
-        nickname: selectedOptions[0]
-          ? `${selectedOptions[0].split(" ")[0]}에 미친 사람`
-          : "운동에 미친 사람",
+        nickname: user.nickname,
         image: "",
       },
       areaName: (selectedOptions[1] && selectedOptions[1].address_name.split(" ")[1]) || "OO구",
       placeName: (selectedOptions[1] && selectedOptions[1].place_name) || "이촌한강공원 농구대",
-      latitude: 33.450701,
-      longitude: 126.570667,
+      latitude: (selectedOptions[1] && selectedOptions[1].y) || "33.450701",
+      longitude: (selectedOptions[1] && selectedOptions[1].x) || "126.570667",
       date: selectedOptions[2] || "2021-00-00",
-      time: selectedOptions[3] || "evening",
+      time: selectedOptions[3] || "저녁",
       timeDescription: selectedOptions[4] || "19시",
       totalNum: selectedOptions[5] || 0,
       currentNum: selectedOptions[5] - 1 || 0,
@@ -191,7 +192,7 @@ const GathCreate = () => {
   };
 
   const handleNextClick = async () => {
-    if (step >= 5 && step <= 8) {
+    if (step >= 5 && step < 8) {
       setSelectedOptions([...selectedOptions, inputValue]);
       setOnSearch(false);
       setInputValue("");
@@ -209,8 +210,26 @@ const GathCreate = () => {
     }
   };
 
-  const handleSave = () => {
-    dispatch(modalOffAction);
+  const handleSave = async () => {
+    try {
+      const payload = {
+        title: gathering.title,
+        description: gathering.description,
+        placeName: gathering.placeName,
+        latitude: gathering.latitude,
+        longitude: gathering.longitude,
+        date: gathering.date,
+        time: gathering.time,
+        timeDescription: gathering.timeDescription,
+        totalNum: gathering.totalNum,
+        areaName: gathering.areaName,
+        sportName: gathering.sportName,
+      };
+      const res = await gathApi.createGath(payload);
+      if (res.status === 200) dispatch(modalOffAction);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -250,9 +269,9 @@ const GathCreate = () => {
           selectedOptions={selectedOptions}
           setSelectedOptions={setSelectedOptions}
         />
-        <GathCard gathering={gathering} />
+        <GathCard gathering={gathering} disabled={true} />
       </Container>
-      <MovePageButtons>
+      <MovePageButtons isOnSearch={isOnSearch}>
         <Button name="prev" onClick={handlePrevClick}>
           {step > 1 && (
             <>
