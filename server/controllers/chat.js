@@ -14,7 +14,7 @@ module.exports = {
       );
       //참여중인 게더링이 없을 경우에 응답입니다.
       if (!gatheringValidList[0]) {
-        return res.status(204).json({ message: "There's no gathering participating" });
+        return res.status(200).json([]);
       }
       // 게더링 아이디로 mongoDB에서 채팅 인포를 가져옵니다.
       const gatheringIdList = gatheringValidList.map((el) => el?.id);
