@@ -269,8 +269,7 @@ const Home = () => {
           sport: refinedSportInput,
           date: refinedDateInput,
         });
-        if (res.status === 200) setGathList(res.data.gatherings);
-        else setGathList([]);
+        setGathList(res.data.gatherings);
       } catch (err) {
         console.error(err);
       }
