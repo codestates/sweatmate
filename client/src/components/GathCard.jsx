@@ -20,11 +20,8 @@ const CardContainer = styled.div`
     margin-bottom: 1.25rem;
   }
   .divider {
-    margin: 0 0.4rem;
+    margin: 0 0.4em 0.1em;
     overflow: hidden;
-  }
-  .text {
-    padding-top: 0.1em;
   }
 `;
 
@@ -37,9 +34,9 @@ const InfoHeader = styled.div`
   align-items: center;
   justify-content: space-between;
   > * {
+    overflow: hidden;
     height: 100%;
     display: flex;
-    align-items: baseline;
   }
 `;
 
@@ -58,16 +55,16 @@ const InfoBody = styled.div`
     font-family: Interop-SemiBold;
   }
   > #location {
+    height: 0.875rem;
+    overflow: hidden;
     font-size: 0.8rem;
     color: var(--color-gray);
     margin-bottom: 0;
     display: flex;
-    align-items: center;
     > * {
       display: flex;
-      align-items: center;
       #marker {
-        padding-right: 0.2rem;
+        margin-right: 0.15em;
       }
     }
   }
@@ -93,27 +90,25 @@ const GathCard = ({ gathering }) => {
     <CardContainer onClick={handleGathDetailModalOn}>
       <InfoHeader>
         <div>
-          <div className="text">{`${gathering.date.split("-")[1]}월 ${
-            gathering.date.split("-")[2]
-          }일`}</div>
+          <div>{`${gathering.date.split("-")[1]}월 ${gathering.date.split("-")[2]}일`}</div>
           <div className="divider">|</div>
-          <div className="text">{gathering.time}</div>
+          <div>{gathering.time}</div>
         </div>
         <div>
-          <div className="text">{`${gathering.currentNum}명 모집 중`}</div>
+          <div>{`${gathering.currentNum}명 모집 중`}</div>
           <div className="divider">|</div>
-          <div className="text">{`총 ${gathering.totalNum}명`}</div>
+          <div>{`총 ${gathering.totalNum}명`}</div>
         </div>
       </InfoHeader>
       <InfoBody>
         <div id="icon">{gathering.sportEmoji}</div>
         <div id="title">{gathering.title}</div>
         <div id="location">
-          <div className="text">{gathering.areaName}</div>
+          <div>{gathering.areaName}</div>
           <div className="divider">|</div>
           <div>
             <FaMapMarkerAlt id="marker" />
-            <div className="text">{gathering.placeName}</div>
+            <div>{gathering.placeName}</div>
           </div>
         </div>
       </InfoBody>
