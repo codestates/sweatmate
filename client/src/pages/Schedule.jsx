@@ -7,7 +7,7 @@ import { signinAction, signoutAction } from "../store/actions";
 import authApi from "../api/auth";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router";
-import gatheringApi from "../api/gathering";
+import gathApi from "../api/gath";
 import Loading from "../components/Loading";
 
 const Container = styled.div`
@@ -127,7 +127,7 @@ const Schedule = () => {
       setIsLoading(true);
       if (isUpcoming) {
         try {
-          const res = await gatheringApi.upcoming(id);
+          const res = await gathApi.getUpcomingGath(id);
           if (res.status === 200) {
             setGatherings(res.data.gatherings);
           }
@@ -136,7 +136,7 @@ const Schedule = () => {
         }
       } else if (isPassed) {
         try {
-          const res = await gatheringApi.passed(id);
+          const res = await gathApi.getPassedGath(id);
           if (res.status === 200) {
             setGatherings(res.data.gatherings);
           }
