@@ -81,7 +81,6 @@ const InfoFooter = styled.div`
 
 const GathCard = ({ gathering }) => {
   const { isGathCreateModal } = useSelector(({ modalReducer }) => modalReducer);
-
   const dispatch = useDispatch();
   const handleGathDetailModalOn = () => {
     if (!isGathCreateModal) dispatch(gathDetailModalOnAction(gathering));
