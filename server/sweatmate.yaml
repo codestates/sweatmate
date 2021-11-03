@@ -717,15 +717,15 @@ paths:
                     creatorId:
                       type: string
               example:
-                gatheringId: 14
-                chatInfo:
-                  title: "야구하실분~!"
-                  sportEmoji: ":baseball:"
-                  sportName: "야구"
-                recentChat:
-                  nickname: "무야호"
-                  message: "그만큼 좋다는 뜻이거든~"
-                  date: "어제"
+                - gatheringId: 14
+                  chatInfo:
+                    title: "야구하실분~!"
+                    sportEmoji: ":baseball:"
+                    sportName: "야구"
+                  recentChat:
+                    nickname: "무야호"
+                    message: "그만큼 좋다는 뜻이거든~"
+                    date: "어제"
         "403":
           description: Unauthorized
           content:
@@ -737,6 +737,12 @@ paths:
       tags:
         - "chat"
       summary: get user's chatInfo
+      parameters:
+        - name: gatheringId
+          in: path
+          required: true
+          schema:
+            type: string
       responses:
         "200":
           description: ok
