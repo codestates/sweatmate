@@ -2,27 +2,16 @@ import axios from "axios";
 import React, { useEffect } from "react";
 import PropTypes from "prop-types"; // ES6
 import styled from "styled-components";
-import media from "styled-media-query";
 const { kakao } = window;
 
 const MapContainer = styled.div`
-  width: 23rem;
-  height: 15rem;
   border-radius: 1rem;
-  margin-top: 1rem;
   filter: drop-shadow(2px 2px 6px var(--color-shadow));
-  z-index: 1;
-  ${media.between("medium", "large")`
-    /* screen width is between 768px (medium) and 1170px (large) */
-    width: 16rem;
-  `}
-  ${media.lessThan("medium")`
-    /* screen width is between 768px (medium) and 1170px (large) */
-    width: 20rem;
-  `}
+  width: 100%;
+  height: 100%;
 `;
 
-const MapPreview = ({ sportName, place, latitude, longitude }) => {
+const MapPreview = ({ sportEngName, place, latitude, longitude }) => {
   useEffect(() => {
     axios
       .get(`https://dapi.kakao.com/v2/local/search/keyword.json?query=${place}`, {
@@ -35,12 +24,12 @@ const MapPreview = ({ sportName, place, latitude, longitude }) => {
         const container = document.getElementById("map"); // 지도를 담을 영역의 DOM 레퍼런스
         const options = {
           // 지도를 생성할 때 필요한 기본 옵션
-          center: new kakao.maps.LatLng(longitude, latitude), // 지도의 중심좌표.
+          center: new kakao.maps.LatLng(latitude, longitude), // 지도의 중심좌표.
           level: 4, // 지도의 레벨(확대, 축소 정도)
         };
         const map = new kakao.maps.Map(container, options); // 지도 생성 및 객체 리턴
 
-        const imageSrc = `${process.env.PUBLIC_URL}/markers/marker-${sportName}.png`; // 마커이미지의 주소입니다
+        const imageSrc = `${process.env.PUBLIC_URL}/markers/marker-${sportEngName}.png`; // 마커이미지의 주소입니다
         const imageSize = new kakao.maps.Size(45, 60); // 마커이미지의 크기입니다
         const imageOption = { offset: new kakao.maps.Point(27, 69) }; // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
 
@@ -82,17 +71,17 @@ const MapPreview = ({ sportName, place, latitude, longitude }) => {
 };
 
 MapPreview.defaultProps = {
-  sportName: "soccer",
+  sportEngName: "soccer",
   place: "이촌한강공원",
-  latitude: 126.970526590861,
-  longitude: 37.5172404421072,
+  latitude: "126.970526590861",
+  longitude: "37.5172404421072",
 };
 
 MapPreview.propTypes = {
-  sportName: PropTypes.string.isRequired,
+  sportEngName: PropTypes.string.isRequired,
   place: PropTypes.string.isRequired,
-  latitude: PropTypes.number.isRequired,
-  longitude: PropTypes.number.isRequired,
+  latitude: PropTypes.string.isRequired,
+  longitude: PropTypes.string.isRequired,
 };
 
 export default MapPreview;
