@@ -35,11 +35,6 @@ const Container = styled.div`
         background-color: var(--color-maingreen--10);
       }
     }
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
-    ::-webkit-scrollbar {
-      display: none; /* Chrome, Safari, Opera*/
-    }
   }
   .datalist-active-item {
     background-color: var(--color-maingreen--25);
