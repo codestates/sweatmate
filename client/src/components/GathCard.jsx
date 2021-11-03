@@ -80,7 +80,7 @@ const InfoFooter = styled.div`
 `;
 
 const GathCard = ({ gathering }) => {
-  const isGathCreateModal = useSelector(({ modalReducer }) => modalReducer);
+  const { isGathCreateModal } = useSelector(({ modalReducer }) => modalReducer);
 
   const dispatch = useDispatch();
   const handleGathDetailModalOn = () => {
