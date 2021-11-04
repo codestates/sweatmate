@@ -5,9 +5,6 @@ const chatLog = new Schema({
     type: String,
     required: true,
   },
-  image: {
-    type: String,
-  },
   message: {
     type: String,
     required: true,
