@@ -1,25 +1,25 @@
 const mongooseChatModel = require("../schemas/chat");
-const { findGatheringOfUser, userFindOne, gatheringFindOne } = require("./functions/sequelize");
+const {
+  findGatheringOfUser,
+  userFindOne,
+  gatheringFindOne,
+  getVaildGatheringId,
+} = require("./functions/sequelize");
 const { DBERROR, getCurrentTime } = require("./functions/utility");
 module.exports = {
   getUserChatList: async (req, res) => {
     const { userId } = res.locals;
     try {
-      //유저 아이디로 참여중인 게더링을 찾는 로직입니다.
-      const gatheringListOfUser = await findGatheringOfUser({ userId }, ["userId", "id"]);
-      const gatheringValidList = await Promise.all(
-        gatheringListOfUser.map(async (el) => {
-          return await el.getGathering({ where: { done: 0 }, attributes: ["id"] });
-        })
-      );
-      //참여중인 게더링이 없을 경우에 응답입니다.
-      if (!gatheringValidList[0]) {
+      //유저 아이디로 참여중인 게더링아이디를 찾는 함수입니다.
+      const usersGatheringIds = await getVaildGatheringId({ userId });
+
+      // 참여중인 게더링이 없을 경우에 응답입니다.
+      if (!usersGatheringIds.length) {
         return res.status(200).json([]);
       }
       // 게더링 아이디로 mongoDB에서 채팅 인포를 가져옵니다.
-      const gatheringIdList = gatheringValidList.map((el) => el?.id);
       const chatsList = await mongooseChatModel.find(
-        { _id: gatheringIdList },
+        { _id: usersGatheringIds },
         { chatLog: { $slice: -1 }, chatInfo: 1, creatorId: 1 }
       );
       // 응답으로 보내줄 데이터를 api문서에 맞게 가공하는 로직입니다.
@@ -29,27 +29,27 @@ module.exports = {
           const date = recentChat[0]?.date;
           // 채팅로그가 비어있을 경우에 응답입니다.
           if (!date) {
-            recentChat[0] = { userId: null, message: null, date: null };
+            recentChat[0] = { message: null, nickname: null, date: null };
             return { gatheringId, chatInfo, creatorId, recentChat };
           }
           // 유저 아이디로 MYSQL에서 user테이블의 유저 정보를 조회합니다.
-          const { userId: recentUserId } = recentChat[0];
+          const { id: recentUserId, message } = recentChat[0];
           const userInfo = await userFindOne({ id: recentUserId });
-          const userNickname = userInfo.dataValues.nickname;
-          recentChat[0].nickname = userNickname;
-          delete recentChat[0].userId;
+          const recentChatInfo = { message };
+          recentChatInfo.nickname = userInfo.dataValues.nickname;
+          // recentChatInfo.image = userInfo.dataValues.image;
           // 최근에 대화한 시간에 따라서 "날짜", "시간", "어제" 로 나눠서 보내주는 로직입니다.
-          const currentDay = getCurrentTime().split(" ")[0];
-          const [day, time] = date.split(" ");
+          const [curDay, curTime] = (currentDay = getCurrentTime().split(" "));
+          const [day, time] = recentChat[0].date.split(" ");
           const oneDayToMillisecond = 86400000;
-          if (currentDay === day) {
-            recentChat[0].date = time;
-          } else if (new Date(currentDay) - new Date(day) === oneDayToMillisecond) {
-            recentChat[0].date = "어제";
+          if (curDay === day) {
+            recentChatInfo.date = time;
+          } else if (new Date(curTime) - new Date(day) === oneDayToMillisecond) {
+            recentChatInfo.date = "어제";
           } else {
-            recentChat[0].date = day;
+            recentChatInfo.date = day;
           }
-          return { gatheringId, chatInfo, creatorId, recentChat };
+          return { gatheringId, chatInfo, creatorId, recentChat: [recentChatInfo] };
         })
       );
       res.status(200).json(chatsListToSend);
@@ -97,7 +97,8 @@ module.exports = {
       });
       const chatInfobyGatheringId = await mongooseChatModel.findOne({ _id: gatheringId });
       const { _id, chatInfo, chatLog, creatorId } = chatInfobyGatheringId;
-      const translatedChatLog = chatLog.map((el) => {
+      const translatedChatLog = chatLog.toObject().map((el) => {
+        console.log(el);
         let userInfo = userList[el.userId];
         el.id = el.userId;
         delete el.userId;
@@ -115,7 +116,6 @@ module.exports = {
         creatorId,
       });
     } catch (err) {
-      console.log(err);
       DBERROR(res, err);
     }
   },

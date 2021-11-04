@@ -17,12 +17,14 @@ module.exports = {
     });
   },
   findGatheringOfUser: async (queries, attributes = []) => {
+    //모든 user_gathering을 찾습니다
     return await User_gathering.findAll({
       where: { ...queries },
       attributes: { exclude: [...attributes] },
     });
   },
   modifyUserSportList: async (queries, sportList) => {
+    //유저의 스포츠목록을 통째로 변경합니다.
     await User_sport.destroy({ where: { ...queries } });
     await User_sport.bulkCreate(sportList);
   },
@@ -38,7 +40,7 @@ module.exports = {
         },
       ],
       order: ["date"],
-      attributes: { exclude: ["creatorId", "createdAt"] }, //TODO: 생성일자는 필요없는지 상의
+      attributes: { exclude: ["creatorId", "createdAt"] },
     });
     return Promise.all(
       gatheringList.map((element) => {
@@ -76,5 +78,20 @@ module.exports = {
       return getUniqueNickname(tempNick, num + 1);
     }
     return nick;
+  },
+  getVaildGatheringId: async (userId) => {
+    const usersGatherings = await User_gathering.findAll({
+      where: { ...userId },
+      attributes: [],
+      include: {
+        model: Gathering,
+        where: { done: 0 },
+        attributes: ["id"],
+      },
+    });
+    const gatheringIds = usersGatherings.map((el) => {
+      return el.dataValues.Gathering.dataValues.id;
+    });
+    return gatheringIds;
   },
 };

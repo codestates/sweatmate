@@ -62,16 +62,19 @@ module.exports = {
     const { sportName, areaName, time, date, totalNum } = req.query;
     const areaId = TranslateFromAreaNameToAreaInfo(areaName)?.id;
     const sportInfo = TranslateFromSportNameToSportInfo(sportName);
-    const sportId = sportInfo?.id;
-    delete sportInfo?.id;
+    let sInfo;
+    if (sportInfo) {
+      sInfo = { ...sportInfo };
+      delete sInfo.id;
+    }
     res.locals.gathering = {
       time,
       date,
       totalNum,
       areaId,
-      sportId,
+      sportId: sportInfo?.id,
     };
-    res.locals.conditions = { ...req.query, ...sportInfo };
+    res.locals.conditions = { ...req.query, ...sInfo };
     next();
   },
   checkToCreateGathering: (req, res, next) => {
@@ -106,21 +109,25 @@ module.exports = {
       return res.status(400).json({ message: "Incorrect format" });
     }
     const { userId } = res.locals;
-    const sportInfo = TranslateFromSportNameToSportInfo(req.body.sportName);
-    const sportId = sportInfo.id;
+    const { id: sportId, sportName: sName } = TranslateFromSportNameToSportInfo(req.body.sportName);
     const areaId = TranslateFromAreaNameToAreaInfo(req.body.areaName).id;
-    delete req.body.sportName;
-    delete req.body.areaName;
     res.locals.setGatheringInfo = {
-      ...req.body,
+      title,
+      description,
+      placeName,
+      latitude,
+      longitude,
+      date,
+      time,
+      timeDescription,
+      totalNum,
       currentNum: 1,
       creatorId: userId,
       sportId,
       areaId,
     };
-    delete sportInfo.id;
-    delete sportInfo.sportEngName;
-    res.locals.sportInfo = sportInfo;
+
+    res.locals.sportInfo = { sportId, sName };
     next();
   },
 };

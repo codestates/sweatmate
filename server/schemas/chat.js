@@ -10,7 +10,7 @@ const chatLog = new Schema({
     required: true,
   },
   date: {
-    type: Date,
+    type: String,
   },
 });
 const chatSchema = new Schema({
