@@ -8,7 +8,7 @@ import InputDatalist from "./InputDatalist";
 import InputTotalNum from "./InputTotalNum";
 import { useDispatch } from "react-redux";
 import gathApi from "../api/gath";
-import { searchModalOnAction, searchGathAction } from "../store/actions";
+import { searchGathAction } from "../store/actions";
 
 const InputContainer = styled.form`
   margin-bottom: 2rem;
@@ -151,9 +151,7 @@ const HomeSearchBar = () => {
     }
   }, [sportInput, areaInput]);
 
-  const handleSearchModalOn = () => {
-    dispatch(searchModalOnAction);
-  };
+  const handleSearchModalOn = () => {};
 
   const handleSubmit = async (event) => {
     try {
