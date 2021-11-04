@@ -1,7 +1,9 @@
 import React from "react";
 import styled from "styled-components";
+import { useDispatch } from "react-redux";
+import { useHistory } from "react-router";
+import { modalOffAction } from "../store/actions";
 import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
 import { ReactComponent as DefaultProfile } from "../assets/defaultProfile.svg";
 import { FaCrown } from "react-icons/fa";
 
@@ -89,17 +91,20 @@ const DefaultImage = styled(DefaultProfile)`
   overflow: hidden;
 `;
 
-const BackgroundLink = styled(Link)`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-`;
-
 const UserProfile = ({ size, user, isDisabled, isCreator, hideName }) => {
+  const history = useHistory();
+  const dispatch = useDispatch();
+  const handleProfileClick = () => {
+    dispatch(modalOffAction);
+    history.push(`/users/${user.id}`);
+  };
   return (
-    <ProfileContainer size={size} disabled={isDisabled}>
+    <ProfileContainer
+      size={size}
+      onClick={() => {
+        if (!isDisabled) handleProfileClick();
+      }}
+    >
       <div id="image">
         {user.image ? <Image url={user.image} /> : <DefaultImage />}
         {isCreator && (
@@ -107,14 +112,8 @@ const UserProfile = ({ size, user, isDisabled, isCreator, hideName }) => {
             <FaCrown />
           </div>
         )}
-        {!isDisabled && <BackgroundLink to={`/users/${user.id}`} />}
       </div>
-      {!hideName && (
-        <div id="nickname">
-          {user.nickname}
-          {!isDisabled && <BackgroundLink to={`/users/${user.id}`} />}
-        </div>
-      )}
+      {!hideName && <div id="nickname">{user.nickname}</div>}
     </ProfileContainer>
   );
 };
