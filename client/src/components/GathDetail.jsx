@@ -12,6 +12,7 @@ const DetailContainer = styled.div`
   width: calc(100vw - 6rem);
   height: calc(100vh - 8rem);
   max-width: 50rem;
+  max-height: 60rem;
   ${media.lessThan("medium")`
     width: 100vw;
     height: 100vh;
@@ -167,10 +168,7 @@ const InfoBody = styled.div`
 const MapBox = styled.div`
   border-radius: 1rem;
   width: 100%;
-  height: 12.5rem;
-  ${media.lessThan("medium")`
-    height: 15rem;
-  `};
+  height: 15rem;
   > * {
     filter: drop-shadow(1px 1px 3px var(--color-shadow)) !important;
   }
