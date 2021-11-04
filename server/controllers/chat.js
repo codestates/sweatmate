@@ -18,10 +18,9 @@ module.exports = {
         return res.status(200).json([]);
       }
       // 게더링 아이디로 mongoDB에서 채팅 인포를 가져옵니다.
-      const chatsList = await mongooseChatModel.find(
-        { _id: usersGatheringIds },
-        { chatLog: { $slice: -1 }, chatInfo: 1, creatorId: 1 }
-      );
+      const chatsList = await mongooseChatModel
+        .find({ _id: usersGatheringIds }, { chatLog: { $slice: -1 }, chatInfo: 1, creatorId: 1 })
+        .lean();
       // 응답으로 보내줄 데이터를 api문서에 맞게 가공하는 로직입니다.
       const chatsListToSend = await Promise.all(
         chatsList.map(async (el) => {
@@ -98,9 +97,8 @@ module.exports = {
       const chatInfobyGatheringId = await mongooseChatModel.findOne({ _id: gatheringId }).lean();
       const { _id, chatInfo, chatLog, creatorId } = chatInfobyGatheringId;
       const translatedChatLog = chatLog.map((el) => {
-        let userInfo = userList[el.userId];
-        el.id = el.userId;
-        delete el.userId;
+        let userInfo = userList[el.id];
+        console.log(userInfo);
         if (!userInfo) {
           el.id = null;
           userInfo = { image: null, nickname: "모임을 나간 유저" };
