@@ -23,6 +23,9 @@ const CardContainer = styled.div`
     margin: 0 0.4em 0.1em;
     overflow: hidden;
   }
+  .hovered {
+    background-color: var(--color-maingreen--50);
+  }
 `;
 
 const InfoHeader = styled.div`
@@ -79,14 +82,14 @@ const InfoFooter = styled.div`
   margin-bottom: 0;
 `;
 
-const GathCard = ({ gathering }) => {
+const GathCard = ({ gathering, ...rest }) => {
   const { isGathCreateModal } = useSelector(({ modalReducer }) => modalReducer);
   const dispatch = useDispatch();
   const handleGathDetailModalOn = () => {
     if (!isGathCreateModal) dispatch(gathDetailModalOnAction(gathering));
   };
   return (
-    <CardContainer onClick={handleGathDetailModalOn}>
+    <CardContainer onClick={handleGathDetailModalOn} {...rest}>
       <InfoHeader>
         <div>
           <div>{`${gathering.date.split("-")[1]}월 ${gathering.date.split("-")[2]}일`}</div>
