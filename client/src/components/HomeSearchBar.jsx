@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import media from "styled-media-query";
 import { IoSearch } from "react-icons/io5";
 import SearchInput from "./SearchInput";
@@ -69,8 +69,10 @@ const SearchBtnView = styled(SearchIcon)`
   cursor: not-allowed;
   ${(props) =>
     props.disabled &&
-    `opacity : 0.5;
-    cursor: not-allowed;`}
+    css`
+      opacity: 0.5;
+      cursor: not-allowed;
+    `}
 `;
 
 const SearchBtnContainer = styled.div`
