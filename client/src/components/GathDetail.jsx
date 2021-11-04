@@ -1,5 +1,7 @@
 import React from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { useHistory } from "react-router";
+import { modalOffAction } from "../store/actions";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import media from "styled-media-query";
@@ -7,6 +9,7 @@ import MapPreview from "./MapPreview";
 import UserProfile from "./UserProfile";
 import Btn from "./Btn";
 import { FaMapMarkerAlt } from "react-icons/fa";
+import gathApi from "../api/gath";
 
 const DetailContainer = styled.div`
   width: calc(100vw - 6rem);
@@ -193,6 +196,20 @@ const DetailFooter = styled(DetailHeader)`
 
 const GathDetail = ({ gathering }) => {
   const { id } = useSelector(({ authReducer }) => authReducer);
+  const history = useHistory();
+  const dispatch = useDispatch();
+  const handleToChatClick = () => {
+    dispatch(modalOffAction);
+    history.push(`/chat/${gathering.id}`);
+  };
+  const handleJoinClick = async () => {
+    try {
+      const res = await gathApi.joinGath(gathering.id);
+      if (res.status === 201) handleToChatClick();
+    } catch (err) {
+      // console.error(err);
+    }
+  };
   return (
     <DetailContainer>
       <DetailHeader>
@@ -271,7 +288,7 @@ const GathDetail = ({ gathering }) => {
       </DetailBody>
       <DetailFooter>
         {gathering.users.map((user) => user.id).includes(id) ? (
-          <Btn className="to-chat" onClick={() => {}}>
+          <Btn className="to-chat" onClick={handleToChatClick}>
             채팅 바로가기
           </Btn>
         ) : (
@@ -279,7 +296,7 @@ const GathDetail = ({ gathering }) => {
             {gathering.currentNum === gathering.totalNum ? (
               <Btn className="join disabled">모임 참여하기</Btn>
             ) : (
-              <Btn className="join" onClick={() => {}}>
+              <Btn className="join" onClick={handleJoinClick}>
                 모임 참여하기
               </Btn>
             )}
