@@ -1,15 +1,18 @@
-import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import PropTypes from "prop-types"; // ES6
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router";
+import { Link } from "react-router-dom";
 import authApi from "../api/auth";
 import { signinAction, signoutAction } from "../store/actions";
 import styled from "styled-components";
 import gathApi from "../api/gath";
 import GathCard from "../components/GathCard";
 import { IoIosArrowBack } from "react-icons/io";
+import { AiOutlineAim } from "react-icons/ai";
 import Btn from "../components/Btn";
+import { Map, MapMarker, CustomOverlayMap } from "react-kakao-maps-sdk";
+import debounce from "lodash/debounce";
 
 const { kakao } = window;
 
@@ -25,15 +28,24 @@ const GathList = styled.div`
   position: absolute;
   display: grid;
   grid-gap: 1rem;
-  gap: 1rem;
-  grid-template-columns: repeat(auto-fill, minmax(20rem, auto));
-  top: 5.5rem;
+  grid-template-columns: none;
+  top: 0.8rem;
   right: 1rem;
   width: 20rem;
-  height: 90%;
-
+  height: 97%;
   z-index: 10;
   overflow: scroll;
+
+  margin: ${(props) => (props.listView ? "0rem 0rem" : "0rem -20rem")};
+  transition: margin 0.7s ease-in-out;
+  -moz-transition: margin 0.7s ease-in-out;
+  -webkit-transition: margin 0.7s ease-in-out;
+  .hovered {
+    border: 3px solid var(--color-maingreen--50);
+  }
+  * {
+    max-height: 13rem;
+  }
   ::-webkit-scrollbar {
     display: none;
   }
@@ -42,29 +54,35 @@ const GathList = styled.div`
 const ButtonContainer = styled.div`
   display: flex;
   position: absolute;
-  top: 5.5rem;
+  top: 0.8rem;
   left: 0rem;
   filter: drop-shadow(2px 2px 6px var(--color-shadow));
-  * {
-    font-size: 1.2rem;
-  }
+  z-index: 10;
+  margin: ${(props) => (props.listView ? "0rem 0rem" : "0rem -6rem")};
+  transition: margin 0.7s ease-in-out;
+  -moz-transition: margin 0.7s ease-in-out;
+  -webkit-transition: margin 0.7s ease-in-out;
 `;
 
-const Button = styled.button`
+const GoHomeButton = styled(Link)`
+  display: flex;
+  align-items: center;
+  justify-content: center;
   height: 3.5rem;
   background-color: var(--color-white);
   color: var(--color-maingreen--100);
-`;
-
-const GoHomeButton = styled(Button)`
   width: 3rem;
   border-right: 1px solid var(--color-maingreen--25);
+  font-size: 1.2rem;
 `;
 
-const FilterButton = styled(Button)`
-  width: 8rem;
-  border-top-right-radius: 0.5rem;
-  border-bottom-right-radius: 0.5rem;
+const FilterButton = styled.button`
+  height: 3.5rem;
+  background-color: var(--color-white);
+  color: var(--color-maingreen--100);
+  width: 4rem;
+  border-top-right-radius: 0.8rem;
+  border-bottom-right-radius: 0.8rem;
 `;
 
 const SearchHereButton = styled(Btn)`
@@ -77,17 +95,76 @@ const SearchHereButton = styled(Btn)`
   width: 15rem;
   height: 4rem;
   border-radius: 5rem;
+  z-index: 10;
   span {
     margin-right: 0.5rem;
   }
 `;
 
-const Map = ({ sportName, place, latitude, longitude }) => {
+const Center = styled.button`
+  position: absolute;
+  width: 2rem;
+  height: 2rem;
+  left: calc((100vw - 2rem) * 0.5);
+  right: calc((100vw - 2rem) * 0.5);
+  top: calc((100vh - 5rem) * 0.5);
+  bottom: calc((100vh - 5rem) * 0.5);
+  color: var(--color-red);
+  border-radius: 100%;
+  z-index: 10;
+`;
+
+const CustomOverlayFlexContainer = styled(CustomOverlayMap)`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  max-width: 12rem;
+  height: auto;
+  padding: 0.5rem;
+  background-color: white;
+  border-radius: 1rem;
+  div {
+    width: 12rem;
+    height: 1.5rem;
+    font-family: Interop-Light;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    color: var(--color-gray);
+    z-index: 999;
+  }
+  div:first-child {
+    width: auto;
+    font-family: Interop-Bold;
+    border-bottom: 1px solid var(--color-lightgray);
+    font-size: 0.8rem;
+    color: var(--color-maingreen--100);
+    z-index: 999;
+  }
+  div:last-child {
+    position: absolute;
+    top: -0.8rem;
+    right: -5.8rem;
+    font-size: 1.5rem;
+    color: var(--color-maingreen--100);
+    z-index: 999;
+  }
+`;
+
+const GathMap = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [gatherings, setGatherings] = useState([]);
-  const [sports, setSports] = useState([]);
   const conditionsForMap = useSelector(({ gathReducer }) => gathReducer);
+  const [map, setMap] = useState();
+  const [points, setPoints] = useState([]);
+  const [state, setState] = useState({});
+  const [hovered, setHovered] = useState(null);
+  const [listView, setListView] = useState(true);
+  const [address, setAddress] = useState("");
 
   useEffect(() => {
     const checkValidUser = async () => {
@@ -104,148 +181,194 @@ const Map = ({ sportName, place, latitude, longitude }) => {
       }
     };
     checkValidUser();
-  }, []);
 
-  useEffect(() => {
-    // 운동, 지역 리스트 받아오기
-    const getList = async () => {
-      try {
-        const { data: sportList } = await gathApi.getSportList();
-        setSports(sportList);
-      } catch (err) {
-        // console.error(err);
-      }
-    };
-    getList();
-  }, []);
-
-  useEffect(() => {
     const findGathering = async () => {
       try {
         const {
           data: { gatherings },
         } = await gathApi.findGath(conditionsForMap);
-        setGatherings(gatherings);
+        setGatherings(() => gatherings);
       } catch (err) {
         console.error(err);
       }
     };
     findGathering();
-  }, [sports]);
+  }, []);
 
-  useEffect(() => {
-    const showMap = async () => {
-      axios
-        .get(`https://dapi.kakao.com/v2/local/search/keyword.json?query=${place}`, {
-          headers: {
-            Authorization: `KakaoAK ${process.env.REACT_APP_KAKAO_REST_KEY}`,
-          },
-        })
-        .then((res) => {
-          // const firstResult = res.data.documents[0];
-          const container = document.getElementById("map"); // 지도를 담을 영역의 DOM 레퍼런스
-          const options = {
-            // 지도를 생성할 때 필요한 기본 옵션
-            center: new kakao.maps.LatLng(longitude, latitude), // 지도의 중심좌표.
-            level: 9, // 지도의 레벨(확대, 축소 정도)
-          };
-          const map = new kakao.maps.Map(container, options); // 지도 생성 및 객체 리턴
-          return map;
-        })
-        .then((map) => {
-          for (let i = 0; i < gatherings.length; i++) {
-            const enName = sports.filter((el) => el.sportName === gatherings[i].sportName)[0]
-              .sportEngName;
+  const bounds = useMemo(() => {
+    const bounds = new kakao.maps.LatLngBounds();
 
-            const imageSrc = `${process.env.PUBLIC_URL}/markers/marker-${enName}.png`; // 마커이미지의 주소입니다
-            const imageSize = new kakao.maps.Size(45, 60); // 마커이미지의 크기입니다
-            const imageOption = { offset: new kakao.maps.Point(27, 69) }; // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
+    points.forEach((point) => {
+      bounds.extend(new kakao.maps.LatLng(point.lat, point.lng));
+    });
+    return bounds;
+  }, [points]);
 
-            // 마커의 이미지정보를 가지고 있는 마커이미지를 생성합니다
-            const markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
+  // 지도에 모임 좌표 정보 모으기
+  const collectPoints = useCallback(() => {
+    const newPoints = gatherings.map((el) => ({
+      lat: parseFloat(el.latitude),
+      lng: parseFloat(el.longitude),
+    }));
+    setPoints(() => newPoints);
+  }, [points]);
 
-            // 마커를 생성합니다
-            const marker = new kakao.maps.Marker({
-              id: gatherings[i].id,
-              map: map,
-              position: new kakao.maps.LatLng(gatherings[i].latitude, gatherings[i].longitude),
-              title: gatherings[i].title,
-              image: markerImage,
-            });
-            // 마커가 지도 위에 표시되도록 설정합니다.
-            marker.setMap(map);
-            // 마커에 클릭이벤트를 등록합니다
-            kakao.maps.event.addListener(marker, "click", function () {
-              // 마커 위에 인포윈도우를 표시합니다
-              console.log(marker);
-              customOverlay.setMap(map);
-            });
-          }
+  // 주소-좌표 변환 객체를 생성합니다
+  const geocoder = new kakao.maps.services.Geocoder();
 
-          // 커스텀 오버레이에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
-          const content = `<div id="overlay">
-            <div class="customoverlay">
-              <a href="https://map.kakao.com/link/map/11394059" target="_blank">
-                <span class="title">${`한강공원 오버레이`}</span>
-              </a>
-            </div>
-          </div>
-          `;
+  function searchDetailAddrFromCoords(coords, callback) {
+    // 좌표로 법정동 상세 주소 정보를 요청합니다
+    geocoder.coord2Address(coords.getLng(), coords.getLat(), callback);
+  }
 
-          // 커스텀 오버레이가 표시될 위치입니다
-          const position = new kakao.maps.LatLng(longitude, latitude);
-
-          // 커스텀 오버레이를 생성합니다
-          const customOverlay = new kakao.maps.CustomOverlay({
-            map: map,
-            position: position,
-            content: content,
-            yAnchor: 5,
-          });
-
-          // const contentUpperSection = document.querySelector(".customoverlay").parent;
-          document.querySelector("#overlay").style.border = "1px solid red";
-        });
+  const handleDrag = (e) => {
+    setListView((prev) => !prev);
+    const callback = (mouseEvent) => {
+      console.log(mouseEvent);
+      return searchDetailAddrFromCoords(mouseEvent.latLng, (result, status) => {
+        if (status === kakao.maps.services.Status.OK) {
+          const detailAddr = result[0].road_address;
+          console.log(detailAddr);
+          return detailAddr;
+        }
+      });
     };
-
-    showMap();
-  }, [gatherings]);
+    console.log(setAddress, callback);
+    // setAddress(searchDetailAddrFromCoords(state.center, callback));
+  };
 
   return (
-    <>
-      <MapContainer id="map"></MapContainer>
-      <GathList>
+    <MapContainer id={"marker"}>
+      <Map
+        center={{
+          lat: 37.54861162159671,
+          lng: 127.18215843848797,
+        }}
+        style={{ width: "100vw", height: "100%" }}
+        level={9} // 지도의 확대 레벨
+        onCreate={(map) => {
+          if (points.length === 0) collectPoints();
+          setMap(map);
+        }}
+        onCenterChanged={debounce((map) => {
+          setState({
+            level: map.getLevel(),
+            center: {
+              lat: map.getCenter().getLat(),
+              lng: map.getCenter().getLng(),
+            },
+          });
+        }, 15)}
+        onDragStart={handleDrag}
+        onDragEnd={handleDrag}
+      >
         {gatherings.map((el, idx) => (
-          <GathCard key={idx} gathering={el} />
+          <MapMarker
+            key={`${el.id}`}
+            position={{ lat: el.latitude, lng: el.longitude }}
+            image={{
+              src: `${process.env.PUBLIC_URL}/markers/marker-${el.sportEngName}.png`, // 마커이미지의 주소입니다
+              size: {
+                width: 30,
+                height: 40,
+              }, // 마커이미지의 크기입니다
+              options: {
+                offset: {
+                  x: 27,
+                  y: 69,
+                }, // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
+              },
+            }}
+            onMouseOver={() => {
+              setHovered(idx);
+            }}
+            onMouseOut={() => {
+              setHovered(null);
+            }}
+            onClick={() => {
+              window.open(`https://map.kakao.com/link/search/${el.placeName}`);
+            }}
+          ></MapMarker>
         ))}
-      </GathList>
-      <ButtonContainer>
-        <GoHomeButton>
-          <IoIosArrowBack />
-        </GoHomeButton>
-        <FilterButton>돌아가기</FilterButton>
-      </ButtonContainer>
-      <SearchHereButton>
-        {"📍"}
-        <span />
-        {"이 위치에서 재검색"}
-      </SearchHereButton>
-    </>
+        {gatherings.map(
+          (el, idx) =>
+            hovered === idx && (
+              <CustomOverlayFlexContainer
+                key={idx}
+                position={{ lat: Number(el.latitude), lng: Number(el.longitude) }}
+                xAnchor={0.7}
+              >
+                <div>{el.title}</div>
+                <div>{el.description}</div>
+                <div>{el.sportEmoji}</div>
+              </CustomOverlayFlexContainer>
+            )
+        )}
+        <GathList listView={listView}>
+          {gatherings.map((el, idx) =>
+            hovered === idx ? (
+              <GathCard
+                key={idx}
+                gathering={el}
+                className="hovered"
+                onMouseOver={() => {
+                  setHovered(idx);
+                }}
+                onMouseOut={() => {
+                  setHovered(null);
+                }}
+              />
+            ) : (
+              <GathCard
+                key={idx}
+                gathering={el}
+                onMouseOver={() => {
+                  setHovered(idx);
+                }}
+                onMouseOut={() => {
+                  setHovered(null);
+                }}
+              />
+            )
+          )}
+        </GathList>
+        <ButtonContainer listView={listView}>
+          <GoHomeButton>
+            <IoIosArrowBack />
+          </GoHomeButton>
+          <FilterButton>홈</FilterButton>
+        </ButtonContainer>
+        <Center>
+          <AiOutlineAim />
+        </Center>
+        <SearchHereButton
+          onClick={() => {
+            if (map) map.setBounds(bounds);
+          }}
+        >
+          {"📍"}
+          <span />
+          {"이 위치에서 재검색"}
+          {address}
+        </SearchHereButton>
+        {console.log("state", state)}{" "}
+      </Map>
+    </MapContainer>
   );
 };
 
-Map.defaultProps = {
+GathMap.defaultProps = {
   sportName: "soccer",
   place: "이촌한강공원",
   latitude: 126.970526590861,
   longitude: 37.5172404421072,
 };
 
-Map.propTypes = {
+GathMap.propTypes = {
   sportName: PropTypes.string.isRequired,
   place: PropTypes.string.isRequired,
   latitude: PropTypes.number.isRequired,
   longitude: PropTypes.number.isRequired,
 };
 
-export default Map;
+export default GathMap;
