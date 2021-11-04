@@ -4,7 +4,6 @@ import { useDispatch } from "react-redux";
 import { useHistory } from "react-router";
 import { modalOffAction } from "../store/actions";
 import PropTypes from "prop-types";
-// import { Link } from "react-router-dom";
 import { ReactComponent as DefaultProfile } from "../assets/defaultProfile.svg";
 import { FaCrown } from "react-icons/fa";
 
@@ -91,14 +90,6 @@ const DefaultImage = styled(DefaultProfile)`
   border-radius: 50%;
   overflow: hidden;
 `;
-
-// const BackgroundLink = styled(Link)`
-//   position: absolute;
-//   top: 0;
-//   left: 0;
-//   width: 100%;
-//   height: 100%;
-// `;
 
 const UserProfile = ({ size, user, isDisabled, isCreator, hideName }) => {
   const history = useHistory();
