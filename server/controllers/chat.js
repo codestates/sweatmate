@@ -98,7 +98,6 @@ module.exports = {
       const { _id, chatInfo, chatLog, creatorId } = chatInfobyGatheringId;
       const translatedChatLog = chatLog.map((el) => {
         let userInfo = userList[el.id];
-        console.log(userInfo);
         if (!userInfo) {
           el.id = null;
           userInfo = { image: null, nickname: "모임을 나간 유저" };
