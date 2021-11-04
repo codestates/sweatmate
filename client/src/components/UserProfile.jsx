@@ -99,33 +99,22 @@ const UserProfile = ({ size, user, isDisabled, isCreator, hideName }) => {
     history.push(`/users/${user.id}`);
   };
   return (
-    <>
-      {isDisabled ? (
-        <ProfileContainer size={size}>
-          <div id="image">
-            {user.image ? <Image url={user.image} /> : <DefaultImage />}
-            {isCreator && (
-              <div id="crownmark">
-                <FaCrown />
-              </div>
-            )}
+    <ProfileContainer
+      size={size}
+      onClick={() => {
+        if (!isDisabled) handleProfileClick();
+      }}
+    >
+      <div id="image">
+        {user.image ? <Image url={user.image} /> : <DefaultImage />}
+        {isCreator && (
+          <div id="crownmark">
+            <FaCrown />
           </div>
-          {!hideName && <div id="nickname">{user.nickname}</div>}
-        </ProfileContainer>
-      ) : (
-        <ProfileContainer size={size} onClick={handleProfileClick}>
-          <div id="image">
-            {user.image ? <Image url={user.image} /> : <DefaultImage />}
-            {isCreator && (
-              <div id="crownmark">
-                <FaCrown />
-              </div>
-            )}
-          </div>
-          {!hideName && <div id="nickname">{user.nickname}</div>}
-        </ProfileContainer>
-      )}
-    </>
+        )}
+      </div>
+      {!hideName && <div id="nickname">{user.nickname}</div>}
+    </ProfileContainer>
   );
 };
 
