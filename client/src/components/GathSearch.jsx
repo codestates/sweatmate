@@ -98,6 +98,20 @@ const SearchList = styled.li`
   }
 `;
 
+const MapContainer = styled.div`
+  width: 23rem;
+  height: 15rem;
+  margin-top: 1rem;
+  ${media.between("medium", "large")`
+    /* screen width is between 768px (medium) and 1170px (large) */
+    width: 16rem;
+  `}
+  ${media.lessThan("medium")`
+    /* screen width is between 768px (medium) and 1170px (large) */
+    width: 20rem;
+  `}
+`;
+
 const StyledDate = styled.div`
   .react-datepicker {
     width: 23rem;
@@ -466,14 +480,14 @@ const GathSearch = ({
         </>
       )}
       {isSelected && step === 2 && (
-        <MapPreview
-          sportName={
-            sports.filter((el) => el.sportName === selectedOptions[0].split(" ")[0])[0].sportEngName
-          }
-          place={selectedOptions[selectedOptions.length - 1].place_name}
-          latitude={parseFloat(selectedOptions[selectedOptions.length - 1].x)}
-          longitude={parseFloat(selectedOptions[selectedOptions.length - 1].y)}
-        />
+        <MapContainer>
+          <MapPreview
+            sportName={selectedOptions[0].split(" ")[0]}
+            place={selectedOptions[selectedOptions.length - 1].place_name}
+            latitude={parseFloat(selectedOptions[selectedOptions.length - 1].x)}
+            longitude={parseFloat(selectedOptions[selectedOptions.length - 1].y)}
+          />
+        </MapContainer>
       )}
     </Container>
   );

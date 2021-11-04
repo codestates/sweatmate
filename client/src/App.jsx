@@ -16,7 +16,7 @@ import Signing from "./components/Signing";
 import GathDetail from "./components/GathDetail";
 
 const App = () => {
-  const { isGathCreateModal, isGathDetailModal, isSignupModal, isSigninModal, gathInfo } =
+  const { isGathCreateModal, isGathDetailModal, isSignupModal, isSigninModal, currentGathInfo } =
     useSelector(({ modalReducer }) => modalReducer);
   const isModal = isGathCreateModal || isGathDetailModal || isSignupModal || isSigninModal;
   return (
@@ -39,9 +39,9 @@ const App = () => {
       <Route path="/schedule" component={MoveTopBtn} />
       <Route path="/users/:id" component={MoveTopBtn} />
       {isModal && (
-        <Modal>
+        <Modal bgColor={isGathDetailModal && "var(--color-darkwhite)"}>
           {isGathCreateModal && <GathCreate />}
-          {isGathDetailModal && <GathDetail gathering={gathInfo} />}
+          {isGathDetailModal && <GathDetail gathering={currentGathInfo} />}
           {isSignupModal && <Signing type={"회원가입"} />}
           {isSigninModal && <Signing type={"로그인"} />}
         </Modal>
