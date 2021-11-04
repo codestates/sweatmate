@@ -1,11 +1,14 @@
 import { SEARCH_GATH } from "../actions/actionTypes";
 
 const initialState = {
-  sport: "",
-  area: "",
-  date: "",
-  time: "",
-  totalNum: null,
+  filter: {
+    sport: "",
+    area: "",
+    date: "",
+    time: "",
+    totalNum: null,
+  },
+  gathList: [],
 };
 
 const gathReducer = (prevState = initialState, action) => {
@@ -13,8 +16,14 @@ const gathReducer = (prevState = initialState, action) => {
   switch (action.type) {
     case SEARCH_GATH:
       state = {
-        ...prevState,
-        ...action.payload,
+        filter: {
+          sport: action.payload.conditions?.sportName || "",
+          area: action.payload.conditions?.areaName || "",
+          date: action.payload.conditions?.date || "",
+          time: action.payload.conditions?.time || "",
+          totalNum: action.payload.conditions?.totalNum || null,
+        },
+        gathList: action.payload.gatherings,
       };
       break;
     default:

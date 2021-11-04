@@ -52,8 +52,8 @@ export const modalOffAction = {
   type: MODAL_OFF,
 };
 
-// Auth
-export const searchAction = (data) => ({
+// Gath
+export const searchGathAction = ({ conditions, gatherings }) => ({
   type: SEARCH_GATH,
-  payload: { ...data },
+  payload: { conditions, gatherings },
 });
