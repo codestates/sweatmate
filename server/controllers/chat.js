@@ -95,10 +95,9 @@ module.exports = {
       participatingUserList.forEach((el) => {
         userList[el.id] = { image: el.image, nickname: el.nickname };
       });
-      const chatInfobyGatheringId = await mongooseChatModel.findOne({ _id: gatheringId });
+      const chatInfobyGatheringId = await mongooseChatModel.findOne({ _id: gatheringId }).lean();
       const { _id, chatInfo, chatLog, creatorId } = chatInfobyGatheringId;
-      const translatedChatLog = chatLog.toObject().map((el) => {
-        console.log(el);
+      const translatedChatLog = chatLog.map((el) => {
         let userInfo = userList[el.userId];
         el.id = el.userId;
         delete el.userId;
