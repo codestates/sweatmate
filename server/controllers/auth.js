@@ -1,14 +1,10 @@
 const bcrypt = require("bcrypt");
 const { v4: uuid } = require("uuid");
 const axios = require("axios");
-const {
-  userFindOne,
-  createUser,
-  getUniqueNickname,
-  decrementGatheringsOfUser,
-} = require("./functions/sequelize");
+const { userFindOne, createUser, getUniqueNickname } = require("./functions/sequelize");
+const noticeModel = require("../schemas/notification");
 const { sendGmail } = require("./functions/mail");
-const { DBERROR, deleteImageinTable } = require("./functions/utility");
+const { DBERROR, deleteImageinTable, dropUser } = require("./functions/utility");
 const { generateAccessToken, setCookie, clearCookie } = require("./functions/token");
 const {
   bcrypt: { saltRounds },
@@ -75,7 +71,11 @@ module.exports = {
       userInfo.update({ authStatus: 1, authKey: null });
       const token = generateAccessToken(userInfo.dataValues.id, userInfo.dataValues.type);
       setCookie(res, token);
-      //TODO: Mongo notification 생성 + 초기 알림으로 환영메시지 등록
+
+      //유저 노티피케이션 테이블 생성 부분
+      const { id } = userInfo.dataValues;
+      noticeModel.signup(id);
+
       return res.redirect(`${process.env.CLIENT_URL}`);
     } catch (err) {
       DBERROR(res, err);
@@ -118,8 +118,9 @@ module.exports = {
         guestTable[userId] = setTimeout(async () => {
           //TODO: 해당 유저의 Mongo notification도 같이 삭제
           //TODO: 이 유저가 만든 게더링이 모두 삭제되기 때문에 삭제 알림 이벤트 추가
-          await decrementGatheringsOfUser(userInfo.dataValues.id);
-          deleteImageinTable(userInfo.dataValues.image);
+          dropUser(userId, req);
+          //s3탈퇴한 유저의 image 삭제
+          deleteImageinTable(image);
           delete guestTable[userId];
           userInfo.destroy();
         }, 7200000);
@@ -149,7 +150,7 @@ module.exports = {
     guestTable[guestUUID] = setTimeout(async () => {
       //TODO: 해당 유저의 Mongo notification도 같이 삭제
       //TODO: 이 유저가 만든 게더링이 모두 삭제되기 때문에 삭제 알림 이벤트 추가
-      await decrementGatheringsOfUser(userInfo.dataValues.id);
+      dropUser(id, req);
       deleteImageinTable(userInfo.dataValues.image);
       delete guestTable[guestUUID];
       guestUser.destroy();
@@ -209,7 +210,9 @@ module.exports = {
       const { id, type } = createdUserInfo.dataValues;
       const token = generateAccessToken(id, type);
       setCookie(res, token);
-      //TODO: Mongo notification 생성 + 초기 알림으로 환영메시지 등록
+      //Mongo notification 생성 + 초기 알림으로 환영메시지 등록
+      noticeModel.signup(id);
+
       return res.status(201).json({ id, nickname: notDuplicationNickname, image });
     } catch (err) {
       return res.status(400).json({ message: "Error occured during social login" });
@@ -267,7 +270,9 @@ module.exports = {
       const { id, type } = createdUserInfo.dataValues;
       const token = generateAccessToken(id, type);
       setCookie(res, token);
-      //TODO: Mongo notification 생성 + 초기 알림으로 환영메시지 등록
+      //Mongo notification 생성 + 초기 알림으로 환영메시지 등록
+      noticeModel.signup(id);
+
       return res.status(201).json({ id, nickname: notDuplicationNickname, image });
     } catch (err) {
       return res.status(400).json({ message: "Error occured during social login" });

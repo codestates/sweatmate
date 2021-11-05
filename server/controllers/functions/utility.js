@@ -1,5 +1,8 @@
 const AWS = require("aws-sdk");
 const s3 = new AWS.S3();
+const mongoose = require("mongoose");
+const noticeModel = require("../../schemas/notification");
+const { getGatheringIdsOfUser, decrementGatheringsOfUser } = require("./sequelize");
 const areaList = require("../../resource/areaList");
 const sportsList = require("../../resource/sportList");
 const areaListById = require("../../resource/areaListById");
@@ -48,6 +51,36 @@ module.exports = {
       el.sportEmoji = sportEmoji;
       el.sportEngName = sportEngName;
       return el;
+    });
+  },
+  dropUser: async (userId, req) => {
+    noticeModel.removeUser(userId);
+    await decrementGatheringsOfUser(userId);
+    const gatheringIdAndTitles = getGatheringIdsOfUser(userId);
+    const realTime = req.app.get(realTime);
+    const main = req.app.get("main");
+    const chat = req.app.get("chat");
+    const _id = mongoose.Types.ObjectId();
+    gatheringIdAndTitles.forEach((el) => {
+      const { id, title } = el;
+      const noticeInfo = {
+        _id,
+        room: id,
+        type: "remove",
+        url: null,
+        target: null,
+        message: `모임을 만든 유저가 회원탈퇴하여 ${title} 모임이 삭제되었습니다`,
+      };
+      const userIds = Object.keys(realTime[id]);
+      noticeModel.createNotice(userIds, noticeInfo);
+      // 참여중인 (채팅 안밖유저에게 전부 알림이 가야함)
+      main.to(id).emit("notice", noticeInfo);
+      chat.to(id).emit("notice", noticeInfo);
+      //참여중인 유저가 있다면 방에서 나가게 함
+      chat.sockets.clients(id).forEach(function (s) {
+        s.leave(id);
+      });
+      delete realTime[id];
     });
   },
 };

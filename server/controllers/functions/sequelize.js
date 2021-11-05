@@ -100,9 +100,11 @@ module.exports = {
       where: { userId },
       include: { model: Gathering },
     });
+
     await Promise.all(
       User_gatheringlist.map(async (el) => await el.Gathering.decrement("currentNum", { by: 1 }))
     );
+    return;
   },
   realTimeUserStatus: async () => {
     // 일정이 끝나지 않은 게더링과 그 게더링에 참여중인 유저 아이디들을 불러옴
@@ -124,5 +126,12 @@ module.exports = {
       });
     });
     return result;
+  },
+  getGatheringIdsOfUser: async (userId) => {
+    const gatheringIds = await Gathering.findAll({
+      where: { creatorId: userId },
+      attributes: ["id", "title"],
+    });
+    return gatheringIds.map((el) => ({ id: el.dataValues.id, title: el.dataValues.title }));
   },
 };
