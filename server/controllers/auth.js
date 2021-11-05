@@ -75,7 +75,7 @@ module.exports = {
       userInfo.update({ authStatus: 1, authKey: null });
       const token = generateAccessToken(userInfo.dataValues.id, userInfo.dataValues.type);
       setCookie(res, token);
-      //TODO: Mongo notification 생성 + 초기 알림으로 환영메시지 등록 + 셋타임으로 1초 뒤 알림만 발생
+      //TODO: Mongo notification 생성 + 초기 알림으로 환영메시지 등록
       return res.redirect(`${process.env.CLIENT_URL}`);
     } catch (err) {
       DBERROR(res, err);
@@ -101,7 +101,6 @@ module.exports = {
       );
       setCookie(res, token);
       const { id, image, nickname } = foundUserByEmail.dataValues;
-      //TODO: mongoDB notification 목록을 배열로 추가로 보내줌
       return res.status(200).json({ id, image, nickname });
     } catch (err) {
       DBERROR(res, err);
@@ -149,13 +148,13 @@ module.exports = {
     const { id, nickname } = guestUser.dataValues;
     guestTable[guestUUID] = setTimeout(async () => {
       //TODO: 해당 유저의 Mongo notification도 같이 삭제
+      //TODO: 이 유저가 만든 게더링이 모두 삭제되기 때문에 삭제 알림 이벤트 추가
       await decrementGatheringsOfUser(userInfo.dataValues.id);
       deleteImageinTable(userInfo.dataValues.image);
       delete guestTable[guestUUID];
       guestUser.destroy();
     }, 7200000);
     //TODO: Mongo notification 생성 + 초기 알림으로 환영메시지 등록
-    //TODO: mongoDB notification 목록을 배열로 추가로 보내줌
 
     // 게스트로그인에 nickname는 UUID 의 첫 번째, 이미지는 미설정시 null 이기 때문에 null을 추가로 넣어줌
     return res.status(200).json({ id, image: null, nickname });
@@ -194,7 +193,6 @@ module.exports = {
         const { id, image, nickname, type } = checkUserByEmail;
         const token = generateAccessToken(id, type);
         setCookie(res, token);
-        //TODO: mongoDB notification 목록을 배열로 추가로 보내줌
         return res.status(200).json({ id, image, nickname });
       }
       // 이 이메일로 가입된 정보가 없다면 정보를 바탕으로 회원가입을 진행
@@ -211,7 +209,6 @@ module.exports = {
       const { id, type } = createdUserInfo.dataValues;
       const token = generateAccessToken(id, type);
       setCookie(res, token);
-      //TODO: mongoDB notification 목록을 배열로 추가로 보내줌
       //TODO: Mongo notification 생성 + 초기 알림으로 환영메시지 등록
       return res.status(201).json({ id, nickname: notDuplicationNickname, image });
     } catch (err) {
@@ -254,7 +251,6 @@ module.exports = {
         const { id, image, nickname, type } = checkUserByEmail;
         const token = generateAccessToken(id, type);
         setCookie(res, token);
-        //TODO: mongoDB notification 목록을 배열로 추가로 보내줌
         return res.status(200).json({ id, image, nickname });
       }
       // 이 이메일로 가입된 정보가 없다면 정보를 바탕으로 회원가입을 진행
@@ -271,7 +267,6 @@ module.exports = {
       const { id, type } = createdUserInfo.dataValues;
       const token = generateAccessToken(id, type);
       setCookie(res, token);
-      //TODO: mongoDB notification 목록을 배열로 추가로 보내줌
       //TODO: Mongo notification 생성 + 초기 알림으로 환영메시지 등록
       return res.status(201).json({ id, nickname: notDuplicationNickname, image });
     } catch (err) {

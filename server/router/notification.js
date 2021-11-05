@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-// router.get("/", () => {});
+// router.get("/", () => {}); // 노티피케이션 정보 응답
 // router.post("/", () => {});
 // router.patch("/", () => {});
 // router.put("/", () => {});
