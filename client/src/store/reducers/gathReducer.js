@@ -1,14 +1,14 @@
 import { SEARCH_GATH } from "../actions/actionTypes";
 
 const initialState = {
-  filter: {
+  conditions: {
     sport: "",
     area: "",
     date: "",
     time: "",
     totalNum: null,
   },
-  gathList: [],
+  gatherings: [],
 };
 
 const gathReducer = (prevState = initialState, action) => {
@@ -16,14 +16,20 @@ const gathReducer = (prevState = initialState, action) => {
   switch (action.type) {
     case SEARCH_GATH:
       state = {
-        filter: {
+        conditions: {
           sport: action.payload.conditions?.sportName || "",
           area: action.payload.conditions?.areaName || "",
           date: action.payload.conditions?.date || "",
           time: action.payload.conditions?.time || "",
-          totalNum: action.payload.conditions?.totalNum || null,
+          totalNum: Number(action.payload.conditions?.totalNum) || null,
+          formatedSport:
+            `${action.payload.conditions?.sportName}${action.payload.conditions?.sportEmoji}` || "",
+          formatedDate:
+            `${action.payload.conditions?.date?.split("-")[0]}년 ${
+              action.payload.conditions?.date?.split("-")[1]
+            }월 ${action.payload.conditions?.date?.split("-")[2]}일` || "",
         },
-        gathList: action.payload.gatherings,
+        gatherings: action.payload.gatherings,
       };
       break;
     default:

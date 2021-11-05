@@ -126,7 +126,7 @@ const Gatherings = styled.div`
 `;
 
 const Home = () => {
-  const { gathList, filter } = useSelector(({ gathReducer }) => gathReducer);
+  const { conditions, gatherings } = useSelector(({ gathReducer }) => gathReducer);
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -166,19 +166,19 @@ const Home = () => {
         </Btn>
       </SearchContainer>
       <ListContainer>
-        {filter.sport && filter.area ? (
+        {conditions.sport && conditions.area ? (
           <ListSubTitle>검색 결과</ListSubTitle>
         ) : (
           <ListSubTitle>스웻메이트에는 지금</ListSubTitle>
         )}
         <ListHeader>
-          {filter.sport && filter.area ? (
+          {conditions.sport && conditions.area ? (
             <ListTitle>
-              {filter.date && `${filter.date} `}
-              {filter.time && `${filter.time} `}
-              {`${filter.area}의 `}
-              {filter.totalNum && `${filter.totalNum}인 `}
-              {`${filter.sport} 모임`}
+              {conditions.date && `${conditions.formatedDate} `}
+              {conditions.time && `${conditions.time} `}
+              {`${conditions.area}의 `}
+              {conditions.totalNum && `${conditions.totalNum}인 `}
+              {`${conditions.formatedSport} 모임`}
             </ListTitle>
           ) : (
             <ListTitle>이런 운동 모임들이 있어요!</ListTitle>
@@ -186,7 +186,7 @@ const Home = () => {
           <OnMapBtn id="onMapBtn" onClick={handleOnMapClick} />
         </ListHeader>
         <Gatherings>
-          {gathList.map((gath, idx) => (
+          {gatherings.map((gath, idx) => (
             <GathCard key={idx} gathering={gath} />
           ))}
         </Gatherings>
