@@ -11,7 +11,7 @@ module.exports = {
     const { userId } = res.locals;
     try {
       //유저 아이디로 참여중인 게더링아이디를 찾는 함수입니다.
-      const usersGatheringIds = await getVaildGatheringId({ userId });
+      const usersGatheringIds = await getVaildGatheringId(userId);
 
       // 참여중인 게더링이 없을 경우에 응답입니다.
       if (!usersGatheringIds.length) {

@@ -81,7 +81,7 @@ module.exports = {
   },
   getVaildGatheringId: async (userId) => {
     const usersGatherings = await User_gathering.findAll({
-      where: { ...userId },
+      where: { userId },
       attributes: [],
       include: {
         model: Gathering,
