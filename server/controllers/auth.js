@@ -1,9 +1,14 @@
 const bcrypt = require("bcrypt");
 const { v4: uuid } = require("uuid");
 const axios = require("axios");
-const { userFindOne, createUser, getUniqueNickname } = require("./functions/sequelize");
+const {
+  userFindOne,
+  createUser,
+  getUniqueNickname,
+  decrementGatheringsOfUser,
+} = require("./functions/sequelize");
 const { sendGmail } = require("./functions/mail");
-const { DBERROR } = require("./functions/utility");
+const { DBERROR, deleteImageinTable } = require("./functions/utility");
 const { generateAccessToken, setCookie, clearCookie } = require("./functions/token");
 const {
   bcrypt: { saltRounds },
@@ -12,10 +17,10 @@ const {
 } = require("../config");
 const emailForm = require("../views/emailFormat");
 /*
-  스케줄러 구성요소, 매 24시간마다 모임일정이 지난 게더링들 done = 1;
-  매 24시간마다 예상하지 못한 서버 재실행에 의해서 사라진 셋타임함수들을 대비해서
-  게스트의 createdAt이 24시간이 지난 유저에 대해서 삭제 
-  이메일 인증이 1시간이 지난  유저 삭제
+  스케줄러 구성요소, 매 24시간마다 모임일정이 지난 게더링들 done = 1 + 종료 이벤트 notification 알림 + 채팅방에 시스템 메시지 보내기
+  게스트의 createdAt이 24시간이 지난 유저에 대해서 삭제 + 유저의 참여중인 게더링 currentNum - 1 + s3 이미지 삭제
+  이메일 인증이 1시간이 지난 유저 삭제
+  모임 07, 12, 17 시마다 모임 시작 알림 보내기
 */
 const guestTable = {};
 
@@ -54,7 +59,7 @@ module.exports = {
       sendGmail({
         toEmail: email,
         subject: "안녕하세요 Sweatmate입니다.",
-        html: emailForm(authKey),
+        html: emailForm(authKey), // TODO: html 수정 필요!
       });
 
       return res.status(201).json({ message: "1시간 이내에 이메일 인증을 진행해주세요" });
@@ -70,6 +75,7 @@ module.exports = {
       userInfo.update({ authStatus: 1, authKey: null });
       const token = generateAccessToken(userInfo.dataValues.id, userInfo.dataValues.type);
       setCookie(res, token);
+      //TODO: Mongo notification 생성 + 초기 알림으로 환영메시지 등록 + 셋타임으로 1초 뒤 알림만 발생
       return res.redirect(`${process.env.CLIENT_URL}`);
     } catch (err) {
       DBERROR(res, err);
@@ -95,6 +101,7 @@ module.exports = {
       );
       setCookie(res, token);
       const { id, image, nickname } = foundUserByEmail.dataValues;
+      //TODO: mongoDB notification 목록을 배열로 추가로 보내줌
       return res.status(200).json({ id, image, nickname });
     } catch (err) {
       DBERROR(res, err);
@@ -105,11 +112,15 @@ module.exports = {
     try {
       const userInfo = await userFindOne({ id: userId });
       const { id, image, nickname } = userInfo;
-      // 유저가 만약 2시간동안 아무런 요청이 없다면 자동으로 관련 정보 삭제
+      // 게스트 유저가 만약 2시간동안 아무런 요청이 없다면 자동으로 관련 정보 삭제
       if (type === "guest") {
         const setTimeOutId = guestTable[userId];
         clearTimeout(setTimeOutId);
-        guestTable[userId] = setTimeout(() => {
+        guestTable[userId] = setTimeout(async () => {
+          //TODO: 해당 유저의 Mongo notification도 같이 삭제
+          //TODO: 이 유저가 만든 게더링이 모두 삭제되기 때문에 삭제 알림 이벤트 추가
+          await decrementGatheringsOfUser(userInfo.dataValues.id);
+          deleteImageinTable(userInfo.dataValues.image);
           delete guestTable[userId];
           userInfo.destroy();
         }, 7200000);
@@ -121,6 +132,7 @@ module.exports = {
   },
   signout: (req, res) => {
     clearCookie(res);
+    //TODO: socket disconnect 이벤트를 발생시켜야함 서버는 연결할때만 토큰검사를 하기 때문에 로그아웃을 했어도 소켓에 연결되어 있을 수도 있음
     return res.status(200).json({ message: "Signed out" });
   },
   guestSignin: async (req, res) => {
@@ -135,10 +147,16 @@ module.exports = {
     const token = generateAccessToken(guestUser.dataValues.id, guestUser.dataValues.type);
     setCookie(res, token);
     const { id, nickname } = guestUser.dataValues;
-    guestTable[guestUUID] = setTimeout(() => {
+    guestTable[guestUUID] = setTimeout(async () => {
+      //TODO: 해당 유저의 Mongo notification도 같이 삭제
+      await decrementGatheringsOfUser(userInfo.dataValues.id);
+      deleteImageinTable(userInfo.dataValues.image);
       delete guestTable[guestUUID];
       guestUser.destroy();
     }, 7200000);
+    //TODO: Mongo notification 생성 + 초기 알림으로 환영메시지 등록
+    //TODO: mongoDB notification 목록을 배열로 추가로 보내줌
+
     // 게스트로그인에 nickname는 UUID 의 첫 번째, 이미지는 미설정시 null 이기 때문에 null을 추가로 넣어줌
     return res.status(200).json({ id, image: null, nickname });
   },
@@ -168,7 +186,7 @@ module.exports = {
           Authorization: `Bearer ${accessToken}`,
         },
       });
-      const { name: nickname, email, picture: image } = profileRes.data; // TODO: 구글은 프로필이미지 있나없나
+      const { name: nickname, email, picture: image } = profileRes.data;
       const checkUserByEmail = await userFindOne({ email });
       // 가입은 이메일 인증을 통해서만 가입이 가능하기 때문에 따로 type을 신경쓰지 않아도 됨
       // 이메일이 있다면 그 유저로 로그인
@@ -176,6 +194,7 @@ module.exports = {
         const { id, image, nickname, type } = checkUserByEmail;
         const token = generateAccessToken(id, type);
         setCookie(res, token);
+        //TODO: mongoDB notification 목록을 배열로 추가로 보내줌
         return res.status(200).json({ id, image, nickname });
       }
       // 이 이메일로 가입된 정보가 없다면 정보를 바탕으로 회원가입을 진행
@@ -192,6 +211,8 @@ module.exports = {
       const { id, type } = createdUserInfo.dataValues;
       const token = generateAccessToken(id, type);
       setCookie(res, token);
+      //TODO: mongoDB notification 목록을 배열로 추가로 보내줌
+      //TODO: Mongo notification 생성 + 초기 알림으로 환영메시지 등록
       return res.status(201).json({ id, nickname: notDuplicationNickname, image });
     } catch (err) {
       return res.status(400).json({ message: "Error occured during social login" });
@@ -233,6 +254,7 @@ module.exports = {
         const { id, image, nickname, type } = checkUserByEmail;
         const token = generateAccessToken(id, type);
         setCookie(res, token);
+        //TODO: mongoDB notification 목록을 배열로 추가로 보내줌
         return res.status(200).json({ id, image, nickname });
       }
       // 이 이메일로 가입된 정보가 없다면 정보를 바탕으로 회원가입을 진행
@@ -249,6 +271,8 @@ module.exports = {
       const { id, type } = createdUserInfo.dataValues;
       const token = generateAccessToken(id, type);
       setCookie(res, token);
+      //TODO: mongoDB notification 목록을 배열로 추가로 보내줌
+      //TODO: Mongo notification 생성 + 초기 알림으로 환영메시지 등록
       return res.status(201).json({ id, nickname: notDuplicationNickname, image });
     } catch (err) {
       return res.status(400).json({ message: "Error occured during social login" });

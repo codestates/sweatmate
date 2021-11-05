@@ -1,5 +1,9 @@
-const { userFindOne, findSportsOfUser, modifyUserSportList } = require("./functions/sequelize");
-const { Gathering } = require("../models");
+const {
+  userFindOne,
+  findSportsOfUser,
+  modifyUserSportList,
+  decrementGatheringsOfUser,
+} = require("./functions/sequelize");
 const { clearCookie } = require("./functions/token");
 const { DBERROR, deleteImageinTable } = require("./functions/utility");
 const areaList = require("../resource/areaList");
@@ -67,14 +71,14 @@ module.exports = {
       if (!userInfo) {
         return res.status(404).json({ message: "User not found" });
       }
-      const User_gatheringlist = await userInfo.getUser_gatherings({
-        include: { model: Gathering },
-      });
-      await Promise.all(
-        User_gatheringlist.map(async (el) => await el.Gathering.decrement("currentNum", { by: 1 }))
-      );
+      await decrementGatheringsOfUser(userInfo.dataValues.id);
+      deleteImageinTable(userInfo.dataValues.image);
+      // 회원 탈퇴에 의해 종료된 게더링에 참여중인 유저들에게 탈퇴에 의한 게더링이 종료 되었음을 이벤트 알림으로 줘야함
+      // 몽구스의 게더링 또한 같이 삭제되어야함
+      // 유저관리 객체에 해당하는 유저 아이디들에게 알림을 줘야함
+      // 그리고 유저관리객체에 해당 게더링들을 삭제함
+
       await userInfo.destroy();
-      //mongoDB에서도 게더링 정보와 유저 정보 삭제해야 함 +  회원탈퇴 시에 게더링정보를 남기느냐 아니냐 상의해야함 현재는 유저삭제시 관련 정보 전부 삭제
       clearCookie(res, token);
       return res.status(200).json({ message: "User deleted", data: { userId } });
     } catch (err) {
