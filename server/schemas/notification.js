@@ -18,6 +18,9 @@ const notificationListSchema = new Schema({
     type: String,
     default: null,
   },
+  message: {
+    type: String,
+  },
 });
 const notificationSchema = new Schema({
   // mysql 유저의 uuid 값을 넣어줌

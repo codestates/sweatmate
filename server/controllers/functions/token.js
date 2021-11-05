@@ -26,12 +26,16 @@ module.exports = {
 
   setCookie: (res, token) => {
     res.cookie("jwt", token, {
+      secure: true,
+      samesite: "none",
       httpOnly: true,
     });
   },
 
   clearCookie: (res) => {
     res.clearCookie("jwt", {
+      secure: true,
+      samesite: "none",
       httpOnly: true,
     });
   },
