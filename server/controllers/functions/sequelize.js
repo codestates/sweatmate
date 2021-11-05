@@ -94,4 +94,35 @@ module.exports = {
     });
     return gatheringIds;
   },
+  decrementGatheringsOfUser: async (userId) => {
+    // 회원탈퇴 전 유저가 참여중인 게더링에 현인원 - 1
+    const User_gatheringlist = await User_gathering.findAll({
+      where: { userId },
+      include: { model: Gathering },
+    });
+    await Promise.all(
+      User_gatheringlist.map(async (el) => await el.Gathering.decrement("currentNum", { by: 1 }))
+    );
+  },
+  realTimeUserStatus: async () => {
+    // 일정이 끝나지 않은 게더링과 그 게더링에 참여중인 유저 아이디들을 불러옴
+    const gatheringList = await Gathering.findAll({
+      where: { done: 0 },
+      attributes: ["id"],
+      include: {
+        model: User_gathering,
+        attributes: ["userId"],
+      },
+    });
+    const result = {};
+    gatheringList.forEach((gathering) => {
+      const { id } = gathering.dataValues;
+      result[id] = {};
+      gathering.dataValues.User_gatherings.forEach((UG) => {
+        const { userId } = UG.dataValues;
+        result[id][userId] = 0;
+      });
+    });
+    return result;
+  },
 };

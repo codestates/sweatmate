@@ -52,6 +52,8 @@ module.exports = {
     try {
       const createdGathering = await createGathering(setGatheringInfo, userId);
       //mongoDB chat 세팅
+      //TODO: 유저 관리 객체에 만들어진 게더링 추가 + 만든 유저의 상태도 0 으로 자동 추가
+      //TODO: 기본적인 채팅로그 "~~모임 채팅방입니다." 시스템메시지 초기 값 추가 논의
       const { id, creator, title } = createdGathering[0];
       const setChatInfo = { _id: id, chatInfo: { title, ...sportInfo }, creatorId: creator.id };
       await mongooseChatModel.create(setChatInfo);
@@ -62,7 +64,6 @@ module.exports = {
     }
   },
   endGathering: async (req, res) => {
-    //TODO: 조기 종료 되거나 노드 스케쥴러에 의해 종료가 되면 채팅창진입불가(채팅창 로그는 볼 수 있게 하느냐 마느냐 나중에 결정)
     //호스트가 호출하는 Api입니다.
     const { userId } = res.locals;
     const { gatheringId } = req.params;
@@ -72,7 +73,9 @@ module.exports = {
         return res.status(403).json({ message: "You don't have permission." });
       }
       gatheringInfo.update({ done: 1 });
-      //TODO: 게더링이 조기종료 했다고 모든 참여자에게 알림 또는 노드스케줄러에 의해 종료되었음을 알림
+      //TODO: 게더링이 조기종료 했다고 모든 참여자에게 알림
+      //TODO: 유저 관리 객체에 해당 게더링에 참여 중인 유저들을 조회 후 유저들에게 notification 알림 추가 후 유저 관리 객체에서 해당게더링 삭제
+      //TODO: 유저들의 알림 목록에서 해당 게더링을 가진 이벤트 목록 삭제
       const endedGatheringInfo = await findAllGathering({ id: gatheringId });
       return res.status(200).json(modifyGatheringFormat(endedGatheringInfo)[0]);
     } catch (err) {
@@ -96,7 +99,7 @@ module.exports = {
         // 게더링에 참여할 수 없는 조건입니다.
         return res.status(400).json({ message: "already full of people or ended gathering" });
       }
-      // TODO: 유저가 게더링에 참여했다는 이벤트를 모든 참여자에게 알림
+      // TODO: 유저가 게더링에 참여했다는 이벤트를 모든 참여자에게 알림 + 유저 관리 객체에 해당 유저 추가
       await gatheringInfo.update({ currentNum: currentNum + 1 });
       const joinedGatheringInfo = await findAllGathering({ id: gatheringId });
       return res.status(201).json(modifyGatheringFormat(joinedGatheringInfo)[0]);
@@ -112,7 +115,7 @@ module.exports = {
       if (!User_gatheringInfo) {
         return res.status(400).json({ message: "You are not in a state of participation." });
       }
-      //TODO: 유저가 게더링을 떠났다는 이벤트를 모든 참여자에게 알림
+      //TODO: 유저가 게더링을 떠났다는 이벤트를 모든 참여자에게 알림 + 유저 관리 객체에 해당 유저 제거
       const gatheringInfo = await gatheringFindOne({ id: gatheringId });
       const { currentNum } = gatheringInfo;
       await User_gatheringInfo.destroy();
