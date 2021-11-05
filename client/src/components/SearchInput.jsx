@@ -1,31 +1,31 @@
 import React, { useRef } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
+import media from "styled-media-query";
 
 const InputWrapper = styled.label`
   height: 100%;
   min-width: ${(props) => {
-    if (props.isSport) return "9rem";
-    if (props.isDate) return "11.5rem";
-    if (props.isTime) return "5rem";
+    if (props.sort === "운동") return "9rem";
+    if (props.sort === "날짜") return "11.5rem";
+    if (props.sort === "시간") return "5rem";
     return "6.5rem";
   }};
   max-width: ${(props) => {
-    if (props.isSport) return "12rem";
-    if (props.isDate) return "15rem";
-    if (props.isTime) return "8rem";
+    if (props.sort === "운동") return "12rem";
+    if (props.sort === "날짜") return "15rem";
+    if (props.sort === "시간") return "8rem";
     return "10rem";
   }};
-  /* ${(props) => (props.isLong ? "15rem" : "10rem")}; */
+  ${media.lessThan("medium")`
+    min-width: unset;
+    max-width: unset;
+    height: fit-content;
+  `};
   border-radius: 1rem;
   display: flex;
   :hover {
     background-color: var(--color-darkwhite);
-  }
-  :last-of-type {
-    .divider {
-      display: none;
-    }
   }
   position: relative;
 `;
@@ -54,31 +54,27 @@ const Divider = styled.div`
   margin: 0.75rem 0;
 `;
 
-const SearchInput = ({ isSport, isDate, isTime, name, children }) => {
+const SearchInput = ({ name, children, hideDivider }) => {
   const label = useRef(null);
   return (
-    <InputWrapper isSport={isSport} isDate={isDate} isTime={isTime} ref={label}>
+    <InputWrapper sort={name} ref={label}>
       <InputArea>
         <Name>{name}</Name>
         {children}
       </InputArea>
-      <Divider className="divider" />
+      {!hideDivider && <Divider className="divider" />}
     </InputWrapper>
   );
 };
 
 SearchInput.defaultProps = {
-  isSport: false,
-  isDate: false,
-  isTime: false,
+  hideDivider: false,
 };
 
 SearchInput.propTypes = {
-  isSport: PropTypes.bool,
-  isDate: PropTypes.bool,
-  isTime: PropTypes.bool,
   name: PropTypes.string.isRequired,
   children: PropTypes.oneOfType([PropTypes.bool, PropTypes.element]).isRequired,
+  hideDivider: PropTypes.bool,
 };
 
 export default SearchInput;
