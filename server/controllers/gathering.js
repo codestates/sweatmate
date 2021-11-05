@@ -76,6 +76,7 @@ module.exports = {
       //TODO: 게더링이 조기종료 했다고 모든 참여자에게 알림
       //TODO: 유저 관리 객체에 해당 게더링에 참여 중인 유저들을 조회 후 유저들에게 notification 알림 추가 후 유저 관리 객체에서 해당게더링 삭제
       //TODO: 유저들의 알림 목록에서 해당 게더링을 가진 이벤트 목록 삭제
+
       const endedGatheringInfo = await findAllGathering({ id: gatheringId });
       return res.status(200).json(modifyGatheringFormat(endedGatheringInfo)[0]);
     } catch (err) {
