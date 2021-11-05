@@ -151,9 +151,7 @@ const HomeSearchBar = () => {
     }
   }, [sportInput, areaInput]);
 
-  const handleSearchModalOn = () => {
-    // dispatch(searchModalOnAction);
-  };
+  const handleSearchModalOn = () => {};
 
   const handleSubmit = async (event) => {
     try {

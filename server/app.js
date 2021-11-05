@@ -17,7 +17,7 @@ const userRouter = require("./router/user");
 const gatheringRouter = require("./router/gathering");
 const notificationRouter = require("./router/notification");
 const chatRouter = require("./router/chat");
-
+const { realTimeUserStatus } = require("./controllers/functions/sequelize");
 const app = express();
 
 const corsOption = {
@@ -25,6 +25,7 @@ const corsOption = {
   optionsSuccessStatus: 200,
   credentials: true,
 };
+
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use(cors(corsOption));
 app.use(helmet());
@@ -55,10 +56,10 @@ const sweatmateServer = app.listen(config.port, async () => {
   mongooseConnect();
   try {
     await sequelize.authenticate();
+    app.set("realTime", await realTimeUserStatus());
+    SocketIO(sweatmateServer, app);
     console.log("Connection has been established successfully.");
   } catch (error) {
     console.error("Unable to connect to the database:", error);
   }
 });
-
-SocketIO(sweatmateServer, app);
