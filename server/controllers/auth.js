@@ -147,6 +147,9 @@ module.exports = {
     const token = generateAccessToken(guestUser.dataValues.id, guestUser.dataValues.type);
     setCookie(res, token);
     const { id, nickname } = guestUser.dataValues;
+    //몽고디비 notifications 컬렉션에 아이디 추가
+    noticeModel.signup(id);
+
     guestTable[guestUUID] = setTimeout(async () => {
       //TODO: 해당 유저의 Mongo notification도 같이 삭제
       //TODO: 이 유저가 만든 게더링이 모두 삭제되기 때문에 삭제 알림 이벤트 추가

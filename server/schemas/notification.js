@@ -30,15 +30,18 @@ const notificationListSchema = new Schema({
     type: String,
   },
 });
-const notificationSchema = new Schema({
-  // mysql 유저의 uuid 값을 넣어줌
-  _id: {
-    type: String,
-    required: true,
+const notificationSchema = new Schema(
+  {
+    // mysql 유저의 uuid 값을 넣어줌
+    _id: {
+      type: String,
+      required: true,
+    },
+    // 알림목록들
+    notification: [notificationListSchema],
   },
-  // 알림목록들
-  notification: [notificationListSchema],
-});
+  { versionKey: false }
+);
 
 notificationSchema.statics.createNotice = async function (userList, notificationInfo) {
   const { _id, room, type, url, target, message } = notificationInfo;
@@ -86,4 +89,4 @@ notificationSchema.statics.removeUser = async function (userId) {
   return;
 };
 
-module.exports = mongoose.model("notification", notificationSchema);
+module.exports = mongoose.model("Notification", notificationSchema);

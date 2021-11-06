@@ -105,7 +105,7 @@ module.exports = (server, app) => {
       // 채팅창 밖의 유저들에 대한 이벤트
       // 유저 알림 스키마에서 _id 필드는 삭제하고 대신 key 필드로 고유값이 들어감.
       const userList = Object.keys(realTime[socket.curRoom]).filter((el) => {
-        return obj[socket.curRoom][el] === 0;
+        return realTime[socket.curRoom][el] === 0;
       });
 
       const noticeInfo = {
