@@ -20,6 +20,10 @@ const ButtonContainer = styled.button`
   :hover {
     opacity: 0.8;
   }
+  :disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
   font-size: 1.2rem;
   min-width: fit-content;
   padding: 1rem 1.5rem;
@@ -34,10 +38,15 @@ const ButtonContainer = styled.button`
     padding: 0.75rem 1rem;
   `};
 `;
-const Btn = (props) => {
-  const { className, color, bgColor, onClick, children } = props;
+const Btn = ({ className, color, bgColor, onClick, disabled, children, ...rest }) => {
   return (
-    <ButtonContainer className={className} color={color} bgColor={bgColor} onClick={onClick}>
+    <ButtonContainer
+      className={className}
+      color={color}
+      bgColor={bgColor}
+      onClick={onClick}
+      disabled={disabled}
+    >
       {children}
     </ButtonContainer>
   );
@@ -47,6 +56,7 @@ Btn.defaultProps = {
   color: "var(--color-darkgray)",
   bgColor: "var(--color-darkwhite)",
   onClick: null,
+  disabled: false,
   children: null,
 };
 
@@ -55,6 +65,7 @@ Btn.propTypes = {
   color: PropTypes.string,
   bgColor: PropTypes.string,
   onClick: PropTypes.func,
+  disabled: PropTypes.bool,
   children: PropTypes.oneOfType([
     PropTypes.bool,
     PropTypes.element,
