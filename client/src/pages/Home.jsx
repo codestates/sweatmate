@@ -186,9 +186,9 @@ const Home = () => {
           <OnMapBtn id="onMapBtn" onClick={handleOnMapClick} />
         </ListHeader>
         <Gatherings>
-          {gatherings.map((gath, idx) => (
-            <GathCard key={idx} gathering={gath} />
-          ))}
+          {gatherings &&
+            gatherings.length > 0 &&
+            gatherings.map((gath, idx) => <GathCard key={idx} gathering={gath} />)}
         </Gatherings>
       </ListContainer>
     </HomeContainer>

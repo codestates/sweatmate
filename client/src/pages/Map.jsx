@@ -1,10 +1,10 @@
-import React, { useEffect, useState, useMemo, useCallback } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import PropTypes from "prop-types"; // ES6
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router";
 import { Link } from "react-router-dom";
 import authApi from "../api/auth";
-import { signinAction, signoutAction } from "../store/actions";
+import { searchGathAction, signinAction, signoutAction } from "../store/actions";
 import styled from "styled-components";
 import gathApi from "../api/gath";
 import GathCard from "../components/GathCard";
@@ -13,6 +13,7 @@ import { AiOutlineAim } from "react-icons/ai";
 import Btn from "../components/Btn";
 import { Map, MapMarker, CustomOverlayMap } from "react-kakao-maps-sdk";
 import debounce from "lodash/debounce";
+import media from "styled-media-query";
 
 const { kakao } = window;
 
@@ -21,21 +22,17 @@ const MapContainer = styled.div`
   height: calc(100vh - 73px);
   filter: drop-shadow(2px 2px 6px var(--color-shadow));
   text-align: center;
+  ${media.lessThan("medium")`
+  height: calc(100vh - 57px);
+  `};
 `;
 
 const GathList = styled.div`
   border-radius: 1rem;
-  position: absolute;
-  display: grid;
-  grid-gap: 1rem;
-  grid-template-columns: none;
-  top: 0.8rem;
-  right: 1rem;
-  width: 20rem;
-  height: 97%;
+  display: flex;
+  max-height: 97%;
   z-index: 10;
   overflow: scroll;
-
   margin: ${(props) => (props.listView ? "0rem 0rem" : "0rem -20rem")};
   transition: margin 0.7s ease-in-out;
   -moz-transition: margin 0.7s ease-in-out;
@@ -45,10 +42,29 @@ const GathList = styled.div`
   }
   * {
     max-height: 13rem;
+    margin-bottom: 1rem;
   }
   ::-webkit-scrollbar {
     display: none;
   }
+  ${media.greaterThan("medium")`
+    flex-direction: column;
+    position: absolute;
+    top: 0.8rem;
+    right: 1rem;
+    width: 21rem;
+    `};
+
+  ${media.lessThan("medium")`
+    flex-direction: row;
+    position: absolute;
+    left: 1rem;
+    bottom: 4.8rem;  
+    width: 95%;
+    > * {
+      margin-right: 1rem;
+    }
+  `};
 `;
 
 const ButtonContainer = styled.div`
@@ -120,13 +136,13 @@ const CustomOverlayFlexContainer = styled(CustomOverlayMap)`
   align-items: center;
   justify-content: center;
   position: absolute;
-  max-width: 12rem;
+  max-width: 20rem;
   height: auto;
   padding: 0.5rem;
   background-color: white;
   border-radius: 1rem;
   div {
-    width: 12rem;
+    width: auto;
     height: 1.5rem;
     font-family: Interop-Light;
     display: flex;
@@ -147,7 +163,7 @@ const CustomOverlayFlexContainer = styled(CustomOverlayMap)`
   div:last-child {
     position: absolute;
     top: -0.8rem;
-    right: -5.8rem;
+    right: -0.8rem;
     font-size: 1.5rem;
     color: var(--color-maingreen--100);
     z-index: 999;
@@ -157,14 +173,25 @@ const CustomOverlayFlexContainer = styled(CustomOverlayMap)`
 const GathMap = () => {
   const dispatch = useDispatch();
   const history = useHistory();
-  const [gatherings, setGatherings] = useState([]);
-  const conditionsForMap = useSelector(({ gathReducer }) => gathReducer);
   const [map, setMap] = useState();
   const [points, setPoints] = useState([]);
-  const [state, setState] = useState({});
   const [hovered, setHovered] = useState(null);
   const [listView, setListView] = useState(true);
   const [address, setAddress] = useState("");
+  // const [isSearched, setIsSearched] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const { conditions, gatherings } = useSelector(({ gathReducer }) => gathReducer);
+
+  const bounds = useMemo(() => {
+    const bounds = new kakao.maps.LatLngBounds();
+
+    points &&
+      points.length > 0 &&
+      points.forEach((point) => {
+        bounds.extend(new kakao.maps.LatLng(point.lat, point.lng));
+      });
+    return bounds;
+  }, [points]);
 
   useEffect(() => {
     const checkValidUser = async () => {
@@ -181,60 +208,148 @@ const GathMap = () => {
       }
     };
     checkValidUser();
+    if (Object.values(conditions).every((el) => Boolean(el) === false)) {
+      console.log("여기서는4", conditions);
+      console.log("게더링", gatherings);
+      const findGath = async () => {
+        console.log("여기서는5", conditions);
+        console.log("게더링", gatherings);
+        const { data } = await gathApi.getAllGath();
+        console.log("여기서는6", conditions);
+        console.log("게더링", gatherings);
 
-    const findGathering = async () => {
-      try {
-        const {
-          data: { gatherings },
-        } = await gathApi.findGath(conditionsForMap);
-        setGatherings(() => gatherings);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    findGathering();
+        dispatch(searchGathAction({ conditions: data.conditions, gatherings: data.gatherings }));
+        console.log("여기서는7", conditions);
+        console.log("게더링", gatherings);
+      };
+      findGath();
+    } else {
+      const findGath = async () => {
+        console.log("여기서는1", conditions);
+        console.log("게더링", gatherings);
+        const { data } = await gathApi.findGath(conditions);
+        console.log("여기서는2", conditions);
+        console.log("게더링", gatherings);
+        console.log("여기서는2", data);
+        const newConditions = {
+          sportName: conditions.sport,
+          areaName: conditions.area,
+          date: conditions.date,
+          time: conditions.time,
+          totalNum: conditions.totalNum,
+        };
+
+        dispatch(searchGathAction({ conditions: newConditions, gatherings: data.gatherings }));
+        console.log("여기서는3", conditions);
+        console.log("게더링", gatherings);
+      };
+      findGath();
+    }
   }, []);
 
-  const bounds = useMemo(() => {
-    const bounds = new kakao.maps.LatLngBounds();
-
-    points.forEach((point) => {
-      bounds.extend(new kakao.maps.LatLng(point.lat, point.lng));
-    });
-    return bounds;
-  }, [points]);
-
-  // 지도에 모임 좌표 정보 모으기
-  const collectPoints = useCallback(() => {
-    const newPoints = gatherings.map((el) => ({
-      lat: parseFloat(el.latitude),
-      lng: parseFloat(el.longitude),
-    }));
-    setPoints(() => newPoints);
-  }, [points]);
-
-  // 주소-좌표 변환 객체를 생성합니다
-  const geocoder = new kakao.maps.services.Geocoder();
-
-  function searchDetailAddrFromCoords(coords, callback) {
-    // 좌표로 법정동 상세 주소 정보를 요청합니다
-    geocoder.coord2Address(coords.getLng(), coords.getLat(), callback);
-  }
-
-  const handleDrag = (e) => {
-    setListView((prev) => !prev);
-    const callback = (mouseEvent) => {
-      console.log(mouseEvent);
-      return searchDetailAddrFromCoords(mouseEvent.latLng, (result, status) => {
-        if (status === kakao.maps.services.Status.OK) {
-          const detailAddr = result[0].road_address;
-          console.log(detailAddr);
-          return detailAddr;
-        }
-      });
+  useEffect(() => {
+    const collectPoints = () => {
+      const newPoints =
+        gatherings &&
+        gatherings.length > 0 &&
+        gatherings.map((el) => ({
+          lat: Number(el.latitude),
+          lng: Number(el.longitude),
+        }));
+      setPoints(newPoints);
     };
-    console.log(setAddress, callback);
-    // setAddress(searchDetailAddrFromCoords(state.center, callback));
+    collectPoints();
+  }, []);
+
+  useEffect(() => {
+    const newConditions = {
+      sportName: conditions.sport,
+      areaName: address,
+      date: conditions.date,
+      time: conditions.time,
+      totalNum: conditions.totalNum,
+    };
+    dispatch(searchGathAction({ conditions: newConditions, gatherings }));
+  }, [address]);
+
+  useEffect(() => {
+    if (isLoaded) {
+      map.setBounds(bounds);
+      const newConditions = {
+        sportName: conditions.sport,
+        areaName: conditions.area,
+        date: conditions.date,
+        time: conditions.time,
+        totalNum: conditions.totalNum,
+      };
+      dispatch(searchGathAction({ conditions: newConditions, gatherings }));
+    }
+  }, [isLoaded]);
+
+  const handleDragStart = () => {
+    setListView(false);
+  };
+
+  const handleDragEnd = () => {
+    setListView(true);
+  };
+
+  const handleCenterChange = debounce(() => {
+    // 주소-좌표 변환 객체를 생성합니다
+    const geocoder = new kakao.maps.services.Geocoder();
+
+    // 현재 지도 중심좌표로 주소를 검색해서 지도 좌측 상단에 표시합니다
+    // debounce(() => searchAddrFromCoords(map.getCenter(), displayCenterInfo), 50);
+
+    // 중심 좌표나 확대 수준이 변경됐을 때 지도 중심 좌표에 대한 주소 정보를 표시하도록 이벤트를 등록합니다
+    kakao.maps.event.addListener(map, "idle", function () {
+      searchAddrFromCoords(map.getCenter(), debounce(displayCenterInfo, 50));
+    });
+
+    function searchAddrFromCoords(coords, callback) {
+      // 좌표로 행정동 주소 정보를 요청합니다
+      geocoder.coord2RegionCode(coords.getLng(), coords.getLat(), callback);
+    }
+
+    // 지도 좌측상단에 지도 중심좌표에 대한 주소정보를 표출하는 함수입니다
+    function displayCenterInfo(result, status) {
+      if (status === kakao.maps.services.Status.OK) {
+        const infoDiv = result[0].region_2depth_name;
+        setAddress(infoDiv);
+      }
+    }
+  }, 50);
+
+  const handleSearchHere = async () => {
+    const findGath = async () => {
+      const { data: wholeData } = await gathApi.getAllGath();
+      if (conditions.sport || conditions.area) {
+        const newConditions = {
+          sportName: conditions.sport,
+          areaName: address,
+          date: conditions.date,
+          time: conditions.time,
+          totalNum: conditions.totalNum,
+        };
+        const { data } = await gathApi.findGath(conditions);
+        const newGatherings =
+          data.gatherings && data.gatherings.length > 0 ? [...data.gatherings] : wholeData;
+        if (data.gatherings.length === 0)
+          dispatch(searchGathAction({ conditions: newConditions, gatherings: newGatherings }));
+        else dispatch(searchGathAction({ conditions: newConditions, gatherings: newGatherings }));
+      } else {
+        const newConditions = {
+          sportName: conditions.sport,
+          areaName: conditions.area,
+          date: conditions.date,
+          time: conditions.time,
+          totalNum: conditions.totalNum,
+        };
+        const newGatherings = [...wholeData.gatherings];
+        dispatch(searchGathAction({ conditions: newConditions, gatherings: newGatherings }));
+      }
+    };
+    findGath();
   };
 
   return (
@@ -242,98 +357,99 @@ const GathMap = () => {
       <Map
         center={{
           lat: 37.54861162159671,
-          lng: 127.18215843848797,
+          lng: 127.00215843848797,
         }}
         style={{ width: "100vw", height: "100%" }}
-        level={9} // 지도의 확대 레벨
-        onCreate={(map) => {
-          if (points.length === 0) collectPoints();
-          setMap(map);
+        level={8} // 지도의 확대 레벨
+        onCreate={(e) => {
+          setMap(e);
+          setIsLoaded(true);
         }}
-        onCenterChanged={debounce((map) => {
-          setState({
-            level: map.getLevel(),
-            center: {
-              lat: map.getCenter().getLat(),
-              lng: map.getCenter().getLng(),
-            },
-          });
-        }, 15)}
-        onDragStart={handleDrag}
-        onDragEnd={handleDrag}
+        onIdle={handleCenterChange}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
       >
-        {gatherings.map((el, idx) => (
-          <MapMarker
-            key={`${el.id}`}
-            position={{ lat: el.latitude, lng: el.longitude }}
-            image={{
-              src: `${process.env.PUBLIC_URL}/markers/marker-${el.sportEngName}.png`, // 마커이미지의 주소입니다
-              size: {
-                width: 30,
-                height: 40,
-              }, // 마커이미지의 크기입니다
-              options: {
-                offset: {
-                  x: 27,
-                  y: 69,
-                }, // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
-              },
-            }}
-            onMouseOver={() => {
-              setHovered(idx);
-            }}
-            onMouseOut={() => {
-              setHovered(null);
-            }}
-            onClick={() => {
-              window.open(`https://map.kakao.com/link/search/${el.placeName}`);
-            }}
-          ></MapMarker>
-        ))}
-        {gatherings.map(
-          (el, idx) =>
-            hovered === idx && (
-              <CustomOverlayFlexContainer
-                key={idx}
-                position={{ lat: Number(el.latitude), lng: Number(el.longitude) }}
-                xAnchor={0.7}
-              >
-                <div>{el.title}</div>
-                <div>{el.description}</div>
-                <div>{el.sportEmoji}</div>
-              </CustomOverlayFlexContainer>
-            )
-        )}
-        <GathList listView={listView}>
-          {gatherings.map((el, idx) =>
-            hovered === idx ? (
-              <GathCard
-                key={idx}
-                gathering={el}
-                className="hovered"
-                onMouseOver={() => {
+        {gatherings &&
+          gatherings.length > 0 &&
+          gatherings.map((el, idx) => (
+            <>
+              <MapMarker
+                key={idx.toString() + "marker"}
+                position={{ lat: el.latitude, lng: el.longitude }}
+                image={{
+                  src: `${process.env.PUBLIC_URL}/markers/marker-${el.sportEngName}.png`, // 마커이미지의 주소입니다
+                  size: {
+                    width: 30,
+                    height: 40,
+                  }, // 마커이미지의 크기입니다
+                  options: {
+                    offset: {
+                      x: 27,
+                      y: 69,
+                    }, // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
+                  },
+                }}
+                onMouseOver={debounce(() => {
                   setHovered(idx);
-                }}
-                onMouseOut={() => {
+                }, 20)}
+                onMouseOut={debounce(() => {
                   setHovered(null);
+                }, 20)}
+                onClick={() => {
+                  document
+                    .getElementsByClassName("gathcard")
+                    [idx].scrollIntoView({ behavior: "smooth" });
                 }}
-              />
-            ) : (
-              <GathCard
-                key={idx}
-                gathering={el}
-                onMouseOver={() => {
-                  setHovered(idx);
-                }}
-                onMouseOut={() => {
-                  setHovered(null);
-                }}
-              />
-            )
-          )}
+              ></MapMarker>
+              {hovered === idx && (
+                <CustomOverlayFlexContainer
+                  key={idx.toString() + "overlay"}
+                  position={{ lat: Number(el.latitude), lng: Number(el.longitude) }}
+                  xAnchor={0.7}
+                  onClick={() => {
+                    window.open(`https://map.kakao.com/link/search/${el.placeName}`);
+                  }}
+                >
+                  <div>{el.title}</div>
+                  <div>{el.description}</div>
+                  <div>{el.sportEmoji}</div>
+                </CustomOverlayFlexContainer>
+              )}
+            </>
+          ))}
+        <GathList id="gathlist" listView={listView}>
+          {gatherings &&
+            gatherings.length > 0 &&
+            gatherings.map((el, idx) =>
+              hovered === idx ? (
+                <GathCard
+                  key={idx.toString() + "card"}
+                  gathering={el}
+                  className="hovered gathcard"
+                  onMouseOver={() => {
+                    setHovered(idx);
+                  }}
+                  onMouseOut={() => {
+                    setHovered(null);
+                  }}
+                />
+              ) : (
+                <GathCard
+                  key={idx.toString() + "card"}
+                  gathering={el}
+                  className="gathcard"
+                  onMouseOver={() => {
+                    setHovered(idx);
+                  }}
+                  onMouseOut={() => {
+                    setHovered(null);
+                  }}
+                />
+              )
+            )}
         </GathList>
         <ButtonContainer listView={listView}>
-          <GoHomeButton>
+          <GoHomeButton to="/home">
             <IoIosArrowBack />
           </GoHomeButton>
           <FilterButton>홈</FilterButton>
@@ -341,18 +457,12 @@ const GathMap = () => {
         <Center>
           <AiOutlineAim />
         </Center>
-        <SearchHereButton
-          onClick={() => {
-            if (map) map.setBounds(bounds);
-          }}
-        >
-          {"📍"}
-          <span />
-          {"이 위치에서 재검색"}
-          {address}
-        </SearchHereButton>
-        {console.log("state", state)}{" "}
       </Map>
+      {conditions.sport && (
+        <SearchHereButton onClick={handleSearchHere}>
+          <span>{`📍 여기에서 재검색 `}</span>
+        </SearchHereButton>
+      )}
     </MapContainer>
   );
 };
