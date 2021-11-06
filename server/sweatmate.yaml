@@ -834,6 +834,87 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/AuthenticationMessage"
+  /notification:
+    get:
+      tags:
+        - "notification"
+      summary: get user's notification
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                    gatheringId:
+                      type: string
+                    type:
+                      type: string
+                    url:
+                      type: string
+                    target:
+                      type: string
+                    message:
+                      type: string
+                  example:
+                    _id: 618674f4285940e3cc48355a,
+                    gatheringId: null,
+                    type: welcome,
+                    url: users/59117a45-6b95-4c2e-a19e-ackie019rhfi,
+                    target: null,
+                    message: sweatmate에 오신 걸 환영합니다. 마이페이지로 이동해 프로필을 바꿔보세요!
+        "400":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/notificationError"
+        "403":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationMessage"
+  /notification/{notificationId}:
+    delete:
+      tags:
+        - "notification"
+      summary: remove user's notification
+      parameters:
+        - name: notificationId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                example:
+                  message: ok
+        "400":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/notificationError"
+        "403":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationMessage"
 components:
   schemas:
     AuthenticationMessage:
@@ -1097,3 +1178,10 @@ components:
           type: string
       example:
         message: You don't have permission
+    notificationError:
+      type: object
+      properties:
+        message:
+          type: string
+      example:
+        message: you don't have notification document

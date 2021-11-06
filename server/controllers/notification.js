@@ -4,20 +4,20 @@ const noticeModel = require("../schemas/notification");
 module.exports = {
   getNotifications: async (req, res) => {
     const { userId } = res.locals;
-    const notificationsOfUser = await noticeModel.findOne({ _id: 1241 }, { _id: 0 }).lean();
-    if (notificationsOfUser) {
+    const notificationsOfUser = await noticeModel.findOne({ _id: userId }, { _id: 0 }).lean();
+    if (!notificationsOfUser) {
       return res.status(400).json({ message: "you don't have notification document" });
     }
     return res.status(200).json(notificationsOfUser.notification);
   },
   deleteNotification: async (req, res) => {
-    const { noticeId } = req.params;
+    const { notificationId } = req.params;
     const { userId } = res.locals;
     const notificationOfUser = await noticeModel.findOne({ _id: userId });
-    if (notificationsOfUser) {
+    if (!notificationOfUser) {
       return res.status(400).json({ message: "you don't have notification document" });
     }
-    await notificationOfUser.notification.id(noticeId)?.remove();
+    await notificationOfUser.notification.id(notificationId)?.remove();
     await notificationOfUser.save();
     return res.status(200).json({ message: "ok" });
   },
