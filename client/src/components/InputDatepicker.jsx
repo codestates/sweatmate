@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useRef } from "react";
+import React from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
+import media from "styled-media-query";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { ko } from "date-fns/esm/locale";
@@ -10,17 +11,23 @@ import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { IoCloseCircle } from "react-icons/io5";
 
 const Container = styled.div`
+  margin-top: 0.5rem;
   width: 100%;
-  * {
-    margin: 0;
-    padding: 0;
-  }
-  .react-datepicker-wrapper {
-    margin-top: 0.25rem;
-    padding: 0 1rem 0.75rem;
+  .react-datepicker__tab-loop {
+    margin-top: 1.75rem;
+    ${media.lessThan("medium")`
+      width: 100%;
+      height: 20.5rem;
+      margin-top: 1.25rem;
+      margin-bottom: -0.75rem;
+      border-radius: 1rem;
+      border: 1px solid var(--color-maingreen--50);
+      position: relative;
+    `};
   }
   .react-datepicker__input-container {
     > input {
+      padding: 0 1rem;
       width: 100%;
       ::placeholder {
         color: var(--color-gray);
@@ -32,18 +39,37 @@ const Container = styled.div`
     }
   }
   .react-datepicker-popper {
-    padding-top: 0.75rem;
+    margin-top: 1.75rem;
+    ${media.lessThan("medium")`
+      filter: none;
+      position: absolute;
+      margin: 0 !important;
+      inset: 0 !important;
+      transform: unset !important;
+    `};
+    width: 100%;
+    padding: 0;
   }
   .react-datepicker {
     background-color: var(--color-white);
     border: none;
     border-radius: 1rem;
-    filter: drop-shadow(0px 6px 10px var(--color-shadow));
+    ${media.greaterThan("medium")`
+      filter: drop-shadow(0px 6px 10px var(--color-shadow));
+    `};
+    ${media.lessThan("medium")`
+      width: 100% !important;
+      inset: 0 !important;
+    `};
   }
   .react-datepicker__month-container {
     > * {
       border: 0;
     }
+    ${media.lessThan("medium")`
+      width: 100% !important;
+      inset: 0 !important;
+    `};
   }
   .react-datepicker__month {
     margin: 0.5rem;
@@ -96,7 +122,7 @@ const Container = styled.div`
       }
     }
     .react-datepicker__day--today {
-      border: 2px solid var(--color-maingreen--75);
+      border: 1px solid var(--color-maingreen--75);
       line-height: calc(2rem - 2px);
     }
   }
@@ -156,38 +182,13 @@ const ClearBtn = styled.button`
   }
 `;
 
-const HomeDatepicker = ({ placeholder, setDisplayedDate }) => {
-  const display = useRef(null);
-  const [selectedDate, setSelectedDate] = useState(null);
+const HomeDatepicker = ({ placeholder, selectedDate, setSelectedDate }) => {
   const handleClearClick = () => {
-    setSelectedDate(null);
+    setSelectedDate("");
   };
-  const months = {
-    Jan: 1,
-    Feb: 2,
-    Mar: 3,
-    Apr: 4,
-    May: 5,
-    Jun: 6,
-    Jul: 7,
-    Aug: 8,
-    Sep: 9,
-    Oct: 10,
-    Nov: 11,
-    Dec: 12,
-  };
-  useEffect(() => {
-    if (!selectedDate) return setDisplayedDate("");
-    const formatedArr = `${selectedDate}`.split(" ").slice(1, 4);
-    const formatedDate = `${formatedArr[2]}년 ${months[formatedArr[0]]}월 ${
-      formatedArr[1][0] === "0" ? formatedArr[1].slice(1) : formatedArr[1]
-    }일`;
-    setDisplayedDate(formatedDate);
-  }, [selectedDate]);
   return (
     <Container>
       <DatePicker
-        ref={display}
         showPopperArrow={false}
         minDate={new Date()}
         dateFormat="yyyy년 MM월 dd일"
@@ -239,7 +240,8 @@ const HomeDatepicker = ({ placeholder, setDisplayedDate }) => {
 
 HomeDatepicker.propTypes = {
   placeholder: PropTypes.string.isRequired,
-  setDisplayedDate: PropTypes.func.isRequired,
+  selectedDate: PropTypes.oneOfType([PropTypes.instanceOf(Date), PropTypes.string]).isRequired,
+  setSelectedDate: PropTypes.func.isRequired,
 };
 
 export default HomeDatepicker;

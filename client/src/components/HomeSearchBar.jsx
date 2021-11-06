@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import media from "styled-media-query";
 import { IoSearch } from "react-icons/io5";
+import { IoIosArrowBack } from "react-icons/io";
 import SearchInput from "./SearchInput";
 import InputDatepicker from "./InputDatepicker";
 import InputDatalist from "./InputDatalist";
 import InputTotalNum from "./InputTotalNum";
+import Btn from "./Btn";
 import { useDispatch } from "react-redux";
 import gathApi from "../api/gath";
 import { searchGathAction } from "../store/actions";
@@ -17,13 +19,30 @@ const InputContainer = styled.form`
   border-radius: 1rem;
   display: flex;
   ${media.lessThan("medium")`
-  margin-bottom: 1.25rem;
-  width: calc(100% - 6rem);
+    margin-bottom: 1.25rem;
+    width: calc(100% - 6rem);
   `}
   ${media.lessThan("small")`
-  width: 100%;
-  min-width: 20rem;
+    width: 100%;
+    min-width: 20rem;
   `}
+  .gath-search-btn {
+    width: 100%;
+    height: 100%;
+    background-color: var(--color-maingreen--75);
+    color: var(--color-white);
+  }
+  .gath-search-btn.pc {
+    padding: 0;
+    border-radius: 0.6rem;
+  }
+  .gath-search-btn.mobile {
+    width: 100%;
+    ${media.lessThan("small")`
+      min-width: 20rem;
+      height: 3.2rem;
+    `}
+  }
 `;
 
 const Placeholder = styled.div`
@@ -62,19 +81,6 @@ const SearchIcon = styled(IoSearch)`
   display: inline-block;
 `;
 
-const SearchBtnView = styled(SearchIcon)`
-  background-color: var(--color-maingreen--75);
-  color: var(--color-white);
-  border-radius: 0.6rem;
-  cursor: not-allowed;
-  ${(props) =>
-    props.disabled &&
-    css`
-      opacity: 0.5;
-      cursor: not-allowed;
-    `}
-`;
-
 const SearchBtnContainer = styled.div`
   flex: 0 0 auto;
   display: flex;
@@ -84,20 +90,57 @@ const SearchBtnContainer = styled.div`
   position: relative;
 `;
 
-const SubmitInput = styled.input`
-  position: absolute;
-  left: 0.5rem;
-  top: 0.5rem;
-  right: 0.5rem;
-  bottom: 0.5rem;
-  width: calc(100% - 1rem);
-  border-radius: 0.6rem;
-  z-index: 1;
-  :hover {
-    cursor: pointer;
-    background-color: var(--color-white);
-    opacity: 0.2;
+const PopupContainer = styled.div`
+  background-color: var(--color-white);
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  display: flex !important;
+  flex-direction: column;
+  overflow: auto;
+  outline: none;
+  z-index: 1000;
+`;
+
+const BackwardBtn = styled.button`
+  border-radius: 0.5rem;
+  padding: 0.25rem;
+  width: 2rem;
+  height: 2rem;
+  font-size: 1.5rem;
+  color: var(--color-black);
+  margin-right: 0.5em;
+`;
+
+const PopupHeader = styled.div`
+  flex: 0 0 auto;
+  padding: 4rem 1rem 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const PopupBody = styled.div`
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  > div {
+    position: relative;
+    height: fit-content;
+    margin: 0 1rem 1rem 1rem;
+    :last-of-type {
+      margin-bottom: 0;
+    }
   }
+  overflow: auto;
+`;
+
+const PopupFooter = styled.div`
+  flex: 0 0 auto;
+  padding: 1rem;
 `;
 
 const HomeSearchBar = () => {
@@ -117,6 +160,16 @@ const HomeSearchBar = () => {
       { id: 3, timeName: "저녁" },
     ],
   });
+  const [popupShown, setPopupShown] = useState(false);
+
+  useEffect(() => {
+    document.body.style.cssText = `position: fixed; top: -${window.scrollY}px`;
+    return () => {
+      const scrollY = document.body.style.top;
+      document.body.style.cssText = `position: ""; top: "";`;
+      window.scrollTo(0, parseInt(scrollY || "0") * -1);
+    };
+  }, []);
 
   useEffect(() => {
     // 운동, 지역 리스트 받아오기
@@ -151,17 +204,37 @@ const HomeSearchBar = () => {
     }
   }, [sportInput, areaInput]);
 
-  const handleSearchModalOn = () => {};
+  const showPopup = () => {
+    setPopupShown(true);
+  };
+
+  const hidePopup = () => {
+    setPopupShown(false);
+  };
 
   const handleSubmit = async (event) => {
     try {
       event.preventDefault();
       // 검색 조건 정제
+      const months = {
+        Jan: "01",
+        Feb: "02",
+        Mar: "03",
+        Apr: "04",
+        May: "05",
+        Jun: "06",
+        Jul: "07",
+        Aug: "08",
+        Sep: "09",
+        Oct: "10",
+        Nov: "11",
+        Dec: "12",
+      };
       const refinedSportInput = sportInput.match(/[A-Za-z가-힣]*/).join("");
-      const refinedDateInput = dateInput
-        .match(/[0-9]*/g)
-        .filter((el) => el.length > 0)
-        .join("-");
+      const refinedDateArr = `${dateInput}`?.split(" ").slice(1, 4);
+      const refinedDateInput = refinedDateArr.length
+        ? `${refinedDateArr[2]}-${months[refinedDateArr[0]]}-${refinedDateArr[1]}`
+        : "";
       // 모임 검색
       const res = await gathApi.findGath({
         sport: refinedSportInput,
@@ -172,6 +245,8 @@ const HomeSearchBar = () => {
       });
       // 리덕스 스토어의 검색 조건, 모임 리스트 업데이트
       dispatch(searchGathAction(res.data));
+      // SearchPopup이 보여지고 있을 경우, 숨기기
+      if (popupShown) setPopupShown(false);
     } catch (err) {
       console.error(err);
     }
@@ -199,7 +274,12 @@ const HomeSearchBar = () => {
           />
         </SearchInput>
         <SearchInput isDate name="날짜" for="date">
-          <InputDatepicker id="date" placeholder="날짜 입력" setDisplayedDate={setDateInput} />
+          <InputDatepicker
+            id="date"
+            placeholder="날짜 입력"
+            selectedDate={dateInput}
+            setSelectedDate={setDateInput}
+          />
         </SearchInput>
         <SearchInput isTime name="시간" for="time">
           <InputDatalist
@@ -210,7 +290,7 @@ const HomeSearchBar = () => {
             setItem={setTimeInput}
           />
         </SearchInput>
-        <SearchInput name="인원" for="totalNum">
+        <SearchInput name="인원" for="totalNum" hideDivider>
           <InputTotalNum
             inputId="totalNum"
             placeholder="인원 입력"
@@ -220,13 +300,96 @@ const HomeSearchBar = () => {
         </SearchInput>
       </InputList>
       <SearchBtnContainer className="pc">
-        {searchable && <SubmitInput type="submit" value="" />}
-        <SearchBtnView size={3} className="search-gathering" disabled={!searchable} />
+        <Btn
+          type="submit"
+          onClick={handleSubmit}
+          className="gath-search-btn pc"
+          disabled={!searchable}
+        >
+          <SearchIcon size={3} />
+        </Btn>
       </SearchBtnContainer>
-      <Placeholder className="mobile" onClick={handleSearchModalOn}>
+      <Placeholder className="mobile" onClick={showPopup}>
         <SearchIcon id="placeholder-icon" size={3} />
         <p id="placeholder-text">어떤 운동하세요?</p>
       </Placeholder>
+      {popupShown && (
+        <PopupContainer className="mobile">
+          <PopupHeader>
+            <BackwardBtn onClick={hidePopup}>
+              <IoIosArrowBack />
+            </BackwardBtn>
+            <Placeholder className="mobile" onClick={showPopup}>
+              <p id="placeholder-text">어떤 운동 모임을 찾으시나요?</p>
+            </Placeholder>
+          </PopupHeader>
+          <PopupBody>
+            <div>
+              <SearchInput isSport name="운동" for="sport" hideDivider>
+                <InputDatalist
+                  id="sport"
+                  values={list.sport}
+                  placeholder="어떤 운동하세요?"
+                  item={sportInput}
+                  setItem={setSportInput}
+                />
+              </SearchInput>
+            </div>
+            <div>
+              <SearchInput name="지역" for="area" hideDivider>
+                <InputDatalist
+                  id="area"
+                  values={list.area}
+                  placeholder="지역 입력"
+                  item={areaInput}
+                  setItem={setAreaInput}
+                />
+              </SearchInput>
+            </div>
+            <div>
+              <SearchInput isDate name="날짜" for="date" hideDivider>
+                <InputDatepicker
+                  id="date"
+                  placeholder="날짜 입력"
+                  selectedDate={dateInput}
+                  setSelectedDate={setDateInput}
+                />
+              </SearchInput>
+            </div>
+            <div>
+              <SearchInput isTime name="시간" for="time" hideDivider>
+                <InputDatalist
+                  id="time"
+                  values={list.time}
+                  placeholder="시간 입력"
+                  item={timeInput}
+                  setItem={setTimeInput}
+                />
+              </SearchInput>
+            </div>
+            <div>
+              <SearchInput name="인원" for="totalNum" hideDivider>
+                <InputTotalNum
+                  inputId="totalNum"
+                  placeholder="인원 입력"
+                  total={totalNumInput}
+                  setTotal={setTotalNumInput}
+                />
+              </SearchInput>
+            </div>
+          </PopupBody>
+          <PopupFooter>
+            <Btn
+              type="submit"
+              onClick={handleSubmit}
+              className="gath-search-btn mobile"
+              disabled={!searchable}
+            >
+              찾아보기
+            </Btn>
+          </PopupFooter>
+        </PopupContainer>
+      )}
     </InputContainer>
   );
 };

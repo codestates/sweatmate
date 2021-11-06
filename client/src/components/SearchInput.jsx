@@ -1,33 +1,44 @@
 import React, { useRef } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import PropTypes from "prop-types";
 import media from "styled-media-query";
 
 const InputWrapper = styled.label`
   height: 100%;
-  min-width: ${(props) => {
-    if (props.sort === "운동") return "9rem";
-    if (props.sort === "날짜") return "11.5rem";
-    if (props.sort === "시간") return "5rem";
-    return "6.5rem";
-  }};
-  max-width: ${(props) => {
-    if (props.sort === "운동") return "12rem";
-    if (props.sort === "날짜") return "15rem";
-    if (props.sort === "시간") return "8rem";
-    return "10rem";
-  }};
-  ${media.lessThan("medium")`
-    min-width: unset;
-    max-width: unset;
-    height: fit-content;
+  ${media.greaterThan("medium")`
+    min-width: ${(props) => {
+      if (props.sort === "운동") return "9rem";
+      if (props.sort === "날짜") return "11.5rem";
+      if (props.sort === "시간") return "5rem";
+      return "6.5rem";
+    }};
+    max-width: ${(props) => {
+      if (props.sort === "운동") return "12rem";
+      if (props.sort === "날짜") return "15rem";
+      if (props.sort === "시간") return "8rem";
+      return "10rem";
+    }};
   `};
   border-radius: 1rem;
   display: flex;
   :hover {
-    background-color: var(--color-darkwhite);
+    ${media.greaterThan("medium")`
+      background-color: var(--color-darkwhite);
+    `};
   }
   position: relative;
+  .bg {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 4rem;
+    border: 1px solid var(--color-lightgray);
+    border-radius: 1rem;
+    ${media.greaterThan("medium")`
+      display: none;
+    `};
+  }
 `;
 
 const InputArea = styled.div`
@@ -36,11 +47,14 @@ const InputArea = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  width: 100%;
+  margin: 0.75rem 0;
+  ${media.lessThan("medium")`
+    height: fit-content;
+  `};
 `;
 
 const Name = styled.div`
-  padding: 0.75rem 1rem 0.25rem;
+  margin: 0 1rem;
   font-size: 0.8rem;
   color: var(--color-darkgray);
   flex: 0 0 1;
@@ -55,9 +69,24 @@ const Divider = styled.div`
 `;
 
 const SearchInput = ({ name, children, hideDivider }) => {
-  const label = useRef(null);
+  const box = useRef(null);
   return (
-    <InputWrapper sort={name} ref={label}>
+    <InputWrapper
+      onFocus={() => {
+        box.current.style.cssText = css`
+          border: 1px solid var(--color-maingreen--50);
+        `;
+        console.log("focused");
+      }}
+      onBlur={() => {
+        box.current.style.cssText = css`
+          border: 1px solid var(--color-lightgray);
+        `;
+        console.log("blured");
+      }}
+      sort={name}
+    >
+      <div className="bg" ref={box} />
       <InputArea>
         <Name>{name}</Name>
         {children}

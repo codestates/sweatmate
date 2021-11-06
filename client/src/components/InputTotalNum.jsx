@@ -1,16 +1,17 @@
 import React, { useRef } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import PropTypes from "prop-types";
+import media from "styled-media-query";
 import { HiPlusSm, HiMinusSm } from "react-icons/hi";
 import { IoCloseCircle } from "react-icons/io5";
 
 const Container = styled.div`
-  width: 100%;
+  margin-top: 0.5rem;
 `;
 
 const Input = styled.input`
+  padding: 0 1rem;
   width: 100%;
-  padding: 0 1rem 0.75rem;
   color: var(--color-black);
   ::placeholder {
     color: var(--color-gray);
@@ -18,14 +19,12 @@ const Input = styled.input`
   }
   outline: none;
   font-size: 1rem;
-  margin-top: 0.25rem;
 `;
 
 const Popper = styled.div`
   position: absolute;
-  left: 0;
-  min-width: calc(100% + 4rem);
-  margin-top: 0.75rem;
+  margin-top: 1.75rem;
+  width: calc(100% + 4rem);
   padding: 1rem;
   background-color: var(--color-white);
   font-size: 1.125rem;
@@ -33,7 +32,14 @@ const Popper = styled.div`
   border-radius: 1rem;
   overflow: auto;
   filter: drop-shadow(0px 6px 10px var(--color-shadow));
-  visibility: hidden;
+  display: none;
+  ${media.lessThan("medium")`
+    width: calc(100vw - 2rem);
+    margin-top: 1.25rem;
+    margin-bottom: -0.75rem;
+    filter: none;
+    border: 1px solid var(--color-maingreen--50);
+  `};
 `;
 
 const PopperInner = styled.div`
@@ -43,18 +49,21 @@ const PopperInner = styled.div`
 `;
 
 const PopperInput = styled.input`
-  width: calc(100% - 7rem);
+  max-width: calc(100% - 4rem);
   text-align: center;
-  color: ${(props) => props.disabled && "var(--color-gray)"};
+  ${(props) =>
+    props.disabled &&
+    css`
+      color: var(--color-gray);
+    `};
 `;
 
 const PlusBtn = styled(HiPlusSm)`
+  flex: 0 0 auto;
   color: var(--color-gray);
   width: 2rem;
   height: 2rem;
-  font-size: 1.5rem;
   padding: 0.25rem;
-  margin-left: 1.5rem;
   border-radius: 50%;
   border: 1px solid var(--color-gray);
   :hover,
@@ -65,12 +74,11 @@ const PlusBtn = styled(HiPlusSm)`
 `;
 
 const MinusBtn = styled(HiMinusSm)`
+  flex: 0 0 auto;
   color: var(--color-gray);
   width: 2rem;
   height: 2rem;
-  font-size: 1.5rem;
   padding: 0.25rem;
-  margin-right: 1.5rem;
   border-radius: 50%;
   border: 1px solid var(--color-gray);
   :hover,
@@ -93,8 +101,9 @@ const DisabledMinus = styled(MinusBtn)`
 const ClearBtn = styled.button`
   position: absolute;
   right: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
+  top: 1.375rem;
+  /* top: 50%;
+  transform: translateY(-50%); */
   width: 1.25rem;
   height: 1.25rem;
   font-size: 1.25rem;
@@ -118,10 +127,14 @@ function InputTotalNum({ inputId, placeholder, total, setTotal }) {
     hidePopper();
   };
   const showPopper = () => {
-    popper.current.style.cssText = `visibility: visible`;
+    popper.current.style.cssText = css`
+      display: block;
+    `;
   };
   const hidePopper = () => {
-    popper.current.style.cssText = `visibility: hidden`;
+    popper.current.style.cssText = css`
+      display: none;
+    `;
   };
   return (
     <Container
@@ -137,7 +150,7 @@ function InputTotalNum({ inputId, placeholder, total, setTotal }) {
       <Popper ref={popper}>
         <PopperInner>
           {total && total > 2 ? <MinusBtn onClick={hadleMinusClick} /> : <DisabledMinus />}
-          <PopperInput id={inputId} type="number" value={total || 1} disabled={!total} readOnly />
+          <PopperInput id={inputId} value={total || 1} disabled={!total} readOnly />
           <PlusBtn onClick={hadlePlusClick} />
         </PopperInner>
       </Popper>

@@ -77,7 +77,6 @@ const DetailContainer = styled.div`
 
 const DetailHeader = styled.div`
   flex: 0 0 auto;
-  background-color: inherit;
   overflow: hidden;
   display: flex;
   flex-direction: column;

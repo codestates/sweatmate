@@ -14,7 +14,7 @@ const ModalWrapper = styled.div`
   right: 0;
   bottom: 0;
   overflow: auto;
-  outline: 0;
+  outline: none;
   z-index: 1000;
 `;
 
@@ -107,6 +107,10 @@ const Modal = ({ children, bgColor }) => {
       </ModalWrapper>
     </Portal>
   );
+};
+
+Modal.defaultProps = {
+  bgColor: "",
 };
 
 Modal.propTypes = {
