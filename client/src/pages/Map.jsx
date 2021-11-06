@@ -59,7 +59,7 @@ const GathList = styled.div`
     flex-direction: row;
     position: absolute;
     left: 1rem;
-    bottom: 4.8rem;  
+    bottom: 0.5rem;  
     width: 95%;
     margin: ${(props) => (props.listView ? "0rem 0rem" : "-18rem 0rem")};
     > * {
@@ -116,6 +116,9 @@ const SearchHereButton = styled(Btn)`
   span {
     margin-right: 0.5rem;
   }
+  ${media.lessThan("medium")`
+    bottom: 15.5rem;
+  `};
 `;
 
 const Center = styled.button`
