@@ -28,6 +28,7 @@ const MapContainer = styled.div`
 `;
 
 const GathList = styled.div`
+  box-sizing: content-box;
   border-radius: 1rem;
   display: flex;
   max-height: 97%;
