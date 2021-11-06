@@ -53,7 +53,7 @@ const SearchContainer = styled.div`
     ${media.lessThan("small")`
       width: 100%;
       min-width: 20rem;
-      height: 3rem;
+      height: 3.2rem;
     `}
     background-color: var(--color-maingreen--75);
     color: var(--color-white);

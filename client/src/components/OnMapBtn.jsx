@@ -20,7 +20,7 @@ const ButtonContainer = styled(Link)`
   `};
   ${media.lessThan("small")`
     width: 100%;
-    height: 3rem;
+    height: 2.8rem;
     /* max-width: 25rem; */
     min-width: 20rem;
     justify-content: center;
