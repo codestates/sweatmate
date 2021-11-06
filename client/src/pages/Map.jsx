@@ -33,7 +33,6 @@ const GathList = styled.div`
   max-height: 97%;
   z-index: 10;
   overflow: scroll;
-  margin: ${(props) => (props.listView ? "0rem 0rem" : "0rem -20rem")};
   transition: margin 0.7s ease-in-out;
   -moz-transition: margin 0.7s ease-in-out;
   -webkit-transition: margin 0.7s ease-in-out;
@@ -53,6 +52,7 @@ const GathList = styled.div`
     top: 0.8rem;
     right: 1rem;
     width: 21rem;
+    margin: ${(props) => (props.listView ? "0rem 0rem" : "0rem -20rem")};
     `};
 
   ${media.lessThan("medium")`
@@ -61,6 +61,7 @@ const GathList = styled.div`
     left: 1rem;
     bottom: 4.8rem;  
     width: 95%;
+    margin: ${(props) => (props.listView ? "0rem 0rem" : "-18rem 0rem")};
     > * {
       margin-right: 1rem;
     }
