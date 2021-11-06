@@ -27,7 +27,7 @@ module.exports = {
   setCookie: (res, token) => {
     res.cookie("jwt", token, {
       secure: true,
-      samesite: "none",
+      sameSite: "none",
       httpOnly: true,
     });
   },
@@ -35,7 +35,7 @@ module.exports = {
   clearCookie: (res) => {
     res.clearCookie("jwt", {
       secure: true,
-      samesite: "none",
+      sameSite: "none",
       httpOnly: true,
     });
   },

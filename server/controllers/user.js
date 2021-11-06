@@ -5,7 +5,7 @@ const {
   decrementGatheringsOfUser,
 } = require("./functions/sequelize");
 const { clearCookie } = require("./functions/token");
-const { DBERROR, deleteImageinTable } = require("./functions/utility");
+const { DBERROR, deleteImageinTable, dropUser } = require("./functions/utility");
 const areaList = require("../resource/areaList");
 const sportsList = require("../resource/sportList");
 
@@ -71,7 +71,7 @@ module.exports = {
       if (!userInfo) {
         return res.status(404).json({ message: "User not found" });
       }
-      await decrementGatheringsOfUser(userInfo.dataValues.id);
+      dropUser(userId, req);
       deleteImageinTable(userInfo.dataValues.image);
       // 회원 탈퇴에 의해 종료된 게더링에 참여중인 유저들에게 탈퇴에 의한 게더링이 종료 되었음을 이벤트 알림으로 줘야함
       // 몽구스의 게더링 또한 같이 삭제되어야함

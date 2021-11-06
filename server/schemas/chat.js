@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
+
 const chatLog = new Schema({
   id: {
     type: String,
@@ -31,5 +32,17 @@ const chatSchema = new Schema({
     required: true,
   },
 });
+
+chatSchema.statics.typeChat = async function (room, _id, userId, message, date) {
+  const AddedChatInfo = await this.findOneAndUpdate(
+    { _id: room },
+    {
+      $push: { chatLog: { _id, id: userId, message, date } },
+    },
+    { returnDocument: "after" }
+  );
+
+  return AddedChatInfo.chatInfo;
+};
 
 module.exports = mongoose.model("Chat", chatSchema);

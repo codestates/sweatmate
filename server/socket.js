@@ -5,7 +5,10 @@ const {
 } = require("./config");
 const { verifyAccessToken } = require("./controllers/functions/token");
 const { getVaildGatheringId } = require("./controllers/functions/sequelize");
-const { typeChat, createNotification } = require("./controllers/functions/mongoose");
+const mongoose = require("mongoose");
+const chatModel = require("./schemas/chat");
+const noticeModel = require("./schemas/notification");
+const { getCurrentTime } = require("./controllers/functions/utility");
 
 module.exports = (server, app) => {
   const realTime = app.get("realTime");
@@ -19,6 +22,7 @@ module.exports = (server, app) => {
   });
   const main = io.of("/");
   const chat = io.of("/chat");
+
   app.set("main", main);
   app.set("chat", chat);
 
@@ -53,7 +57,13 @@ module.exports = (server, app) => {
     const room = socket.handshake.query.room;
     // 소켓을 해당 입장하려는 룸에 입장시킴
     // 유저 관리 객체에 해당 유저 상태를 1로 변경
-    realTime[room][decoded.id] = 1;
+    try {
+      realTime[room][decoded.id] = 1;
+    } catch (err) {
+      //만약 이미 없어진 방에 입장하려 한다면 연결을 끊음
+      socket.disconnectSockets();
+      return;
+    }
     socket.join(room);
     socket.curRoom = room;
     next();
@@ -67,9 +77,11 @@ module.exports = (server, app) => {
     socket.on("leaveMainRoom", (room) => {
       socket.leave(room);
     });
+
     socket.on("leaveChatRoom", (room) => {
       socket.join(room);
     });
+
     socket.on("signout", () => {
       main.in(socket.id).disconnectSockets();
     });
@@ -84,48 +96,35 @@ module.exports = (server, app) => {
     //Client TODO: 메시지 보낼 때 emit("message", userInfo:{id, nickname,image}, message)
     socket.on("message", async (userInfo, message) => {
       // 채팅창에 접속중인 유저들에 대한 이벤트
-
-      const { id, nickname, image } = userInfo;
-      const { _id, date, gatheringInfo } = await typeChat(1, 1, message);
-      chat.to(socket.curRoom).emit("message", { _id, id, message, nickname, image, date });
+      const { id: userId, nickname, image } = userInfo;
+      const date = getCurrentTime();
+      const _id = mongoose.Types.ObjectId(); // 채팅로그의 _id + 알림의 _id 동시에 사용
+      const gatheringInfo = await chatModel.typeChat(socket.curRoom, _id, userId, message, date);
+      chat.to(socket.curRoom).emit("message", { _id, id: userId, message, nickname, image, date });
 
       // 채팅창 밖의 유저들에 대한 이벤트
-
-      // const userList = Object.keys(realTime[socket.curRoom]).filter((el) => {
-      //   return obj[socket.curRoom][el] === 0;
-      // });
-
-      // 유저들의 notification 스키마에 추가될 이벤트
-      // 유저아이디들이 부여되는데 서버는 유저 하나하나가 누군지 모르기 때문에 objectID를 전달 불가능한 듯 하다
-      // 상의하기
-
-      // userList.forEach(async (userId) => {
-      //   const {
-      //     _id,
-      //     id: gatheringId,
-      //     type,
-      //     url,
-      //     target,
-      //     message,
-      //   } = await createNotification(
-      //     userId,
-      //     socket.curRoom,
-      //     "new",
-      //     `/chat/${socket.curRoom}`,
-      //     null,
-      //     `${gatheringInfo.title} 모임에서 새로운 메시지가 있습니다.`
-      //   );
-      // });
-
-      main.to(socket.curRoom).emit("Notice", {
-        url: `/chat/${socket.curRoom}`,
-        gatheringId: socket.curRoom,
-        type: "new",
-        message: `${gatheringInfo.title} 모임에서 새로운 메시지가 있습니다.`,
+      // 유저 알림 스키마에서 _id 필드는 삭제하고 대신 key 필드로 고유값이 들어감.
+      const userList = Object.keys(realTime[socket.curRoom]).filter((el) => {
+        return obj[socket.curRoom][el] === 0;
       });
+
+      const noticeInfo = {
+        _id,
+        room: socket.curRoom,
+        type: "new",
+        url: `/chat/${socket.curRoom}`,
+        target: null,
+        message: `${gatheringInfo.title} 모임에서 새로운 메시지가 있습니다.`,
+      };
+
+      await noticeModel.createNotice(userList, noticeInfo); // userList: 유저 아이디가 담긴 배열, noticeInfo: 알림의 정보가 담긴 객체
+
+      //메인에 notice 알림, new 타입의 경우에 이미 해당 gathering의 new 타입 메시지가 있을 경우에 notification 목록에 추가 생성되지않음
+      //그래서 클라이언트에서도 이미 new 타입과 gatheringId가 같은 알림을 이미 가지고 있다면 스테이트에 추가하면 안됨.!
+      main.to(socket.curRoom).emit("notice", noticeInfo);
     });
 
-    socket.on("disconnect", (socket) => {
+    socket.on("disconnect", (reason) => {
       console.log("❌ /chat 클라이언트 접속 해제!", socket.id);
       realTime[socket.curRoom][socket.userId] = 0;
     });

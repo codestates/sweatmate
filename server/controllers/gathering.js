@@ -6,13 +6,15 @@ const {
   findOrCreateUser_gathering,
   User_gatheringFindOne,
 } = require("./functions/sequelize");
-const mongooseChatModel = require("../schemas/chat");
+const chatModel = require("../schemas/chat");
+const noticeModel = require("../schemas/notification");
 const {
   createValidObject,
   DBERROR,
   getCurrentTime,
   modifyGatheringFormat,
 } = require("./functions/utility");
+const mongoose = require("mongoose");
 
 module.exports = {
   getGatheringList: async (req, res) => {
@@ -51,12 +53,12 @@ module.exports = {
     const { userId, setGatheringInfo, sportInfo } = res.locals;
     try {
       const createdGathering = await createGathering(setGatheringInfo, userId);
+      const { id, creator, title, sportName, sportEmoji } = createdGathering[0];
       //mongoDB chat 세팅
       //TODO: 유저 관리 객체에 만들어진 게더링 추가 + 만든 유저의 상태도 0 으로 자동 추가
-      //TODO: 기본적인 채팅로그 "~~모임 채팅방입니다." 시스템메시지 초기 값 추가 논의
-      const { id, creator, title } = createdGathering[0];
       const setChatInfo = { _id: id, chatInfo: { title, ...sportInfo }, creatorId: creator.id };
-      await mongooseChatModel.create(setChatInfo);
+      req.app.get("realTime")[id] = { [creator.id]: 0 };
+      await chatModel.create(setChatInfo);
       //mongoDB
       return res.status(200).json(modifyGatheringFormat(createdGathering)[0]);
     } catch (err) {
@@ -73,9 +75,29 @@ module.exports = {
         return res.status(403).json({ message: "You don't have permission." });
       }
       gatheringInfo.update({ done: 1 });
-      //TODO: 게더링이 조기종료 했다고 모든 참여자에게 알림
-      //TODO: 유저 관리 객체에 해당 게더링에 참여 중인 유저들을 조회 후 유저들에게 notification 알림 추가 후 유저 관리 객체에서 해당게더링 삭제
-      //TODO: 유저들의 알림 목록에서 해당 게더링을 가진 이벤트 목록 삭제
+      const { title } = gatheringInfo.dataValues;
+      //이벤트
+      const realTime = req.app.get("realTime");
+      const userIds = Object.keys(realTime[gatheringId]);
+      const _id = mongoose.Types.ObjectId();
+      const main = req.app.get("main");
+      const chat = req.app.get("chat");
+      const noticeInfo = {
+        _id,
+        room: gatheringId,
+        type: "earlydone",
+        url: null,
+        target: null,
+        message: `${title} 모임이 조기 종료되었습니다`,
+      };
+      noticeModel.createNotice(userIds, noticeInfo);
+      main.to(gatheringId).emit("notice", noticeInfo);
+      chat.to(gatheringId).emit("notice", noticeInfo);
+      chat.sockets.clients(gatheringId).forEach(function (s) {
+        s.leave(gatheringId);
+      });
+      delete realTime[gatheringId];
+      //이벤트
       const endedGatheringInfo = await findAllGathering({ id: gatheringId });
       return res.status(200).json(modifyGatheringFormat(endedGatheringInfo)[0]);
     } catch (err) {
@@ -92,7 +114,7 @@ module.exports = {
         return res.status(400).json({ message: "already participating" });
       }
       const gatheringInfo = await gatheringFindOne({ id: gatheringId });
-      const { totalNum, currentNum, done, date } = gatheringInfo;
+      const { totalNum, currentNum, done, date, title } = gatheringInfo;
       const gatheringSetDay = +new Date(date);
       const currentDay = +new Date(getCurrentTime().split(" ")[0]);
       if (totalNum <= currentNum || done === 1 || gatheringSetDay < currentDay) {
@@ -100,6 +122,28 @@ module.exports = {
         return res.status(400).json({ message: "already full of people or ended gathering" });
       }
       // TODO: 유저가 게더링에 참여했다는 이벤트를 모든 참여자에게 알림 + 유저 관리 객체에 해당 유저 추가
+      //이벤트
+      const userInfo = await userFindOne({ id: userId });
+      const { nickname } = userInfo.dataValues;
+      const realTime = req.app.get("realTime");
+      const userIds = Object.keys(realTime[gatheringId]);
+      const _id = mongoose.Types.ObjectId();
+      const main = req.app.get("main");
+      const chat = req.app.get("chat");
+      const noticeInfo = {
+        _id,
+        room: gatheringId,
+        type: "join",
+        url: `/chat/${gatheringId}`,
+        target: userId,
+        message: `${nickname}님이 ${title} 모임에 참여했습니다`,
+      };
+      // 채팅 시스템 알람이 없기 때문에 채팅에 참여중인 사람도 같이 알람을 받아야 함
+      noticeModel.createNotice(userIds, noticeInfo);
+      main.to(gatheringId).emit("notice", noticeInfo);
+      chat.to(gatheringId).emit("notice", noticeInfo);
+      realTime[gatheringId][userId] = 0;
+      //이벤트
       await gatheringInfo.update({ currentNum: currentNum + 1 });
       const joinedGatheringInfo = await findAllGathering({ id: gatheringId });
       return res.status(201).json(modifyGatheringFormat(joinedGatheringInfo)[0]);
@@ -116,6 +160,28 @@ module.exports = {
         return res.status(400).json({ message: "You are not in a state of participation." });
       }
       //TODO: 유저가 게더링을 떠났다는 이벤트를 모든 참여자에게 알림 + 유저 관리 객체에 해당 유저 제거
+      const userInfo = await userFindOne({ id: userId });
+      const { nickname } = userInfo.dataValues;
+      const realTime = req.app.get("realTime");
+      delete realTime[gatheringId][userId];
+      const userIds = Object.keys(realTime[gatheringId]);
+      const _id = mongoose.Types.ObjectId();
+      const main = req.app.get("main");
+      const chat = req.app.get("chat");
+      const noticeInfo = {
+        _id,
+        room: gatheringId,
+        type: "leave",
+        url: `/chat/${gatheringId}`,
+        target: userId,
+        message: `${nickname}님이 ${title} 모임을 떠났습니다.`,
+      };
+      // 채팅 시스템 알람이 없기 때문에 채팅에 참여중인 사람도 같이 알람을 받아야 함
+      noticeModel.createNotice(userIds, noticeInfo);
+      main.to(gatheringId).emit("notice", noticeInfo);
+      chat.to(gatheringId).emit("notice", noticeInfo);
+      //이벤트
+
       const gatheringInfo = await gatheringFindOne({ id: gatheringId });
       const { currentNum } = gatheringInfo;
       await User_gatheringInfo.destroy();
