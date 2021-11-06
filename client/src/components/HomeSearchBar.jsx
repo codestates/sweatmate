@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import media from "styled-media-query";
 import { IoSearch } from "react-icons/io5";
 import { IoIosArrowBack } from "react-icons/io";
@@ -26,6 +26,23 @@ const InputContainer = styled.form`
     width: 100%;
     min-width: 20rem;
   `}
+  .gath-search-btn {
+    width: 100%;
+    height: 100%;
+    background-color: var(--color-maingreen--75);
+    color: var(--color-white);
+  }
+  .gath-search-btn.pc {
+    padding: 0;
+    border-radius: 0.6rem;
+  }
+  .gath-search-btn.mobile {
+    width: 100%;
+    ${media.lessThan("small")`
+      min-width: 20rem;
+      height: 3.2rem;
+    `}
+  }
 `;
 
 const Placeholder = styled.div`
@@ -64,19 +81,6 @@ const SearchIcon = styled(IoSearch)`
   display: inline-block;
 `;
 
-const SearchBtnView = styled(SearchIcon)`
-  background-color: var(--color-maingreen--75);
-  color: var(--color-white);
-  border-radius: 0.6rem;
-  cursor: not-allowed;
-  ${(props) =>
-    props.disabled &&
-    css`
-      opacity: 0.5;
-      cursor: not-allowed;
-    `}
-`;
-
 const SearchBtnContainer = styled.div`
   flex: 0 0 auto;
   display: flex;
@@ -84,22 +88,6 @@ const SearchBtnContainer = styled.div`
   align-items: center;
   padding: 0.5rem;
   position: relative;
-`;
-
-const SubmitInput = styled.input`
-  position: absolute;
-  left: 0.5rem;
-  top: 0.5rem;
-  right: 0.5rem;
-  bottom: 0.5rem;
-  width: calc(100% - 1rem);
-  border-radius: 0.6rem;
-  z-index: 1;
-  :hover {
-    cursor: pointer;
-    background-color: var(--color-white);
-    opacity: 0.2;
-  }
 `;
 
 const PopupContainer = styled.div`
@@ -153,18 +141,6 @@ const PopupBody = styled.div`
 const PopupFooter = styled.div`
   flex: 0 0 auto;
   padding: 1rem;
-  .search {
-    width: 100%;
-    ${media.lessThan("small")`
-      min-width: 20rem;
-      height: 3rem;
-    `}
-    background-color: var(--color-maingreen--75);
-    color: var(--color-white);
-    :disabled {
-      opacity: 0.5;
-    }
-  }
 `;
 
 const HomeSearchBar = () => {
@@ -269,6 +245,8 @@ const HomeSearchBar = () => {
       });
       // 리덕스 스토어의 검색 조건, 모임 리스트 업데이트
       dispatch(searchGathAction(res.data));
+      // SearchPopup이 보여지고 있을 경우, 숨기기
+      if (popupShown) setPopupShown(false);
     } catch (err) {
       console.error(err);
     }
@@ -322,8 +300,14 @@ const HomeSearchBar = () => {
         </SearchInput>
       </InputList>
       <SearchBtnContainer className="pc">
-        {searchable && <SubmitInput type="submit" value="" />}
-        <SearchBtnView size={3} className="search-gathering" disabled={!searchable} />
+        <Btn
+          type="submit"
+          onClick={handleSubmit}
+          className="gath-search-btn pc"
+          disabled={!searchable}
+        >
+          <SearchIcon size={3} />
+        </Btn>
       </SearchBtnContainer>
       <Placeholder className="mobile" onClick={showPopup}>
         <SearchIcon id="placeholder-icon" size={3} />
@@ -395,7 +379,12 @@ const HomeSearchBar = () => {
             </div>
           </PopupBody>
           <PopupFooter>
-            <Btn className="search" disabled={!searchable} onClick={handleSubmit}>
+            <Btn
+              type="submit"
+              onClick={handleSubmit}
+              className="gath-search-btn mobile"
+              disabled={!searchable}
+            >
               찾아보기
             </Btn>
           </PopupFooter>
