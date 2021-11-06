@@ -9,12 +9,7 @@ const {
   joinGathering,
   leaveGathering,
 } = require("../controllers/gathering");
-const {
-  createConditionsForSearching,
-  isAuth,
-  checkPermission,
-  checkToCreateGathering,
-} = require("../middlewares");
+const { createConditionsForSearching, isAuth, checkToCreateGathering } = require("../middlewares");
 
 router.get("/", createConditionsForSearching, getGatheringList); // req.query 게더링 조회
 router.get("/random", getRandomGathering); // 유저 정보, 비로그인 에 따라서 게더링 랜덤 조회
