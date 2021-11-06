@@ -14,24 +14,27 @@ const chatLog = new Schema({
     type: String,
   },
 });
-const chatSchema = new Schema({
-  _id: {
-    type: Number,
-    required: true,
-  }, // mysql의 gatheringId가 들어감
-  chatInfo: {
-    type: Object, // 타이틀, 스포츠 (한글), 스포츠 이모지,
+const chatSchema = new Schema(
+  {
+    _id: {
+      type: Number,
+      required: true,
+    }, // mysql의 gatheringId가 들어감
+    chatInfo: {
+      type: Object, // 타이틀, 스포츠 (한글), 스포츠 이모지,
+    },
+    chatLog: {
+      type: [chatLog],
+      required: true,
+      // default: [{ user: "userid", message: "새로운 모임이 만들어졌습니다.", date: Date() },] //{id, userId, nickname, image, date}
+    },
+    creatorId: {
+      type: String,
+      required: true,
+    },
   },
-  chatLog: {
-    type: [chatLog],
-    required: true,
-    // default: [{ user: "userid", message: "새로운 모임이 만들어졌습니다.", date: Date() },] //{id, userId, nickname, image, date}
-  },
-  creatorId: {
-    type: String,
-    required: true,
-  },
-});
+  { versionKey: false }
+);
 
 chatSchema.statics.typeChat = async function (room, _id, userId, message, date) {
   const AddedChatInfo = await this.findOneAndUpdate(
