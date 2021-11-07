@@ -851,7 +851,7 @@ paths:
                   properties:
                     _id:
                       type: string
-                    gatheringId:
+                    room:
                       type: string
                     type:
                       type: string
@@ -863,7 +863,7 @@ paths:
                       type: string
                   example:
                     _id: 618674f4285940e3cc48355a,
-                    gatheringId: null,
+                    room: null,
                     type: welcome,
                     url: users/59117a45-6b95-4c2e-a19e-ackie019rhfi,
                     target: null,
