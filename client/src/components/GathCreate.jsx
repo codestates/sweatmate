@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { modalOffAction } from "../store/actions";
+import { gathDetailModalOnAction, modalOffAction } from "../store/actions";
 import { useDispatch, useSelector } from "react-redux";
 import GathSearch from "./GathSearch";
 import GathCard from "./GathCard";
@@ -9,25 +9,27 @@ import { MdOutlineKeyboardArrowLeft, MdOutlineKeyboardArrowRight } from "react-i
 import gathApi from "../api/gath";
 
 const GathCreateContainer = styled.div`
+  width: 100%;
+  height: fit-content;
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 100%;
-  height: 100%;
 `;
 
 const Info = styled.div`
-  width: 50rem;
+  width: 100%;
+  padding: 2rem 2rem 1.5rem;
   * {
     margin: 1.2rem 0rem;
   }
   ${media.between("medium", "large")`
     /* screen width is between 768px (medium) and 1170px (large) */
-    width: 35rem;
+    width: 40rem;
   `}
   ${media.lessThan("medium")`
     /* screen width is between 768px (medium) and 1170px (large) */
     width: 20rem;
+    padding: 0rem 0rem 1.5rem;
   `}
 `;
 
@@ -39,9 +41,11 @@ const MovePageButtons = styled.div`
   width: 50rem;
   height: 12rem;
   z-index: ${(props) => props.isOnSearch && -1};
+  padding: 2rem 2rem 1.5rem;
+
   ${media.between("medium", "large")`
   /* screen width is between 768px (medium) and 1170px (large) */
-  width: 35rem;
+  width: 40rem;
   `}
   ${media.lessThan("medium")`
   /* screen width is between 768px (medium) and 1170px (large) */
@@ -67,12 +71,17 @@ const Container = styled.div`
   justify-content: space-between;
   width: 50rem;
   ${media.between("medium", "large")`
-    /* screen width is between 768px (medium) and 1170px (large) */
     width: 35rem;
     `}
   ${media.lessThan("medium")`
-    /* screen width is between 768px (medium) and 1170px (large) */
     width: 20rem;
+  `}
+`;
+
+const StyledGathCard = styled(GathCard)`
+  margin: 0rem 2rem;
+  ${media.lessThan("medium")`
+    display: none;
   `}
 `;
 
@@ -226,7 +235,11 @@ const GathCreate = () => {
         sportName: gathering.sportName,
       };
       const res = await gathApi.createGath(payload);
-      if (res.status === 200) dispatch(modalOffAction);
+      console.log(res.data);
+      if (res.status === 200) {
+        dispatch(modalOffAction);
+        dispatch(gathDetailModalOnAction(res.data));
+      }
     } catch (error) {
       console.error(error);
     }
@@ -269,7 +282,7 @@ const GathCreate = () => {
           selectedOptions={selectedOptions}
           setSelectedOptions={setSelectedOptions}
         />
-        <GathCard gathering={gathering} disabled={true} />
+        <StyledGathCard gathering={gathering} disabled={true} />
       </Container>
       <MovePageButtons isOnSearch={isOnSearch}>
         <Button name="prev" onClick={handlePrevClick}>
