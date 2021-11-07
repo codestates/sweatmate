@@ -91,4 +91,10 @@ module.exports = {
     today.setDate(today.getDate() - 1);
     return today.toISOString().replace("T", " ").substring(0, 10);
   },
+  getTomorrowDate: function () {
+    const today = new Date();
+    today.setHours(today.getHours() + 9);
+    today.setDate(today.getDate() + 1);
+    return today.toISOString().replace("T", " ").substring(0, 10);
+  },
 };

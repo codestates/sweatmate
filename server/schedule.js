@@ -9,11 +9,12 @@ const mongoose = require("mongoose");
 const noticeModel = require("./schemas/notification");
 const {
   getYesterdayDate,
+  getTomorrowDate,
   dropUser,
   deleteImageinTable,
   getCurrentTime,
 } = require("./controllers/functions/utility");
-const { finishGatherings, userFindOne } = require("./controllers/functions/sequelize");
+const { finishGatherings } = require("./controllers/functions/sequelize");
 const { User, Gathering } = require("./models");
 const { Op } = require("sequelize");
 
@@ -115,11 +116,11 @@ module.exports = (app) => {
     });
 
     if ((time = "오후")) {
-      const yesterDayGatherings = await Gathering.findAll({
-        where: { date: getYesterdayDate() },
+      const tomorrowGatherings = await Gathering.findAll({
+        where: { date: getTomorrowDate() },
         attributes: ["id", "title"],
       });
-      yesterDayGatherings.forEach((el) => {
+      tomorrowGatherings.forEach((el) => {
         const { id, title } = el.dataValues;
         const noticeInfo = {
           _id,
