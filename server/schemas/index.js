@@ -1,9 +1,9 @@
 const mongoose = require("mongoose");
 const {
-  mongodb: { id, password },
+  mongodb: { id, password, connectionCode },
   nodeEnv,
 } = require("../config");
-const MONGO_URL = `mongodb://${id}:${password}@localhost:27017/admin`;
+const MONGO_URL = connectionCode;
 const connect = () => {
   if (nodeEnv !== "production") {
     mongoose.set("debug", true);

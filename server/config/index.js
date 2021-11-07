@@ -32,6 +32,7 @@ module.exports = {
   mongodb: {
     id: required("MONGO_ID"),
     password: required("MONGO_PASSWORD"),
+    connectionCode: required("MONGO_CONNECTION_CODE"),
   },
   nodeEnv: required("NODE_ENV"),
   google: {
