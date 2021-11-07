@@ -28,44 +28,49 @@ const MapContainer = styled.div`
 `;
 
 const GathList = styled.div`
+  box-sizing: content-box;
   border-radius: 1rem;
   display: flex;
+  gap: 0.5rem;
   max-height: 97%;
   z-index: 10;
   overflow: scroll;
   transition: margin 0.7s ease-in-out;
   -moz-transition: margin 0.7s ease-in-out;
   -webkit-transition: margin 0.7s ease-in-out;
-  .hovered {
-    border: 3px solid var(--color-maingreen--50);
-  }
   * {
     max-height: 13rem;
-    margin-bottom: 1rem;
   }
   ::-webkit-scrollbar {
     display: none;
   }
   ${media.greaterThan("medium")`
-    flex-direction: column;
-    position: absolute;
-    top: 0.8rem;
-    right: 1rem;
-    width: 21rem;
-    margin: ${(props) => (props.listView ? "0rem 0rem" : "0rem -20rem")};
-    `};
+  flex-direction: column;
+  position: absolute;
+  top: 0.8rem;
+  right: 1rem;
+  width: 24rem;
+  margin: ${(props) => (props.listView ? "0rem 0rem" : "0rem -23.8rem")};
+  `};
 
   ${media.lessThan("medium")`
-    flex-direction: row;
-    position: absolute;
-    left: 1rem;
-    bottom: 0.5rem;  
-    width: 95%;
-    margin: ${(props) => (props.listView ? "0rem 0rem" : "-18rem 0rem")};
-    > * {
-      margin-right: 1rem;
-    }
+  flex-direction: row;
+  position: absolute;
+  left: 1rem;
+  bottom: 0.5rem;  
+  width: 95%;
+  margin: ${(props) => (props.listView ? "0rem 0rem" : "-18rem 0rem")};
+  > * {
+    margin-right: 1rem;
+  }
   `};
+`;
+
+const StyledGathCard = styled(GathCard)`
+  border: 3px solid var(--color-white);
+  &.hovered {
+    border: 3px solid var(--color-maingreen--50);
+  }
 `;
 
 const ButtonContainer = styled.div`
@@ -213,28 +218,14 @@ const GathMap = () => {
     };
     checkValidUser();
     if (Object.values(conditions).every((el) => Boolean(el) === false)) {
-      console.log("여기서는4", conditions);
-      console.log("게더링", gatherings);
       const findGath = async () => {
-        console.log("여기서는5", conditions);
-        console.log("게더링", gatherings);
         const { data } = await gathApi.getAllGath();
-        console.log("여기서는6", conditions);
-        console.log("게더링", gatherings);
-
         dispatch(searchGathAction({ conditions: data.conditions, gatherings: data.gatherings }));
-        console.log("여기서는7", conditions);
-        console.log("게더링", gatherings);
       };
       findGath();
     } else {
       const findGath = async () => {
-        console.log("여기서는1", conditions);
-        console.log("게더링", gatherings);
         const { data } = await gathApi.findGath(conditions);
-        console.log("여기서는2", conditions);
-        console.log("게더링", gatherings);
-        console.log("여기서는2", data);
         const newConditions = {
           sportName: conditions.sport,
           areaName: conditions.area,
@@ -244,8 +235,6 @@ const GathMap = () => {
         };
 
         dispatch(searchGathAction({ conditions: newConditions, gatherings: data.gatherings }));
-        console.log("여기서는3", conditions);
-        console.log("게더링", gatherings);
       };
       findGath();
     }
@@ -426,27 +415,27 @@ const GathMap = () => {
             gatherings.length > 0 &&
             gatherings.map((el, idx) =>
               hovered === idx ? (
-                <GathCard
+                <StyledGathCard
                   key={idx.toString() + "card"}
                   gathering={el}
                   className="hovered gathcard"
-                  onMouseOver={() => {
-                    setHovered(idx);
+                  onMouseEnter={(e) => {
+                    if (e.target === e.currentTarget) setHovered(idx);
                   }}
-                  onMouseOut={() => {
-                    setHovered(null);
+                  onMouseLeave={(e) => {
+                    if (e.target === e.currentTarget) setHovered(null);
                   }}
                 />
               ) : (
-                <GathCard
+                <StyledGathCard
                   key={idx.toString() + "card"}
                   gathering={el}
                   className="gathcard"
-                  onMouseOver={() => {
-                    setHovered(idx);
+                  onMouseEnter={(e) => {
+                    if (e.target === e.currentTarget) setHovered(idx);
                   }}
-                  onMouseOut={() => {
-                    setHovered(null);
+                  onMouseLeave={(e) => {
+                    if (e.target === e.currentTarget) setHovered(null);
                   }}
                 />
               )
