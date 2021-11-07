@@ -10,7 +10,7 @@ const notificationListSchema = new Schema({
 
     required: true,
   },
-  gatheringId: {
+  room: {
     type: Number,
     default: null,
   },
