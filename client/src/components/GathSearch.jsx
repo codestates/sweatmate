@@ -9,8 +9,12 @@ import media from "styled-media-query";
 import gathApi from "../api/gath";
 
 const Container = styled.div`
-  width: 50rem;
+  width: 23rem;
   height: 13rem;
+  ${media.greaterThan("large")`
+    /* screen width is between 768px (medium) and 1170px (large) */
+    margin-left: 2rem;
+  `}
 `;
 
 const Search = styled.input`
@@ -26,7 +30,7 @@ const Search = styled.input`
   filter: drop-shadow(2px 2px 6px var(--color-shadow));
   ${media.between("medium", "large")`
     /* screen width is between 768px (medium) and 1170px (large) */
-    width: 16rem;
+    width: 14rem;
     `}
   ${media.lessThan("medium")`
     /* screen width is between 768px (medium) and 1170px (large) */
@@ -45,7 +49,7 @@ const Count = styled.div`
   justify-content: space-between;
   ${media.between("medium", "large")`
     /* screen width is between 768px (medium) and 1170px (large) */
-    width: 16rem;
+    width: 14rem;
     `}
   ${media.lessThan("medium")`
     /* screen width is between 768px (medium) and 1170px (large) */
@@ -69,14 +73,13 @@ const SearchResult = styled.ul`
   border-bottom-right-radius: 2rem;
   background-color: var(--color-white);
   z-index: 5;
-  padding: 1.2rem;
   overflow: scroll;
   ::-webkit-scrollbar {
     display: none;
   }
   ${media.between("medium", "large")`
     /* screen width is between 768px (medium) and 1170px (large) */
-    width: 16rem;
+    width: 14rem;
     `}
   ${media.lessThan("medium")`
     /* screen width is between 768px (medium) and 1170px (large) */
@@ -93,6 +96,10 @@ const SearchList = styled.li`
   background-color: var(--color-white);
   border-bottom: 1px solid var(--color-lightgray);
   cursor: pointer;
+  padding: 1.2rem;
+  :hover {
+    background-color: var(--color-maingreen--25);
+  }
   :last-child {
     border-style: none;
   }
@@ -104,7 +111,7 @@ const MapContainer = styled.div`
   margin-top: 1rem;
   ${media.between("medium", "large")`
     /* screen width is between 768px (medium) and 1170px (large) */
-    width: 16rem;
+    width: 14rem;
   `}
   ${media.lessThan("medium")`
     /* screen width is between 768px (medium) and 1170px (large) */
@@ -125,7 +132,7 @@ const StyledDate = styled.div`
     filter: drop-shadow(2px 2px 6px var(--color-shadow));
     ${media.between("medium", "large")`
       /* screen width is between 768px (medium) and 1170px (large) */
-      width: 16rem;
+      width: 14rem;
     `}
     ${media.lessThan("medium")`
       /* screen width is between 768px (medium) and 1170px (large) */
@@ -484,8 +491,8 @@ const GathSearch = ({
           <MapPreview
             sportName={selectedOptions[0].split(" ")[0]}
             place={selectedOptions[selectedOptions.length - 1].place_name}
-            latitude={parseFloat(selectedOptions[selectedOptions.length - 1].x)}
-            longitude={parseFloat(selectedOptions[selectedOptions.length - 1].y)}
+            latitude={selectedOptions[selectedOptions.length - 1].y}
+            longitude={selectedOptions[selectedOptions.length - 1].x}
           />
         </MapContainer>
       )}

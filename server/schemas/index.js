@@ -3,7 +3,7 @@ const {
   mongodb: { id, password },
   nodeEnv,
 } = require("../config");
-const MONGO_URL = `mongodb://${id}:${password}@localhost:27017/admin`;
+const MONGO_URL = `mongodb+srv://yun:1!Q@cluster0.ysvcr.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const connect = () => {
   if (nodeEnv !== "production") {
     mongoose.set("debug", true);
@@ -11,7 +11,7 @@ const connect = () => {
   mongoose.connect(
     MONGO_URL,
     {
-      dbName: "sweatmate",
+      dbName: "heegu0311",
       useNewUrlParser: true,
     },
     (error) => {
