@@ -67,7 +67,7 @@ module.exports = {
       const { id, title } = el;
       const noticeInfo = {
         _id,
-        room: id,
+        gatheringId: id,
         type: "remove",
         url: null,
         target: null,

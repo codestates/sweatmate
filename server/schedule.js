@@ -30,7 +30,7 @@ module.exports = (app) => {
       const { id, title } = el;
       const noticeInfo = {
         _id,
-        room: id,
+        gatheringId: id,
         type: "done",
         url: null,
         target: null,
@@ -103,7 +103,7 @@ module.exports = (app) => {
       const { id, title } = el.dataValues;
       const noticeInfo = {
         _id,
-        room: id,
+        gatheringId: id,
         type: "notice",
         url: `/chat/${id}`,
         target: null,
@@ -124,7 +124,7 @@ module.exports = (app) => {
         const { id, title } = el.dataValues;
         const noticeInfo = {
           _id,
-          room: id,
+          gatheringId: id,
           type: "notice",
           url: `/chat/${id}`,
           target: null,

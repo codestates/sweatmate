@@ -110,7 +110,7 @@ module.exports = (server, app) => {
 
       const noticeInfo = {
         _id,
-        room: socket.curRoom,
+        gatheringId: socket.curRoom,
         type: "new",
         url: `/chat/${socket.curRoom}`,
         target: null,
