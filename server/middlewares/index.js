@@ -30,7 +30,8 @@ module.exports = {
     return next();
   },
   checkNickname: async (req, res, next) => {
-    const nickname = req.params.nickname ?? req.body.nickname;
+    const nickname = req.params.nickname ? req.params.nickname : req.body.nickname;
+
     try {
       const userInfo = await userFindOne({ nickname });
       if (userInfo) return res.status(400).json({ message: `${nickname} already exists` });
