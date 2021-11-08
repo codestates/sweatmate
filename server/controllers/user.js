@@ -30,7 +30,7 @@ module.exports = {
         return { skill, sportEmoji, sportName, sportEngName };
       });
       const sports = await Promise.all(sportsPromise);
-      const areaName = areaInfo?.dataValues.areaName ?? null;
+      const areaName = areaInfo?.dataValues.areaName ? areaInfo?.dataValues.areaName : null;
       delete userInfo.dataValues.areaId;
       return res.status(200).json({ ...userInfo.dataValues, areaName, sports });
     } catch (err) {
