@@ -22,4 +22,4 @@ export KAKAO_CLIENT_ID=$(aws ssm get-parameters --region ap-northeast-2 --names 
 export KAKAO_CLIENT_SECRET=$(aws ssm get-parameters --region ap-northeast-2 --names KAKAO_CLIENT_SECRET --query Parameters[0].Value | sed 's/"//g')
 export MONGO_CONNECTION_CODE=$(aws ssm get-parameters --region ap-northeast-2 --names MONGO_CONNECTION_CODE --query Parameters[0].Value | sed 's/"//g')
 
-authbind --deep pm2 start app.js
+authbind --deep pm2 start app.js --interpreter=/home/ubuntu/.nvm/versions/node/v14.18.0/bin/node
