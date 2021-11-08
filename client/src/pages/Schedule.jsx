@@ -80,6 +80,7 @@ const EmptyContainer = styled.div`
   background-image: url("/schedule_assets/empty-bg.svg");
   background-position: center;
   background-size: cover;
+  background-repeat: no-repeat;
   display: flex;
   justify-content: center;
   align-items: center;
