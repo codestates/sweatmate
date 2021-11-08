@@ -41,7 +41,7 @@ module.exports = {
     }
   },
   checkEmail: async (req, res, next) => {
-    const email = req.params.email ?? req.body.email;
+    const email = req.params.email ? req.params.email : req.body.email;
     try {
       const userInfo = await userFindOne({ email });
       if (userInfo) {
