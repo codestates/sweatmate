@@ -181,16 +181,19 @@ const ButtonContainer = styled.div`
   gap: 1rem;
   align-items: center;
   justify-content: center;
-  margin-top: 5rem;
-  margin-bottom: 4rem;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
   * {
     align-items: center;
     justify-content: center;
   }
+  ${media.lessThan("medium")`
+  margin-top: 1rem;
+  `};
 `;
 
 const Button = styled(Btn)`
-  border: 3px solid var(--color-maingreen--100);
+  border: 2px solid var(--color-maingreen--100);
   width: calc((100% - 1rem) / 2);
   width: 36rem;
   ${media.lessThan("medium")`
@@ -199,26 +202,30 @@ const Button = styled(Btn)`
 `;
 
 const EditModeButton = styled(Button)`
-  border: 3px solid var(--color-maingreen--100);
+  border: 2px solid var(--color-maingreen--100);
   margin-bottom: 5rem;
   width: 36rem;
   ${media.lessThan("medium")`
-  flex-direction: column;
-  width: 17rem;
+    flex-direction: column;
+    width: 17rem;
   `};
+`;
+
+const DeleteButton = styled(EditModeButton)`
+  border: 2px solid var(--color-red);
 `;
 
 const CancelButton = styled(Button)`
   width: 17rem;
-  border: 3px solid var(--color-red);
+  border: 2px solid var(--color-red);
   ${media.lessThan("medium")`
   width: 8rem;
   `};
 `;
 
-const DeleteButton = styled(Button)`
+const SaveButton = styled(Button)`
   width: 17rem;
-  border: 3px solid var(--color-red);
+  border: 2px solid var(--color-maingreen--100);
   ${media.lessThan("medium")`
     width: 8rem;
   `};
@@ -381,18 +388,27 @@ const Mypage = () => {
           </EditModeButton>
         </ButtonContainer>
       ) : (
-        <ButtonContainer>
-          <CancelButton color={"var(--color-red)"} onClick={handleEditClick}>
-            취소
-          </CancelButton>
-          <DeleteButton
-            color={"var(--color-white)"}
-            bgColor={"var(--color-red)"}
-            onClick={handleEditClick}
-          >
-            계정 삭제
-          </DeleteButton>
-        </ButtonContainer>
+        <>
+          <ButtonContainer>
+            <CancelButton color={"var(--color-red)"} onClick={handleEditClick}>
+              취소
+            </CancelButton>
+            <SaveButton color={"var(--color-maingreen--100)"} onClick={handleEditClick}>
+              저장
+            </SaveButton>
+          </ButtonContainer>
+          <ButtonContainer>
+            <DeleteButton
+              type="button"
+              className="edit"
+              color={"var(--color-white)"}
+              bgColor={"var(--color-red)"}
+              onClick={handleEditClick}
+            >
+              계정 삭제
+            </DeleteButton>
+          </ButtonContainer>
+        </>
       )}
     </Container>
   );
