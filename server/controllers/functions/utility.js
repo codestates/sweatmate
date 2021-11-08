@@ -54,7 +54,9 @@ module.exports = {
     });
   },
   dropUser: async (userId, req) => {
+    //유저의 몽고디비 도큐멘트 삭제
     noticeModel.removeUser(userId);
+    //유저가 참여중인 모든 게더링 참여 중 인원 -1
     await decrementGatheringsOfUser(userId);
     const gatheringIdAndTitles = getGatheringIdsOfUser(userId);
     const realTime = req.app.get(realTime);
@@ -65,7 +67,7 @@ module.exports = {
       const { id, title } = el;
       const noticeInfo = {
         _id,
-        room: id,
+        gatheringId: id,
         type: "remove",
         url: null,
         target: null,
@@ -82,5 +84,17 @@ module.exports = {
       });
       delete realTime[id];
     });
+  },
+  getYesterdayDate: function () {
+    const today = new Date();
+    today.setHours(today.getHours() + 9);
+    today.setDate(today.getDate() - 1);
+    return today.toISOString().replace("T", " ").substring(0, 10);
+  },
+  getTomorrowDate: function () {
+    const today = new Date();
+    today.setHours(today.getHours() + 9);
+    today.setDate(today.getDate() + 1);
+    return today.toISOString().replace("T", " ").substring(0, 10);
   },
 };

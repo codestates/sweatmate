@@ -84,7 +84,7 @@ module.exports = {
       const chat = req.app.get("chat");
       const noticeInfo = {
         _id,
-        room: gatheringId,
+        gatheringId: gatheringId,
         type: "earlydone",
         url: null,
         target: null,
@@ -132,7 +132,7 @@ module.exports = {
       const chat = req.app.get("chat");
       const noticeInfo = {
         _id,
-        room: gatheringId,
+        gatheringId: gatheringId,
         type: "join",
         url: `/chat/${gatheringId}`,
         target: userId,
@@ -170,7 +170,7 @@ module.exports = {
       const chat = req.app.get("chat");
       const noticeInfo = {
         _id,
-        room: gatheringId,
+        gatheringId: gatheringId,
         type: "leave",
         url: `/chat/${gatheringId}`,
         target: userId,

@@ -44,15 +44,15 @@ const notificationSchema = new Schema(
 );
 
 notificationSchema.statics.createNotice = async function (userList, notificationInfo) {
-  const { _id, room, type, url, target, message } = notificationInfo;
+  const { _id, gatheringId, type, url, target, message } = notificationInfo;
   //타입 new와 gatheringId 에 대한 알림이 이미 있다면 알림이 추가되지 않는다.
   if (type === "new") {
     let a = await this.updateMany(
       {
         _id: userList,
-        notification: { $not: { $elemMatch: { $and: [{ type: "new" }, { gatheringId: room }] } } },
+        notification: { $not: { $elemMatch: { $and: [{ type: "new" }, { gatheringId }] } } },
       },
-      { $push: { notification: { _id, gatheringId: room, type, url, target, message } } }
+      { $push: { notification: { _id, gatheringId, type, url, target, message } } }
     );
     console.log("뉴타입", a);
     return;
@@ -61,7 +61,7 @@ notificationSchema.statics.createNotice = async function (userList, notification
       {
         _id: userList,
       },
-      { $push: { notification: { _id, gatheringId: room, type, url, target, message } } }
+      { $push: { notification: { _id, gatheringId, type, url, target, message } } }
     );
     console.log("다른타입", a);
     return;
@@ -73,7 +73,7 @@ notificationSchema.statics.signup = async function (userId) {
     notification: [
       {
         _id: mongoose.Types.ObjectId(),
-        room: null,
+        gatheringId: null,
         type: "welcome",
         url: `users/${userId}`,
         target: null,

@@ -35,15 +35,16 @@ module.exports = {
           const { id: recentUserId, message } = recentChat[0];
           const userInfo = await userFindOne({ id: recentUserId });
           const recentChatInfo = { message };
-          recentChatInfo.nickname = userInfo.dataValues.nickname;
+          recentChatInfo.nickname = userInfo?.dataValues.nickname ?? "모임을 나간 유저";
           // recentChatInfo.image = userInfo.dataValues.image;
           // 최근에 대화한 시간에 따라서 "날짜", "시간", "어제" 로 나눠서 보내주는 로직입니다.
-          const [curDay, curTime] = (currentDay = getCurrentTime().split(" "));
+          const currentDay = getCurrentTime().split(" ");
+          const [curDay, _] = currentDay;
           const [day, time] = recentChat[0].date.split(" ");
           const oneDayToMillisecond = 86400000;
           if (curDay === day) {
-            recentChatInfo.date = time;
-          } else if (new Date(curTime) - new Date(day) === oneDayToMillisecond) {
+            recentChatInfo.date = time.slice(0, 5);
+          } else if (new Date(curDay) - new Date(day) === oneDayToMillisecond) {
             recentChatInfo.date = "어제";
           } else {
             recentChatInfo.date = day;

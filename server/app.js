@@ -58,6 +58,7 @@ const sweatmateServer = app.listen(config.port, async () => {
     await sequelize.authenticate();
     app.set("realTime", await realTimeUserStatus());
     SocketIO(sweatmateServer, app);
+    require("./schedule")(app);
     console.log("Connection has been established successfully.");
   } catch (error) {
     console.error("Unable to connect to the database:", error);

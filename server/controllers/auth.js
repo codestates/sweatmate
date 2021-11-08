@@ -12,14 +12,7 @@ const {
   kakao,
 } = require("../config");
 const emailForm = require("../views/emailFormat");
-/*
-  스케줄러 구성요소, 매 24시간마다 모임일정이 지난 게더링들 done = 1 + 종료 이벤트 notification 알림 + 채팅방에 시스템 메시지 보내기
-  게스트의 createdAt이 24시간이 지난 유저에 대해서 삭제 + 유저의 참여중인 게더링 currentNum - 1 + s3 이미지 삭제
-  이메일 인증이 1시간이 지난 유저 삭제
-  모임 07, 12, 17 시마다 모임 시작 알림 보내기
-*/
 const guestTable = {};
-
 module.exports = {
   validNickname: async (req, res) => {
     return res.status(200).json({ message: "Valid nickname" });
