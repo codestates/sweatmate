@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const {
-  mongodb: { id, password, connectionCode },
+  mongodb: { connectionCode },
   nodeEnv,
 } = require("../config");
 const MONGO_URL = connectionCode;
