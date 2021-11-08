@@ -79,9 +79,7 @@ module.exports = {
       main.to(id).emit("notice", noticeInfo);
       chat.to(id).emit("notice", noticeInfo);
       //참여중인 유저가 있다면 방에서 나가게 함
-      chat.sockets.clients(id).forEach(function (s) {
-        s.leave(id);
-      });
+      chat.in(id).disconnectSockets();
       delete realTime[id];
     });
   },

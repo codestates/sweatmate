@@ -93,9 +93,7 @@ module.exports = {
       noticeModel.createNotice(userIds, noticeInfo);
       main.to(gatheringId).emit("notice", noticeInfo);
       chat.to(gatheringId).emit("notice", noticeInfo);
-      chat.sockets.clients(gatheringId).forEach(function (s) {
-        s.leave(gatheringId);
-      });
+      chat.in(gatheringId).disconnectSockets();
       delete realTime[gatheringId];
       //이벤트
       const endedGatheringInfo = await findAllGathering({ id: gatheringId });

@@ -18,7 +18,7 @@ module.exports = (server, app) => {
       origin: allowedOrigin,
       credentials: true,
     },
-    serveClient: true, // TODO: 클라이언트에서 socket 설치하면 false 로 바꿔주기
+    serveClient: false, // TODO: 클라이언트에서 socket 설치하면 false 로 바꿔주기
   });
   const main = io.of("/");
   const chat = io.of("/chat");
