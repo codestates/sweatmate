@@ -35,9 +35,7 @@ module.exports = {
           const { id: recentUserId, message } = recentChat[0];
           const userInfo = await userFindOne({ id: recentUserId });
           const recentChatInfo = { message };
-          recentChatInfo.nickname = userInfo?.dataValues.nickname
-            ? userInfo?.dataValues.nickname
-            : "모임을 나간 유저";
+          recentChatInfo.nickname = userInfo?.dataValues.nickname ?? "모임을 나간 유저";
           // recentChatInfo.image = userInfo.dataValues.image;
           // 최근에 대화한 시간에 따라서 "날짜", "시간", "어제" 로 나눠서 보내주는 로직입니다.
           const currentDay = getCurrentTime().split(" ");
