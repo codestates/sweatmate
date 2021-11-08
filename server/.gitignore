@@ -126,4 +126,7 @@ dist
 # Serverless Webpack directories
 .webpack/
 
+# awsconfig
+awsconfig.json
+
 # End of https://www.toptal.com/developers/gitignore/api/node
