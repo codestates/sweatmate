@@ -30,8 +30,6 @@ module.exports = {
     allowedOrigin: required("CORS_ALLOW_ORIGIN"),
   },
   mongodb: {
-    id: required("MONGO_ID"),
-    password: required("MONGO_PASSWORD"),
     connectionCode: required("MONGO_CONNECTION_CODE"),
   },
   nodeEnv: required("NODE_ENV"),
