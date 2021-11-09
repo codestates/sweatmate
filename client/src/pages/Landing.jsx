@@ -90,10 +90,10 @@ const KeyValueContainer = styled.div`
     ${(props) =>
       props.align === "left"
         ? css`
-            margin-right: 12rem;
+            margin-right: 8rem;
           `
         : css`
-            margin-left: 12rem;
+            margin-left: 8rem;
           `}
   }
 `;
@@ -103,7 +103,7 @@ const DescrWrapper = styled.div`
   display: flex;
   flex-direction: column;
   z-index: 1;
-  padding: 4rem 0;
+  margin: auto 0;
 `;
 
 const DescTitle = styled.h2`
@@ -140,23 +140,23 @@ const ImageWrapper = styled.div`
   display: flex;
   &#first-container,
   &#third-container {
-    margin: 0 2rem 0 4rem;
+    margin: 0 2rem 0 8rem;
   }
   &#second-container,
   &#fourth-container {
-    margin: 0 4rem 0 2rem;
+    margin: 0 8rem 0 2rem;
   }
   &#first-container {
     width: 38rem;
-    padding: 2.5rem 0;
+    padding: 2.5rem 2rem;
   }
   &#second-container {
-    width: 38rem;
-    padding: 2.5rem 0;
+    width: fit-content;
+    padding: 2rem;
   }
   &#third-container {
-    width: 38rem;
-    padding: 2rem;
+    width: fit-content;
+    padding: 6rem 2rem 2rem;
   }
   &#fourth-container {
     padding: 2rem;
@@ -179,7 +179,7 @@ const ImageWrapper = styled.div`
     }
     .card {
       width: 20rem;
-      filter: drop-shadow(2px 2px 8px var(--color-shadow));
+      filter: drop-shadow(2.5px 2.5px 5px var(--color-shadow));
       margin-bottom: 1rem;
       :last-of-type {
         margin-bottom: 0;
@@ -187,11 +187,41 @@ const ImageWrapper = styled.div`
     }
   }
   .second {
+    &.still {
+      display: flex;
+      flex-direction: column;
+      width: 30rem;
+    }
+    &.animation {
+      position: absolute;
+      inset: 0;
+    }
+    .pin {
+      width: 3rem;
+      position: absolute;
+      filter: drop-shadow(2.5px 2.5px 5px var(--color-shadow));
+      &.one {
+        top: 4rem;
+        left: 23.5rem;
+      }
+      &.two {
+        top: 8.5rem;
+        left: 5.5rem;
+      }
+      &.three {
+        top: 16.25rem;
+        left: 16.5rem;
+      }
+    }
   }
   .third {
     &.still {
       display: flex;
       flex-direction: column;
+    }
+    &.animation {
+      position: absolute;
+      inset: 0;
     }
     #upcoming {
       width: 10rem;
@@ -200,7 +230,14 @@ const ImageWrapper = styled.div`
     }
     #upcoming-card {
       width: 20rem;
-      filter: drop-shadow(2px 2px 8px var(--color-shadow));
+      filter: drop-shadow(2.5px 2.5px 5px var(--color-shadow));
+    }
+    #alarm {
+      width: 20rem;
+      filter: drop-shadow(2.5px 2.5px 5px var(--color-shadow));
+      position: absolute;
+      left: 14rem;
+      top: 0rem;
     }
   }
   .fourth {
@@ -208,11 +245,12 @@ const ImageWrapper = styled.div`
       display: flex;
       flex-direction: column;
       width: 28rem;
+      height: calc(41px + 64px + 64px + 4rem);
       position: relative;
     }
     .chat {
       position: absolute;
-      filter: drop-shadow(2px 2px 8px var(--color-shadow));
+      filter: drop-shadow(2.5px 2.5px 5px var(--color-shadow));
       &.one {
         width: 272px;
         height: 41px;
@@ -221,7 +259,7 @@ const ImageWrapper = styled.div`
       }
       &.two {
         right: 0;
-        top: calc(41px + 1.5rem);
+        top: calc(41px + 2rem);
         width: 338px;
         height: 64px;
       }
@@ -229,7 +267,7 @@ const ImageWrapper = styled.div`
         width: 340px;
         height: 64px;
         left: 0;
-        top: calc(41px + 64px + 3rem);
+        top: calc(41px + 64px + 4rem);
       }
     }
   }
@@ -361,8 +399,14 @@ const Landing = () => {
           <DescSubTitle>지도로 보기</DescSubTitle>
         </DescrWrapper>
         <ImageWrapper id="second-container">
-          <div className="second still"></div>
-          <div className="second animation"></div>
+          <div className="second still">
+            <img id="map-bg" src="../images/map-bg.png" />
+          </div>
+          <div className="second animation">
+            <img className="pin one" src="../images/map-pin-1.png" />
+            <img className="pin two" src="../images/map-pin-2.png" />
+            <img className="pin three" src="../images/map-pin-3.png" />
+          </div>
         </ImageWrapper>
       </KeyValueContainer>
       <KeyValueContainer colored align="right">
@@ -381,7 +425,9 @@ const Landing = () => {
             <img id="upcoming" src="../images/upcoming.png" />
             <img id="upcoming-card" src="../images/card-3.png" />
           </div>
-          <div className="third animation"></div>
+          <div className="third animation">
+            <img id="alarm" src="../images/alarm.png" />
+          </div>
         </ImageWrapper>
       </KeyValueContainer>
       <KeyValueContainer align="left">
@@ -397,9 +443,9 @@ const Landing = () => {
         </DescrWrapper>
         <ImageWrapper id="fourth-container">
           <div className="fourth animation">
-            <img className="chat one" src="../images/chat-1.png" />
-            <img className="chat two" src="../images/chat-2.png" />
-            <img className="chat three" src="../images/chat-3.png" />
+            <img className="chat one" src="../images/chat-1-colored.png" />
+            <img className="chat two" src="../images/chat-2-colored.png" />
+            <img className="chat three" src="../images/chat-3-colored.png" />
           </div>
         </ImageWrapper>
       </KeyValueContainer>
