@@ -7,6 +7,7 @@ import {
   MODAL_OFF,
   SIGN_IN,
   SIGN_OUT,
+  UPDATE_INFO,
   SEARCH_GATH,
 } from "./actionTypes";
 
@@ -30,6 +31,12 @@ export const signinAction = (data) => ({
 export const signoutAction = {
   type: SIGN_OUT,
 };
+export const updateInfoAction = (data) => ({
+  type: UPDATE_INFO,
+  payload: {
+    ...data,
+  },
+});
 
 // Modal
 export const gathCreateModalOnAction = {
