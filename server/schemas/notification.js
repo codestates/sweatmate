@@ -85,7 +85,7 @@ notificationSchema.statics.signup = async function (userId) {
 };
 
 notificationSchema.statics.removeUser = async function (userId) {
-  await this.remove({ _id: userId });
+  await this.deleteOne({ _id: userId });
   return;
 };
 
