@@ -109,12 +109,13 @@ module.exports = (server, app) => {
       });
 
       const noticeInfo = {
-        _id,
+        id: _id,
         gatheringId: socket.curRoom,
         type: "new",
         url: `/chat/${socket.curRoom}`,
         target: null,
-        message: `${gatheringInfo.title} 모임에서 새로운 메시지가 있습니다.`,
+        title: gatheringInfo.title,
+        message: `모임에서 새로운 메시지가 있습니다.`,
       };
 
       await noticeModel.createNotice(userList, noticeInfo); // userList: 유저 아이디가 담긴 배열, noticeInfo: 알림의 정보가 담긴 객체

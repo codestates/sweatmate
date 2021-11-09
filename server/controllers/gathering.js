@@ -84,12 +84,13 @@ module.exports = {
       const main = req.app.get("main");
       const chat = req.app.get("chat");
       const noticeInfo = {
-        _id,
+        id: _id,
         gatheringId: gatheringId,
         type: "earlydone",
         url: null,
         target: null,
-        message: `${title} 모임이 조기 종료되었습니다`,
+        title: title,
+        message: `모임이 조기 종료되었습니다`,
       };
       noticeModel.createNotice(userIds, noticeInfo);
       main.to(gatheringId).emit("notice", noticeInfo);
@@ -130,12 +131,13 @@ module.exports = {
       const main = req.app.get("main");
       const chat = req.app.get("chat");
       const noticeInfo = {
-        _id,
+        id: _id,
         gatheringId: gatheringId,
         type: "join",
         url: `/chat/${gatheringId}`,
         target: userId,
-        message: `${nickname}님이 ${title} 모임에 참여했습니다`,
+        title: title,
+        message: `${nickname}님이 모임에 참여했습니다`,
       };
       // 채팅 시스템 알람이 없기 때문에 채팅에 참여중인 사람도 같이 알람을 받아야 함
       noticeModel.createNotice(userIds, noticeInfo);
@@ -168,12 +170,13 @@ module.exports = {
       const main = req.app.get("main");
       const chat = req.app.get("chat");
       const noticeInfo = {
-        _id,
+        id: _id,
         gatheringId: gatheringId,
         type: "leave",
         url: `/chat/${gatheringId}`,
         target: userId,
-        message: `${nickname}님이 ${title} 모임을 떠났습니다.`,
+        title: title,
+        message: `${nickname}님이 모임을 떠났습니다.`,
       };
       // 채팅 시스템 알람이 없기 때문에 채팅에 참여중인 사람도 같이 알람을 받아야 함
       noticeModel.createNotice(userIds, noticeInfo);

@@ -29,12 +29,13 @@ module.exports = (app) => {
     gatheringIdAndTitles.forEach((el) => {
       const { id, title } = el;
       const noticeInfo = {
-        _id,
+        id: _id,
         gatheringId: id,
         type: "done",
         url: null,
         target: null,
-        message: `${title} 모임이 종료되었습니다`,
+        title: title,
+        message: `모임이 종료되었습니다`,
       };
       const userIds = Object.keys(realTime[id]);
       noticeModel.createNotice(userIds, noticeInfo);
@@ -102,12 +103,13 @@ module.exports = (app) => {
     theDayGatherings.forEach((el) => {
       const { id, title } = el.dataValues;
       const noticeInfo = {
-        _id,
+        id: _id,
         gatheringId: id,
         type: "notice",
         url: `/chat/${id}`,
         target: null,
-        message: `오늘 ${title} 모임이 ${time}에 시작돼요!`,
+        title: title,
+        message: `오늘 모임이 ${time}에 시작돼요!`,
       };
       const userIds = Object.keys(realTime[id]);
       noticeModel.createNotice(userIds, noticeInfo);
@@ -123,12 +125,13 @@ module.exports = (app) => {
       tomorrowGatherings.forEach((el) => {
         const { id, title } = el.dataValues;
         const noticeInfo = {
-          _id,
+          id: _id,
           gatheringId: id,
           type: "notice",
           url: `/chat/${id}`,
           target: null,
-          message: `내일 ${title} 모임이 시작돼요!`,
+          title: title,
+          message: `내일 모임이 시작돼요!`,
         };
         const userIds = Object.keys(realTime[id]);
         noticeModel.createNotice(userIds, noticeInfo);
