@@ -155,7 +155,6 @@ const ContentBox = styled.div`
 const DescrWrapper = styled.div`
   flex: 0 0 auto;
   width: fit-content;
-  border: 1px solid red;
   display: flex;
   flex-direction: column;
   z-index: 1;
@@ -214,7 +213,6 @@ const DescSubTitle = styled.h3`
 
 const ImageWrapper = styled.div`
   flex: 0 0 auto;
-  border: 1px solid blue;
   z-index: 1;
   position: relative;
   display: flex;
