@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
 import styled, { css } from "styled-components";
-import { useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useHistory } from "react-router";
 import authApi from "../api/auth";
-import { signinAction, signoutAction } from "../store/actions";
+import { signinAction, signoutAction, signupModalOnAction } from "../store/actions";
 import Btn from "../components/Btn";
 
 const LandingContainer = styled.div`
@@ -23,10 +23,24 @@ const CoverContainer = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  .start-btn {
-    background-color: var(--color-maingreen--75);
-    color: var(--color-white);
+  .btn {
     margin: 2.5rem auto;
+    border: 2px solid var(--color-maingreen--75);
+    min-width: 15rem;
+    &.start,
+    &.to-home {
+      background-color: var(--color-maingreen--75);
+      color: var(--color-white);
+      margin-right: 1rem;
+    }
+    &.experience {
+      background-color: transparent;
+      color: var(--color-maingreen--100);
+      :hover {
+        opacity: 1;
+        background-color: var(--color-maingreen--10);
+      }
+    }
   }
 `;
 
@@ -200,7 +214,7 @@ const ImageWrapper = styled.div`
       position: absolute;
       filter: drop-shadow(2px 2px 8px var(--color-shadow));
       &.one {
-        width: 270px;
+        width: 272px;
         height: 41px;
         left: 0;
         top: 0;
@@ -208,11 +222,11 @@ const ImageWrapper = styled.div`
       &.two {
         right: 0;
         top: calc(41px + 1.5rem);
-        width: 336px;
+        width: 338px;
         height: 64px;
       }
       &.three {
-        width: 338px;
+        width: 340px;
         height: 64px;
         left: 0;
         top: calc(41px + 64px + 3rem);
@@ -222,8 +236,21 @@ const ImageWrapper = styled.div`
 `;
 
 const Landing = () => {
+  const { isLogin } = useSelector(({ authReducer }) => authReducer);
   const dispatch = useDispatch();
   const history = useHistory();
+
+  const handleStartClick = () => {
+    dispatch(signupModalOnAction);
+  };
+
+  const handleExperienceClick = async () => {
+    const res = await authApi.guestSignin();
+    if (res.status === 200) {
+      dispatch(signinAction(res.data));
+      history.push("/home");
+    }
+  };
 
   useEffect(() => {
     const url = new URL(window.location.href);
@@ -275,7 +302,22 @@ const Landing = () => {
       <CoverContainer>
         <CoverSubTitle>운동 메이트를 만나는 간편한 방법,</CoverSubTitle>
         <CoverTitle>스웻메이트</CoverTitle>
-        <Btn className="start-btn">스웻메이트 시작하기</Btn>
+        <div id="btn-container">
+          {isLogin ? (
+            <Btn className="to-home btn" onClick={() => history.push("/home")}>
+              스웻메이트 홈으로
+            </Btn>
+          ) : (
+            <>
+              <Btn className="start btn" onClick={handleStartClick}>
+                스웻메이트 시작하기
+              </Btn>
+              <Btn className="experience btn" onClick={handleExperienceClick}>
+                일단 체험해볼래요
+              </Btn>
+            </>
+          )}
+        </div>
       </CoverContainer>
       <KeyValueContainer colored align="right">
         <div className="fill" />
