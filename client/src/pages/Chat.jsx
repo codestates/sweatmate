@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import media from "styled-media-query";
 import {
   IoChatbubblesOutline,
@@ -9,6 +9,7 @@ import {
   IoEllipsisHorizontalOutline,
 } from "react-icons/io5";
 import { IoIosSend } from "react-icons/io";
+import Bubble from "../components/Bubble";
 import { useRouteMatch, useParams, Switch, Route, useHistory } from "react-router";
 import { NavLink } from "react-router-dom";
 import PropTypes from "prop-types";
@@ -481,6 +482,7 @@ const ChatLog = styled.div`
   background-image: url("/chat_assets/bg.svg");
   background-position: center;
   background-size: contain;
+  flex: 1 1 auto;
 `;
 const ChatLogItem = styled.div`
   display: flex;
@@ -490,21 +492,6 @@ const ChatLogItem = styled.div`
   }
   align-self: ${({ isCreator }) => isCreator && "flex-end"};
 `;
-const Bubble = styled.div`
-  display: flex;
-  flex-direction: column;
-  padding: 0.5rem;
-  border: 1px solid var(--color-lightgray);
-  background-color: var(--color-darkwhite);
-  border-radius: 0 0.5rem 0.5rem;
-  ${({ isCreator }) =>
-    isCreator &&
-    css`
-      border-radius: 0.5rem 0 0.5rem 0.5rem;
-      background-color: var(--color-maingreen--25);
-      border-color: var(--color-maingreen--100);
-    `};
-`;
 const NicknameBubbleContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -513,23 +500,23 @@ const Nickname = styled.span`
   font-size: 0.9rem;
   margin-bottom: 0.5rem;
 `;
-const BubbleMessage = styled.p``;
 const ChatFormContainer = styled.div`
   border-top: 1px solid var(--color-lightgray);
   padding: 1rem;
+  flex: 0 0 auto;
 `;
 const ChatForm = styled.form`
   display: flex;
-  padding: 0.5rem;
   border-radius: 0.5rem;
   background-color: var(--color-darkwhite);
 `;
 const ChatInput = styled.input`
   flex: 1;
-  padding: 0.5rem;
+  padding: 0.5rem 1rem;
   font-size: 1rem;
   ::placeholder {
-    color: var(--color-lightgray);
+    font-family: Interop-Regular;
+    color: var(--color-gray);
   }
 `;
 const ChatSubmitBtn = styled.button`
@@ -823,9 +810,7 @@ const Room = () => {
                   )}
                   <NicknameBubbleContainer>
                     {!isCreator && <Nickname>{item.nickname}</Nickname>}
-                    <Bubble isCreator={isCreator}>
-                      <BubbleMessage>{item.message}</BubbleMessage>
-                    </Bubble>
+                    <Bubble isMine={isCreator}>{item.message}</Bubble>
                   </NicknameBubbleContainer>
                 </ChatLogItem>
               );
