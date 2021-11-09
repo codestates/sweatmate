@@ -1,6 +1,7 @@
 const AWS = require("aws-sdk");
 const s3 = new AWS.S3();
 const mongoose = require("mongoose");
+const chatModel = require("../../schemas/chat");
 const noticeModel = require("../../schemas/notification");
 const { getGatheringIdsOfUser, decrementGatheringsOfUser } = require("./sequelize");
 const areaList = require("../../resource/areaList");
@@ -12,7 +13,7 @@ module.exports = {
     return res.status(500).json({ message: `Error occured in database: ${err}` });
   },
   deleteImageinTable: (image) => {
-    const imageKey = /[\d]{13}\.[\w]+/.exec(image)[0];
+    const imageKey = /[\d]{13}\.[\w]+/.exec(image)?.[0];
     if (!imageKey) return;
     const params = {
       Bucket: "sweatmate",
@@ -55,11 +56,12 @@ module.exports = {
   },
   dropUser: async (userId, req) => {
     //유저의 몽고디비 도큐멘트 삭제
-    noticeModel.removeUser(userId);
+    await noticeModel.removeUser(userId);
+    await chatModel.removeChatOfUser(userId);
     //유저가 참여중인 모든 게더링 참여 중 인원 -1
     await decrementGatheringsOfUser(userId);
-    const gatheringIdAndTitles = getGatheringIdsOfUser(userId);
-    const realTime = req.app.get(realTime);
+    const gatheringIdAndTitles = await getGatheringIdsOfUser(userId);
+    const realTime = req.app.get("realTime");
     const main = req.app.get("main");
     const chat = req.app.get("chat");
     const _id = mongoose.Types.ObjectId();

@@ -44,8 +44,12 @@ chatSchema.statics.typeChat = async function (room, _id, userId, message, date) 
     },
     { returnDocument: "after" }
   );
-
   return AddedChatInfo.chatInfo;
+};
+
+chatSchema.statics.removeChatOfUser = async function (userId) {
+  await this.deleteMany({ creatorId: userId });
+  return;
 };
 
 module.exports = mongoose.model("Chat", chatSchema);

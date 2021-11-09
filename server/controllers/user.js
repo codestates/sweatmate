@@ -50,13 +50,14 @@ module.exports = {
         console.log("기존 유저 image가 s3에서 삭제됩니다.");
         deleteImageinTable(image);
       }
-      const getUserSportsList = JSON.parse(sports).map((userSport) => {
-        const sportInfo = sportsList.filter((sportList) => {
-          return userSport.sportName === sportList.sportName;
-        })[0];
-        return { sportId: sportInfo.id, userId, skill: userSport.skill };
-      });
-      await modifyUserSportList({ userId }, getUserSportsList);
+      //TODO: 스포츠 레벨 표기
+      // const getUserSportsList = JSON.parse(sports).map((userSport) => {
+      //   const sportInfo = sportsList.filter((sportList) => {
+      //     return userSport.sportName === sportList.sportName;
+      //   })[0];
+      //   return { sportId: sportInfo.id, userId, skill: userSport.skill };
+      // });
+      // await modifyUserSportList({ userId }, getUserSportsList);
       module.exports.getUerInfo(req, res);
     } catch (err) {
       console.log(err);
@@ -71,17 +72,17 @@ module.exports = {
       if (!userInfo) {
         return res.status(404).json({ message: "User not found" });
       }
-      dropUser(userId, req);
+      await dropUser(userId, req);
       deleteImageinTable(userInfo.dataValues.image);
       // 회원 탈퇴에 의해 종료된 게더링에 참여중인 유저들에게 탈퇴에 의한 게더링이 종료 되었음을 이벤트 알림으로 줘야함
       // 몽구스의 게더링 또한 같이 삭제되어야함
       // 유저관리 객체에 해당하는 유저 아이디들에게 알림을 줘야함
       // 그리고 유저관리객체에 해당 게더링들을 삭제함
-
       await userInfo.destroy();
       clearCookie(res, token);
       return res.status(200).json({ message: "User deleted", data: { userId } });
     } catch (err) {
+      console.log(err);
       DBERROR(res, err);
     }
   },
