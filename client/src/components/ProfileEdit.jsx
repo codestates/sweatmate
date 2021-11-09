@@ -3,11 +3,11 @@ import PropTypes from "prop-types";
 import styled from "styled-components";
 import DataListInput from "react-plain-datalist-input";
 // import media from "styled-media-query";
-import { FaUserCircle } from "react-icons/fa";
-import { GrMail } from "react-icons/gr";
-import { IoLocationSharp } from "react-icons/io5";
-import { ImManWoman } from "react-icons/im";
-import { RiLeafLine } from "react-icons/ri";
+// import { FaUserCircle } from "react-icons/fa";
+// import { GrMail } from "react-icons/gr";
+// import { IoLocationSharp } from "react-icons/io5";
+// import { ImManWoman } from "react-icons/im";
+// import { RiLeafLine } from "react-icons/ri";
 
 const InfoContainer = styled.div`
   display: flex;
@@ -21,7 +21,7 @@ const InfoContainer = styled.div`
 const InfoEdit = styled.input`
   width: 100%;
   height: 2.2rem;
-  border: 2px solid gray;
+  border: 2px solid var(--color-lightgray);
   border-radius: 0.5rem;
   padding: 0.25rem;
 `;
@@ -32,7 +32,7 @@ const SelectContainer = styled(InfoContainer)`
     padding-left: 0.3rem;
     width: 100%;
     height: 2.2rem;
-    border: 2px solid gray;
+    border: 2px solid var(--color-lightgray);
     border-radius: 0.5rem;
   }
   .datalist-items {
@@ -44,7 +44,7 @@ const SelectContainer = styled(InfoContainer)`
     border: 2px solid var(--color-lightgray);
     border-radius: 0.5rem;
     background-color: var(--color-darkwhite);
-    margin-left: -0.4rem;
+    margin-left: -0.5rem;
     div.datalist-active-item.datalist-active-item-default {
       padding-left: 0.3rem;
       background-color: var(--color-darkwhite);
@@ -69,9 +69,18 @@ const SelectContainer = styled(InfoContainer)`
 `;
 const InfoSelect = styled(DataListInput)``;
 
-const ProfileEdit = ({ type, values }) => {
-  const onSelect = useCallback((selectedItem) => {}, []);
-  const onInput = useCallback((selectedItem) => {}, []);
+const ProfileEdit = ({ type, email, values, setUserInfo }) => {
+  const onSelect = useCallback((selectedItem) => {
+    console.log("selectedItem", selectedItem);
+    if (selectedItem.label.includes("구")) {
+      setUserInfo((prevState) => ({ ...prevState, area: selectedItem.label }));
+    } else if (selectedItem.label === "남" || selectedItem.label === "여") {
+      setUserInfo((prevState) => ({ ...prevState, gender: selectedItem.label }));
+    } else {
+      setUserInfo((prevState) => ({ ...prevState, age: selectedItem.label }));
+    }
+  }, []);
+  // const onInput = useCallback((selectedItem) => {}, []);
 
   const items = useMemo(
     () =>
@@ -88,36 +97,48 @@ const ProfileEdit = ({ type, values }) => {
     [values]
   );
 
+  const handleInputChange = (e) => {
+    setUserInfo((prevState) => ({ ...prevState, [e.target.name]: e.target.value }));
+  };
+
   const func = (type) => {
     switch (type) {
-      case "nickname":
-        if (type !== "nickname") break;
-        return (
-          <>
-            <GrMail style={{ display: "inline" }} />
-            <InfoEdit name={type} placeholder="이메일" />
-          </>
-        );
       case "email":
         if (type !== "email") break;
         return (
           <>
-            <FaUserCircle style={{ display: "inline" }} />
-            <InfoEdit name={type} placeholder="닉네임" />
+            {/* <GrMail style={{ display: "inline" }} /> */}
+            ✉️
+            <InfoEdit
+              name={type}
+              value={email}
+              placeholder="이메일"
+              onChange={handleInputChange}
+              disabled
+            />
+          </>
+        );
+      case "nickname":
+        if (type !== "nickname") break;
+        return (
+          <>
+            {/* <FaUserCircle style={{ display: "inline" }} /> */}
+            👤
+            <InfoEdit name={type} placeholder="닉네임" onChange={handleInputChange} />
           </>
         );
       case "area":
         if (type !== "area") break;
         return (
           <SelectContainer>
-            <IoLocationSharp style={{ display: "inline" }} />
+            {/* <IoLocationSharp style={{ display: "inline" }} /> */}
+            📍
             <InfoSelect
-              name={type}
+              id="area"
               placeholder="지역"
               items={items}
               onSelect={onSelect}
-              onInput={onInput}
-              suppressReselect={false}
+              suppressReselect={true}
             />
           </SelectContainer>
         );
@@ -125,14 +146,13 @@ const ProfileEdit = ({ type, values }) => {
         if (type !== "gender") break;
         return (
           <SelectContainer>
-            <ImManWoman style={{ display: "inline" }} />
+            {/* <ImManWoman style={{ display: "inline" }} /> */}
+            👫🏻
             <InfoSelect
-              name={type}
               placeholder="성별"
               items={items}
               onSelect={onSelect}
-              onInput={onInput}
-              suppressReselect={false}
+              suppressReselect={true}
             />
           </SelectContainer>
         );
@@ -140,15 +160,13 @@ const ProfileEdit = ({ type, values }) => {
         if (type !== "age") break;
         return (
           <SelectContainer>
-            <RiLeafLine style={{ display: "inline" }} />
+            {/* <RiLeafLine style={{ display: "inline" }} /> */}
+            ⏰
             <InfoSelect
-              name={type}
               placeholder="나이"
               items={items}
               onSelect={onSelect}
-              onInput={onInput}
-              suppressReselect={false}
-              clearInputOnClick={true}
+              suppressReselect={true}
             />
           </SelectContainer>
         );
@@ -163,5 +181,7 @@ export default ProfileEdit;
 
 ProfileEdit.propTypes = {
   type: PropTypes.string.isRequired,
+  email: PropTypes.string,
   values: PropTypes.arrayOf(PropTypes.any),
+  setUserInfo: PropTypes.func,
 };

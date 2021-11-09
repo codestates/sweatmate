@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types"; // ES6
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router";
 import styled from "styled-components";
@@ -54,6 +55,17 @@ const ProfileImage = styled.img`
   `};
 `;
 
+const StyledDefaultProfile = styled(DefaultProfile)`
+  width: 18rem;
+  height: 18rem;
+  border-radius: 100%;
+  aspect-ratio: 1;
+  margin: auto 3.5rem auto 2.5rem;
+  ${media.lessThan("medium")`
+    margin: auto 2.5rem 2rem 2.5rem;
+  `};
+`;
+
 const InfoContainer = styled.div`
   display: flex;
   align-items: center;
@@ -101,7 +113,10 @@ const ImageEditInputs = styled.div`
   background-color: var(--color-darkwhite);
   border: 2px solid var(--color-maingreen--100);
   border-radius: 0.5rem;
-  input {
+  label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 5rem;
     height: 2rem;
     color: var(--color-maingreen--100);
@@ -219,60 +234,113 @@ const CancelButton = styled(Button)`
   width: 17rem;
   border: 2px solid var(--color-red);
   ${media.lessThan("medium")`
-  width: 8rem;
+    width: 8rem;
   `};
 `;
 
-const SaveButton = styled(Button)`
-  width: 17rem;
+const SaveButton = styled.label`
+  text-align: center;
+  font-family: Interop-SemiBold;
+  background-color: ${(props) => props.bgColor};
+  color: ${(props) => props.color};
+  :hover {
+    opacity: 0.8;
+  }
+  :disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  font-size: 1.2rem;
+  min-width: fit-content;
+  padding: 1rem 1.5rem;
+  border-radius: 0.8rem;
+  ${media.lessThan("medium")`
+    font-size: 1.15rem;
+    padding: 0.875rem 1.25rem;
+    border-radius: 0.6rem;
+    `};
+  ${media.lessThan("small")`
+    font-size: 1rem;
+    padding: 0.75rem 1rem;
+  `};
+  color: var(--color-maingreen--100);
   border: 2px solid var(--color-maingreen--100);
+  cursor: pointer;
+  width: 17rem;
   ${media.lessThan("medium")`
     width: 8rem;
   `};
 `;
 
-const EditButton = () => (
-  <EditDetails>
-    <EditSummary>
-      <TiPencil />
-      편집
-    </EditSummary>
-    <details-menu role="menu">
-      <EditTooltip>
-        <EditTooltip />
-      </EditTooltip>
-      <ImageEditInputs>
-        <label tabIndex="0" role="menuitem">
-          <input type="button" value="이미지 선택" />
-        </label>
-        <label tabIndex="0" role="menuitem">
-          <input type="button" value="이미지 삭제" />
-        </label>
-      </ImageEditInputs>
-    </details-menu>
-  </EditDetails>
-);
+const EditButton = ({ setUserInfo, setPhoto }) => {
+  const handlePhotoChange = (e) => {
+    const fileInfo = e.target.files[0];
+    const imageUrl = URL.createObjectURL(fileInfo);
+
+    setPhoto(fileInfo);
+    setUserInfo((prev) => ({
+      ...prev,
+      image: imageUrl,
+    }));
+  };
+
+  const handlePhotoDelete = () => {
+    setUserInfo((prev) => ({
+      ...prev,
+      image: "",
+    }));
+  };
+
+  return (
+    <EditDetails>
+      <EditSummary>
+        <TiPencil />
+        편집
+      </EditSummary>
+      <details-menu role="menu">
+        <EditTooltip>
+          <EditTooltip />
+        </EditTooltip>
+        <ImageEditInputs>
+          <label htmlFor="photo" tabIndex="0" role="menuitem">
+            이미지 선택
+            <input
+              id="photo"
+              type="file"
+              style={{ display: "none" }}
+              accept="image/*,audio/*,video/mp4,video/x-m4v,application/pdf"
+              onChange={handlePhotoChange}
+            />
+          </label>
+          <label tabIndex="0" role="menuitem" onClick={handlePhotoDelete}>
+            이미지 삭제
+          </label>
+        </ImageEditInputs>
+      </details-menu>
+    </EditDetails>
+  );
+};
 
 const Mypage = () => {
   const dispatch = useDispatch();
   const history = useHistory();
-  const { nickname, image } = useSelector(({ authReducer }) => authReducer);
+  const { id, nickname, image, area, gender, age } = useSelector(({ authReducer }) => authReducer);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [photo, setPhoto] = useState("");
   const [userInfo, setUserInfo] = useState({
-    age: "",
-    areaName: "",
-    email: "",
-    gender: "",
     image: image,
     nickname: nickname,
-    sports: [],
+    email: "",
+    area: area,
+    gender: gender,
+    age: age,
   });
-  const [area, setArea] = useState([{ id: 1, name: "송파구" }]);
-  const gender = [
+  const [areaList, setAreaList] = useState([{ id: 1, name: "송파구" }]);
+  const genderList = [
     { id: 1, name: "남" },
     { id: 2, name: "여" },
   ];
-  const age = [
+  const ageList = [
     { id: 1, name: "10" },
     { id: 2, name: "20" },
     { id: 3, name: "30" },
@@ -283,15 +351,14 @@ const Mypage = () => {
 
   useEffect(() => {
     const checkUserInfo = async (id) => {
-      const res = await userApi.getUerInfo(id);
+      const res = await userApi.getUserInfo(id);
       setUserInfo({
         age: res.data.age,
-        areaName: res.data.areaName,
+        area: res.data.areaName,
         email: res.data.email,
         gender: res.data.gender,
         image: res.data.image,
         nickname: res.data.nickname,
-        sports: [],
       });
     };
 
@@ -316,31 +383,47 @@ const Mypage = () => {
     const getAreaList = async () => {
       const res = await gathApi.getAreaList();
       const areaList = res.data.map((el) => ({ id: el.id, name: el.areaName }));
-      setArea(areaList);
+      setAreaList(areaList);
     };
     getAreaList();
   }, []);
 
   const handleEditClick = (e) => {
     e.preventDefault();
-    setIsEditMode((prev) => !prev);
+    setIsEditMode(true);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append("image", photo);
+    console.log(photo);
+    formData.append("nickname", userInfo.nickname);
+    console.log(userInfo);
+    formData.append("areaName", userInfo.area);
+    formData.append("gender", userInfo.gender);
+    formData.append("age", userInfo.age);
+    for (const key of formData.entries()) {
+      console.log(key[0] + ", " + key[1]);
+    }
+    const res = await userApi.modifyUserInfo(id, formData);
+    console.log(res);
+    // dispatch(updateInfoAction(res.data));
+    setIsEditMode(false);
+  };
+
+  const handleDeleteAccount = () => {
+    const res = userApi.deleteUserAccount(id);
+    console.log(res);
   };
 
   return (
     <Container>
-      <ProfileContainer>
-        {image ? <ProfileImage src={image} /> : <DefaultProfile />}
-        {!isEditMode && <EditButton />}
+      <ProfileContainer onSubmit={handleSubmit}>
+        {userInfo.image ? <ProfileImage src={userInfo.image} /> : <StyledDefaultProfile />}
+        {isEditMode && <EditButton setUserInfo={setUserInfo} setPhoto={setPhoto} />}
         <ProfileInfo>
           {!isEditMode ? (
-            <>
-              <ProfileEdit type="email" values={[]} />
-              <ProfileEdit type="nickname" values={[]} />
-              <ProfileEdit type="area" values={area} />
-              <ProfileEdit type="gender" values={gender} />
-              <ProfileEdit type="age" values={age} />
-            </>
-          ) : (
             <>
               <InfoContainer>
                 {/* <FaUserCircle style={{ display: "inline" }} />  */}
@@ -367,8 +450,47 @@ const Mypage = () => {
                 <Info>{userInfo.age || "❓"}</Info>
               </InfoContainer>
             </>
+          ) : (
+            <>
+              <ProfileEdit
+                id="nickname"
+                name="nickname"
+                type="nickname"
+                values={[]}
+                setUserInfo={setUserInfo}
+              />
+              <ProfileEdit
+                id="email"
+                name="email"
+                type="email"
+                values={[]}
+                email={userInfo.email}
+              />
+              <ProfileEdit
+                id="area"
+                name="area"
+                type="area"
+                values={areaList}
+                setUserInfo={setUserInfo}
+              />
+              <ProfileEdit
+                id="gender"
+                name="gender"
+                type="gender"
+                values={genderList}
+                setUserInfo={setUserInfo}
+              />
+              <ProfileEdit
+                id="age"
+                name="age"
+                type="age"
+                values={ageList}
+                setUserInfo={setUserInfo}
+              />
+            </>
           )}
         </ProfileInfo>
+        <button id="submitdata" style={{ display: "none" }}></button>
       </ProfileContainer>
       {/* <MySkillContainer>
         <Title>{nickname || "OOO"}님의 관심 운동</Title>
@@ -376,6 +498,28 @@ const Mypage = () => {
         <AddSkill>+</AddSkill>
       </MySkillContainer> */}
       {isEditMode ? (
+        <>
+          <ButtonContainer>
+            <CancelButton color={"var(--color-red)"} onClick={() => setIsEditMode(false)}>
+              취소
+            </CancelButton>
+            <SaveButton htmlFor="submitdata" type="submit" color={"var(--color-maingreen--100)"}>
+              저장
+            </SaveButton>
+          </ButtonContainer>
+          <ButtonContainer>
+            <DeleteButton
+              type="button"
+              className="edit"
+              color={"var(--color-white)"}
+              bgColor={"var(--color-red)"}
+              onClick={handleDeleteAccount}
+            >
+              계정 삭제
+            </DeleteButton>
+          </ButtonContainer>
+        </>
+      ) : (
         <ButtonContainer>
           <EditModeButton
             type="button"
@@ -387,31 +531,14 @@ const Mypage = () => {
             프로필 수정
           </EditModeButton>
         </ButtonContainer>
-      ) : (
-        <>
-          <ButtonContainer>
-            <CancelButton color={"var(--color-red)"} onClick={handleEditClick}>
-              취소
-            </CancelButton>
-            <SaveButton color={"var(--color-maingreen--100)"} onClick={handleEditClick}>
-              저장
-            </SaveButton>
-          </ButtonContainer>
-          <ButtonContainer>
-            <DeleteButton
-              type="button"
-              className="edit"
-              color={"var(--color-white)"}
-              bgColor={"var(--color-red)"}
-              onClick={handleEditClick}
-            >
-              계정 삭제
-            </DeleteButton>
-          </ButtonContainer>
-        </>
       )}
     </Container>
   );
 };
 
 export default Mypage;
+
+EditButton.propTypes = {
+  setUserInfo: PropTypes.func,
+  setPhoto: PropTypes.func,
+};
