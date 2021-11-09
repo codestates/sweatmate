@@ -66,12 +66,13 @@ module.exports = {
     gatheringIdAndTitles.forEach((el) => {
       const { id, title } = el;
       const noticeInfo = {
-        _id,
+        id: _id,
         gatheringId: id,
         type: "remove",
         url: null,
         target: null,
-        message: `모임을 만든 유저가 회원탈퇴하여 ${title} 모임이 삭제되었습니다`,
+        title: title,
+        message: `모임을 만든 유저가 회원탈퇴하여 모임이 삭제되었습니다`,
       };
       const userIds = Object.keys(realTime[id]);
       noticeModel.createNotice(userIds, noticeInfo);
