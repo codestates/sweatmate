@@ -163,15 +163,6 @@ const HomeSearchBar = () => {
   const [popupShown, setPopupShown] = useState(false);
 
   useEffect(() => {
-    document.body.style.cssText = `position: fixed; top: -${window.scrollY}px`;
-    return () => {
-      const scrollY = document.body.style.top;
-      document.body.style.cssText = `position: ""; top: "";`;
-      window.scrollTo(0, parseInt(scrollY || "0") * -1);
-    };
-  }, []);
-
-  useEffect(() => {
     // 운동, 지역 리스트 받아오기
     const getList = async () => {
       try {
