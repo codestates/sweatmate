@@ -15,9 +15,15 @@ import Btn from "../components/Btn";
 import authApi from "../api/auth";
 import gathApi from "../api/gath";
 import userApi from "../api/user";
-import { signinAction, signoutAction } from "../store/actions";
+import {
+  confirmModalOnAction,
+  signinAction,
+  signoutAction,
+  updateInfoAction,
+} from "../store/actions";
 import { ReactComponent as DefaultProfile } from "../assets/defaultProfile.svg";
 import ProfileEdit from "../components/ProfileEdit";
+import ConfirmModal from "../components/ConfirmModal";
 
 const Container = styled.div`
   display: flex;
@@ -325,6 +331,7 @@ const Mypage = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const { id, nickname, image, area, gender, age } = useSelector(({ authReducer }) => authReducer);
+  const { isConfirmModal } = useSelector(({ modalReducer }) => modalReducer);
   const [isEditMode, setIsEditMode] = useState(false);
   const [photo, setPhoto] = useState("");
   const [userInfo, setUserInfo] = useState({
@@ -348,6 +355,14 @@ const Mypage = () => {
     { id: 5, name: "50" },
     { id: 6, name: "60" },
   ];
+
+  const content = {
+    title: "정말로 계정을 삭제하시나요 ❓",
+    body: "모든 유저 & 모임 정보가 사라집니다❗️",
+    func: () => {
+      handleDeleteAccount();
+    },
+  };
 
   useEffect(() => {
     const checkUserInfo = async (id) => {
@@ -403,18 +418,22 @@ const Mypage = () => {
     formData.append("areaName", userInfo.area);
     formData.append("gender", userInfo.gender);
     formData.append("age", userInfo.age);
-    for (const key of formData.entries()) {
-      console.log(key[0] + ", " + key[1]);
+    try {
+      const res = await userApi.modifyUserInfo(id, formData);
+      dispatch(updateInfoAction(res));
+      setIsEditMode(false);
+    } catch (error) {
+      console.error(error);
     }
-    const res = await userApi.modifyUserInfo(id, formData);
-    console.log(res);
-    // dispatch(updateInfoAction(res.data));
-    setIsEditMode(false);
   };
 
-  const handleDeleteAccount = () => {
-    const res = userApi.deleteUserAccount(id);
-    console.log(res);
+  const handleDeleteAccount = async () => {
+    try {
+      const res = await userApi.deleteUserAccount(id);
+      if (res.status === 200) history.push("/");
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -438,7 +457,7 @@ const Mypage = () => {
               <InfoContainer>
                 {/* <IoLocationSharp style={{ display: "inline" }} /> */}
                 📍
-                <Info>{userInfo.age || "❓"}</Info>
+                <Info>{userInfo.area || "❓"}</Info>
               </InfoContainer>
               <InfoContainer>
                 {/* <ImManWoman style={{ display: "inline" }} /> */}
@@ -458,6 +477,7 @@ const Mypage = () => {
                 type="nickname"
                 values={[]}
                 setUserInfo={setUserInfo}
+                nickname={userInfo.nickname}
               />
               <ProfileEdit
                 id="email"
@@ -513,7 +533,7 @@ const Mypage = () => {
               className="edit"
               color={"var(--color-white)"}
               bgColor={"var(--color-red)"}
-              onClick={handleDeleteAccount}
+              onClick={() => dispatch(confirmModalOnAction)}
             >
               계정 삭제
             </DeleteButton>
@@ -532,6 +552,7 @@ const Mypage = () => {
           </EditModeButton>
         </ButtonContainer>
       )}
+      {isConfirmModal && <ConfirmModal content={content} />}
     </Container>
   );
 };
