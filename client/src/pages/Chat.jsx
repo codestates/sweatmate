@@ -503,19 +503,20 @@ const Nickname = styled.span`
 const ChatFormContainer = styled.div`
   border-top: 1px solid var(--color-lightgray);
   padding: 1rem;
+  flex: 0 0 auto;
 `;
 const ChatForm = styled.form`
   display: flex;
-  padding: 0.5rem;
   border-radius: 0.5rem;
   background-color: var(--color-darkwhite);
 `;
 const ChatInput = styled.input`
   flex: 1;
-  padding: 0.5rem;
+  padding: 0.5rem 1rem;
   font-size: 1rem;
   ::placeholder {
-    color: var(--color-lightgray);
+    font-family: Interop-Regular;
+    color: var(--color-gray);
   }
 `;
 const ChatSubmitBtn = styled.button`
