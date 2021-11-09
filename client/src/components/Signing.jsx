@@ -1,23 +1,24 @@
 /* eslint-disable  */
 
 import React, { useEffect, useState } from "react";
-import styled from "styled-components";
+import { useDispatch } from "react-redux";
 import PropTypes from "prop-types";
-import Btn from "./Btn";
+import styled from "styled-components";
 import media from "styled-media-query";
+import debounce from "lodash/debounce";
+import { useHistory } from "react-router-dom";
 import { ImGoogle } from "react-icons/im";
 import { SiKakao } from "react-icons/si";
-import { useDispatch } from "react-redux";
+import { HiOutlineMail } from "react-icons/hi";
+
 import {
   modalOffAction,
   signinAction,
   signinModalOnAction,
   signupModalOnAction,
 } from "../store/actions";
-import debounce from "lodash/debounce";
-import { useHistory } from "react-router-dom";
+import Btn from "./Btn";
 import authApi from "../api/auth";
-import { HiOutlineMail } from "react-icons/hi";
 
 const Form = styled.form`
   display: flex;
@@ -26,6 +27,7 @@ const Form = styled.form`
   justify-content: center;
   width: auto;
   height: auto;
+  margin: 2rem 2rem 0rem 2rem;
   * {
     width: 20rem;
     height: 3rem;
@@ -105,18 +107,21 @@ const FlexContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-
+  margin-bottom: 2rem;
   div {
     width: 20rem;
   }
   .kakao {
     width: 10rem;
     height: 3rem;
-    border: 1.5px solid #f7e600;
+    border: 1.5px solid #f4da48;
     margin-right: 0.5rem;
     * {
       width: 2.5rem;
       height: auto;
+      :first-child {
+        margin-right: 0.2rem;
+      }
     }
   }
 
@@ -127,6 +132,9 @@ const FlexContainer = styled.div`
     * {
       width: 1rem;
       height: auto;
+      :first-child {
+        margin-right: 0.2rem;
+      }
     }
   }
 `;
