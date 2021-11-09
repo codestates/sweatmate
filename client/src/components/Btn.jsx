@@ -14,7 +14,6 @@ import media from "styled-media-query";
 
 const ButtonContainer = styled.button`
   text-align: center;
-  font-family: Interop-SemiBold;
   background-color: ${(props) => props.bgColor};
   color: ${(props) => props.color};
   :hover {
