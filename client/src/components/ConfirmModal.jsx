@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import PropTypes from "prop-types";
 import { modalOffAction } from "../store/actions";
 import { useDispatch } from "react-redux";
@@ -128,10 +128,20 @@ const ConfirmModal = ({ isTransparent, content }) => {
     }
   };
   useEffect(() => {
-    document.body.style.cssText = `position: fixed; top: -${window.scrollY}px`;
+    document.body.style.cssText = css`
+      position: fixed;
+      top: -${window.scrollY}px;
+      left: 0;
+      right: 0;
+    `;
     return () => {
       const scrollY = document.body.style.top;
-      document.body.style.cssText = `position: ""; top: "";`;
+      document.body.style.cssText = css`
+        position: "";
+        top: "";
+        left: "";
+        right: "";
+      `;
       window.scrollTo(0, parseInt(scrollY || "0") * -1);
     };
   }, []);
