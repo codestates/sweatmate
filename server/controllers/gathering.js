@@ -5,6 +5,7 @@ const {
   gatheringFindOne,
   findOrCreateUser_gathering,
   User_gatheringFindOne,
+  userFindOne,
 } = require("./functions/sequelize");
 const chatModel = require("../schemas/chat");
 const noticeModel = require("../schemas/notification");
