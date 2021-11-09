@@ -859,6 +859,8 @@ paths:
                       type: string
                     target:
                       type: string
+                    title:
+                      type: strin
                     message:
                       type: string
                   example:
@@ -867,6 +869,7 @@ paths:
                     type: welcome,
                     url: users/59117a45-6b95-4c2e-a19e-ackie019rhfi,
                     target: null,
+                    title: null,
                     message: sweatmate에 오신 걸 환영합니다. 마이페이지로 이동해 프로필을 바꿔보세요!
         "400":
           description: Unauthorized
