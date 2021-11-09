@@ -57,7 +57,7 @@ module.exports = {
       //   })[0];
       //   return { sportId: sportInfo.id, userId, skill: userSport.skill };
       // });
-      await modifyUserSportList({ userId }, getUserSportsList);
+      // await modifyUserSportList({ userId }, getUserSportsList);
       module.exports.getUerInfo(req, res);
     } catch (err) {
       console.log(err);

@@ -56,8 +56,8 @@ module.exports = {
   },
   dropUser: async (userId, req) => {
     //유저의 몽고디비 도큐멘트 삭제
-    noticeModel.removeUser(userId);
-    chatModel.removeChatOfUser(userId);
+    await noticeModel.removeUser(userId);
+    await chatModel.removeChatOfUser(userId);
     //유저가 참여중인 모든 게더링 참여 중 인원 -1
     await decrementGatheringsOfUser(userId);
     const gatheringIdAndTitles = await getGatheringIdsOfUser(userId);
