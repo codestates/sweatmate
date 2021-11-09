@@ -1,5 +1,5 @@
 import React from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router";
 import { modalOffAction } from "../store/actions";
@@ -29,16 +29,24 @@ const ProfileContainer = styled.div`
   align-items: center;
   font-family: Interop-SemiBold;
   font-size: calc(${(props) => props.size} * 1rem);
-  ${(props) => {
-    if (props.size <= 0.8) return "font-family: Interop-Medium";
-  }};
+  ${(props) =>
+    props.size <= 0.8 &&
+    css`
+      font-family: Interop-Medium;
+    `};
   > #image {
     width: calc(${(props) => props.size} * 1.4rem);
     height: calc(${(props) => props.size} * 1.4rem);
     margin-right: calc(${(props) => props.size} * 0.8rem);
     ${(props) => {
-      if (props.size <= 0.8) return "margin-right: 0.64rem";
-      if (props.size >= 1.25) return "margin-right: 1rem";
+      if (props.size <= 0.8)
+        return css`
+          margin-right: 0.64rem;
+        `;
+      if (props.size >= 1.25)
+        return css`
+          margin-right: 1rem;
+        `;
     }};
     position: relative;
   }
@@ -53,11 +61,14 @@ const ProfileContainer = styled.div`
     }};
     position: relative;
   }
-  :hover {
-    ${(props) => {
-      if (!props.disabled) return "opacity: 0.8";
-    }};
-  }
+  ${(props) =>
+    !props.disabled &&
+    css`
+      cursor: pointer;
+      :hover {
+        opacity: 0.8;
+      }
+    `};
   #crownmark {
     position: absolute;
     right: 0;
@@ -100,6 +111,7 @@ const UserProfile = ({ size, user, isDisabled, isCreator, hideName }) => {
   };
   return (
     <ProfileContainer
+      disabled={isDisabled}
       size={size}
       onClick={() => {
         if (!isDisabled) handleProfileClick();
