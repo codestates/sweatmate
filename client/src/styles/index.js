@@ -125,6 +125,7 @@ const GlobalStyle = createGlobalStyle`
     --color-darkgray: #62626A; /* 변경 전 : #474751 */
     --color-gray: #919196; /* 변경 전 : #969699 */
     --color-lightgray: #DCDCE0; /* 변경 전 : #DCDCDD */ 
+    --color-palegray: #EEF2F6;
     --color-darkwhite: #F6F6FA;
     --color-white: #FCFCFF;
     --color-shadow: #1D1D2133;
