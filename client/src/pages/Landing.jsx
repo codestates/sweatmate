@@ -76,6 +76,7 @@ const CoverContainer = styled.div`
       }
     }
     :disabled {
+      opacity: unset;
       cursor: unset;
     }
   }
