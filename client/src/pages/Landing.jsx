@@ -6,6 +6,8 @@ import { useHistory } from "react-router";
 import authApi from "../api/auth";
 import { signinAction, signoutAction, signupModalOnAction } from "../store/actions";
 import Btn from "../components/Btn";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 const LandingContainer = styled.div`
   background-image: url(${(props) => props.url});
@@ -277,7 +279,7 @@ const ImageWrapper = styled.div`
       `}
       filter: drop-shadow(2.5px 2.5px 5px var(--color-shadow));
       margin-bottom: 1rem;
-      :last-of-type {
+      &.three {
         margin-bottom: 0;
       }
     }
@@ -435,6 +437,147 @@ const Landing = () => {
     }
   }, []);
 
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+    // first: cards
+    gsap.from(".card.one", {
+      scrollTrigger: {
+        trigger: "#first-container",
+        start: "top 75%",
+        end: "bottom 100%",
+        toggleActions: "restart none reverse none",
+      },
+      opacity: 0,
+      x: 75,
+      duration: 1.25,
+      ease: "power4",
+      delay: 0.25,
+    });
+    gsap.from(".card.two", {
+      scrollTrigger: {
+        trigger: "#first-container",
+        start: "top 75%",
+        end: "bottom 100%",
+        toggleActions: "restart none reverse none",
+      },
+      opacity: 0,
+      x: 75,
+      duration: 1.25,
+      ease: "power4",
+      delay: 0.5,
+    });
+    gsap.from(".card.three", {
+      scrollTrigger: {
+        trigger: "#first-container",
+        start: "top 75%",
+        end: "bottom 100%",
+        toggleActions: "restart none reverse none",
+      },
+      opacity: 0,
+      x: 75,
+      duration: 1.25,
+      ease: "power4",
+      delay: 0.75,
+    });
+    // second: pins
+    gsap.from(".pin.one", {
+      scrollTrigger: {
+        trigger: "#second-container",
+        start: "top 75%",
+        end: "bottom 100%",
+        toggleActions: "restart none reverse none",
+      },
+      opacity: 0,
+      y: -100,
+      duration: 0.5,
+      ease: "back",
+      delay: 0.25,
+    });
+    gsap.from(".pin.two", {
+      scrollTrigger: {
+        trigger: "#second-container",
+        start: "top 75%",
+        end: "bottom 100%",
+        toggleActions: "restart none reverse none",
+      },
+      opacity: 0,
+      y: -100,
+      duration: 0.5,
+      ease: "back",
+      delay: 0.5,
+    });
+    gsap.from(".pin.three", {
+      scrollTrigger: {
+        trigger: "#second-container",
+        start: "top 75%",
+        end: "bottom 100%",
+        toggleActions: "restart none reverse none",
+      },
+      opacity: 0,
+      y: -100,
+      duration: 0.5,
+      ease: "back",
+      delay: 0.75,
+    });
+    // third: alarm
+    gsap.from("#alarm", {
+      scrollTrigger: {
+        trigger: "#third-container",
+        start: "top 75%",
+        end: "bottom 100%",
+        toggleActions: "restart none reverse none",
+      },
+      opacity: 0,
+      x: 75,
+      duration: 1.25,
+      ease: "power4",
+      delay: 0.25,
+    });
+    // fourth: chats
+    gsap.from(".chat.one", {
+      scrollTrigger: {
+        trigger: "#fourth-container",
+        start: "top 75%",
+        end: "bottom 100%",
+        toggleActions: "restart none reverse none",
+      },
+      opacity: 0,
+      x: -5,
+      y: -30,
+      duration: 1.25,
+      ease: "circ",
+      delay: 0.25,
+    });
+    gsap.from(".chat.two", {
+      scrollTrigger: {
+        trigger: "#fourth-container",
+        start: "top 75%",
+        end: "bottom 100%",
+        toggleActions: "restart none reverse none",
+      },
+      opacity: 0,
+      x: 5,
+      y: -30,
+      duration: 1.25,
+      ease: "circ",
+      delay: 1,
+    });
+    gsap.from(".chat.three", {
+      scrollTrigger: {
+        trigger: "#fourth-container",
+        start: "top 75%",
+        end: "bottom 100%",
+        toggleActions: "restart none reverse none",
+      },
+      opacity: 0,
+      x: -5,
+      y: -30,
+      duration: 1.25,
+      ease: "circ",
+      delay: 1.75,
+    });
+  }, []);
+
   return (
     <LandingContainer url="../images/cover-bg-long.png">
       <CoverContainer>
@@ -480,9 +623,9 @@ const Landing = () => {
               <img id="sport-datalist" src="../images/sport-datalist.png" />
             </div>
             <div className="first animation">
-              <img className="card top" src="../images/card-1-1.png" />
-              <img className="card mid" src="../images/card-1-2.png" />
-              <img className="card btm" src="../images/card-1-3.png" />
+              <img className="card one" src="../images/card-1-1.png" />
+              <img className="card two" src="../images/card-1-2.png" />
+              <img className="card three" src="../images/card-1-3.png" />
             </div>
           </ImageWrapper>
         </ContentBox>
