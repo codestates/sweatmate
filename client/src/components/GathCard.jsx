@@ -54,6 +54,7 @@ const InfoBody = styled.div`
   }
   > #icon {
     font-size: 2rem;
+    margin-bottom: 1rem;
   }
   > #title {
     font-size: 1.25rem;
