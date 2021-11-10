@@ -23,9 +23,11 @@ const CardContainer = styled.div`
     margin: 0 0.4em 0.1em;
     overflow: hidden;
   }
+  position: relative;
   .hovered {
     background-color: var(--color-maingreen--50);
   }
+  cursor: pointer;
 `;
 
 const InfoHeader = styled.div`
