@@ -32,10 +32,8 @@ module.exports = {
             return { gatheringId, chatInfo, creatorId, recentChat };
           }
           // 유저 아이디로 MYSQL에서 user테이블의 유저 정보를 조회합니다.
-          const { id: recentUserId, message, date } = recentChat[0];
-          const userInfo = await userFindOne({ id: recentUserId });
+          const { message, date } = recentChat[0];
           const recentChatInfo = { message };
-          recentChatInfo.nickname = userInfo?.dataValues.nickname ?? "모임을 나간 유저";
           recentChatInfo.date = date;
           return { gatheringId, chatInfo, creatorId, recentChat: [recentChatInfo] };
         })
