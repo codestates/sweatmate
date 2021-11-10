@@ -174,7 +174,7 @@ module.exports = {
       if (!User_gatheringInfo) {
         return res.status(400).json({ message: "You are not in a state of participation." });
       }
-      
+
       const gatheringInfo = await gatheringFindOne({ id: gatheringId });
       const { currentNum, title, creatorId } = gatheringInfo.dataValues;
 
@@ -190,8 +190,8 @@ module.exports = {
 
       const noticeType = host ? "ban" : "leave";
       const noticeMessage = host
-        ? `${nickname}님이 모임을 떠났습니다.`
-        : `${nickname}님이 모임에서 추방되었습니다.`;
+        ? `${nickname}님이 모임에서 추방되었습니다.`
+        : `${nickname}님이 모임을 떠났습니다.`;
 
       const realTime = req.app.get("realTime");
       delete realTime[gatheringId][userId];
