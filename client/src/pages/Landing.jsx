@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import styled, { css } from "styled-components";
 import media from "styled-media-query";
 import { useSelector, useDispatch } from "react-redux";
@@ -74,6 +74,9 @@ const CoverContainer = styled.div`
         opacity: 1;
         background-color: var(--color-maingreen--10);
       }
+    }
+    :disabled {
+      cursor: unset;
     }
   }
   #cover-anima-container {
@@ -391,6 +394,7 @@ const ImageWrapper = styled.div`
 
 const Landing = () => {
   const { isLogin } = useSelector(({ authReducer }) => authReducer);
+  const [btnClickable, setBtnClickable] = useState(false);
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -399,10 +403,14 @@ const Landing = () => {
   };
 
   const handleExperienceClick = async () => {
-    const res = await authApi.guestSignin();
-    if (res.status === 200) {
-      dispatch(signinAction(res.data));
-      history.push("/home");
+    try {
+      const res = await authApi.guestSignin();
+      if (res.status === 200) {
+        dispatch(signinAction(res.data));
+        history.push("/home");
+      }
+    } catch (err) {
+      // console.error(err);
     }
   };
 
@@ -449,6 +457,12 @@ const Landing = () => {
       };
       checkValidUser();
     }
+  }, []);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setBtnClickable(true);
+    }, 10500);
   }, []);
 
   useEffect(() => {
@@ -617,15 +631,23 @@ const Landing = () => {
           <CoverTitle className="cover-content">스웻메이트</CoverTitle>
           <div id="btn-container" className="cover-content">
             {isLogin ? (
-              <Btn className="to-home btn" onClick={() => history.push("/home")}>
+              <Btn
+                className="to-home btn"
+                onClick={() => history.push("/home")}
+                disabled={!btnClickable}
+              >
                 스웻메이트 홈으로
               </Btn>
             ) : (
               <>
-                <Btn className="start btn" onClick={handleStartClick}>
+                <Btn className="start btn" onClick={handleStartClick} disabled={!btnClickable}>
                   시작하기
                 </Btn>
-                <Btn className="experience btn" onClick={handleExperienceClick}>
+                <Btn
+                  className="experience btn"
+                  onClick={handleExperienceClick}
+                  disabled={!btnClickable}
+                >
                   체험해보기
                 </Btn>
               </>
