@@ -27,14 +27,16 @@ const Form = styled.form`
   justify-content: center;
   width: auto;
   height: auto;
-  margin: 2rem 2rem 0rem 2rem;
+  margin: 4rem 2rem 0rem 2rem;
   * {
     width: 20rem;
     height: 3rem;
     margin: 0.5rem 0rem;
   }
   input {
-    border-bottom: 1px solid var(--color-gray);
+    height: 2.3rem;
+    border: 1px solid var(--color-gray);
+    border-radius: 0.4rem;
     :first-of-type {
       margin-top: 1rem;
     }
@@ -75,7 +77,6 @@ const Button = styled(Btn)`
   min-height: 3rem;
   font-size: 1rem;
   border: 1.5px solid var(--color-maingreen--100);
-  filter: drop-shadow(2px 2px 3px var(--color-shadow));
   * {
     font-size: 0.5rem;
   }
