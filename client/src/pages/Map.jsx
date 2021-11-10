@@ -204,7 +204,6 @@ const GathMap = () => {
   }, [points]);
 
   useEffect(() => {
-    console.log("1번 useEffect : authMe & 모임 받아오기");
     const checkValidUser = async () => {
       try {
         const res = await authApi.me();
@@ -243,7 +242,6 @@ const GathMap = () => {
   }, []);
 
   useEffect(() => {
-    console.log("2번 useEffect 포인트 재설정");
     const collectPoints = () => {
       const newPoints =
         gatherings &&
@@ -258,7 +256,6 @@ const GathMap = () => {
   }, []);
 
   useEffect(() => {
-    console.log("3번 useEffect : 리덕스 Condition 업데이트");
     const newConditions = {
       sportName: conditions.sport,
       areaName: address,
@@ -270,9 +267,7 @@ const GathMap = () => {
   }, [address]);
 
   useEffect(() => {
-    console.log("4번 useEffect : 지도 범위 재설정");
     // if (isLoaded) {
-    console.log("4-1번 setBounds : 지도 범위 재설정");
     if (map) map.setBounds(bounds);
     const newConditions = {
       sportName: conditions.sport,
@@ -287,18 +282,15 @@ const GathMap = () => {
   }, []);
 
   const handleDragStart = () => {
-    console.log("5번 핸들러 함수 : 드레그 시작");
     setListView(false);
   };
 
   const handleDragEnd = () => {
-    console.log("6번 핸들러 함수 : 드레그 끝");
     setListView(true);
   };
 
   const handleCenterChange = debounce(() => {
     // 주소-좌표 변환 객체를 생성합니다
-    console.log("7번 핸들러 함수 : 중심 변경 좌표를 주소로 변환");
     const geocoder = new kakao.maps.services.Geocoder();
 
     // 현재 지도 중심좌표로 주소를 검색해서 지도 좌측 상단에 표시합니다
@@ -324,11 +316,9 @@ const GathMap = () => {
   }, 50);
 
   const handleSearchHere = async () => {
-    console.log("8번 핸들러 함수 : 여기서 재검색");
     const findGath = async () => {
       const { data: wholeData } = await gathApi.getAllGath();
       if (conditions.sport || conditions.area) {
-        console.log("8-1번 핸들러 함수 : 여기서 재검색");
         const newConditions = {
           sportName: conditions.sport,
           areaName: address,
@@ -343,7 +333,6 @@ const GathMap = () => {
           dispatch(searchGathAction({ conditions: newConditions, gatherings: newGatherings }));
         else dispatch(searchGathAction({ conditions: newConditions, gatherings: newGatherings }));
       } else {
-        console.log("8-2번 핸들러 함수 : 여기서 재검색");
         const newConditions = {
           sportName: conditions.sport,
           areaName: conditions.area,
@@ -368,7 +357,6 @@ const GathMap = () => {
         style={{ width: "100vw", height: "100%" }}
         level={8} // 지도의 확대 레벨
         onCreate={(e) => {
-          console.log("0번 핸들러 함수 : onCreate");
           setMap(e);
           // setIsLoaded(true);
         }}
