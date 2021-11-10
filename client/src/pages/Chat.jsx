@@ -602,28 +602,28 @@ const Room = ({ chatList, updateChatList }) => {
           return history.push("/chat");
         }
       });
-
-      const getChatDetail = async () => {
-        const res = await chatApi.getChatDetail(id);
-        if (res.status === 200) {
-          const { userList, chatLog, chatInfo, creatorId } = res.data;
-          setUserList(userList);
-          setChatLog(chatLog);
-          setChatInfo({ ...chatInfo, creatorId });
-          chatLogRef?.current?.lastChild?.scrollIntoView();
-        }
-      };
-      getChatDetail();
     };
     getChatList();
 
+    const getChatDetail = async () => {
+      const res = await chatApi.getChatDetail(id);
+      if (res.status === 200) {
+        const { userList, chatLog, chatInfo, creatorId } = res.data;
+        setUserList(userList);
+        setChatLog(chatLog);
+        setChatInfo({ ...chatInfo, creatorId });
+        chatLogRef?.current?.lastChild?.scrollIntoView();
+      }
+    };
+    getChatDetail();
+
     return () => {
       console.log("unmount");
-      removeChatSocket();
       getChatSocketIO(id).emit("leave");
       getChatSocketIO(id).off("message");
       getChatSocketIO(id).off("quit");
       getChatSocketIO(id).off("leave");
+      removeChatSocket();
       isAvailable && getMainSocketIO().emit("joinMainRoom", Number(id));
     };
   }, [id]);
