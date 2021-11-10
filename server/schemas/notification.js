@@ -77,7 +77,7 @@ notificationSchema.statics.signup = async function (userId) {
     _id: userId,
     notification: [
       {
-        _id: mongoose.Types.ObjectId(),
+        id: mongoose.Types.ObjectId(),
         gatheringId: null,
         type: "welcome",
         url: `users/${userId}`,

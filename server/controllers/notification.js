@@ -13,12 +13,14 @@ module.exports = {
   deleteNotification: async (req, res) => {
     const { notificationId } = req.params;
     const { userId } = res.locals;
-    const notificationOfUser = await noticeModel.findOne({ _id: userId });
+    const notificationOfUser = await noticeModel.findOneAndUpdate(
+      { _id: userId },
+      { $pull: { notification: { id: notificationId } } },
+      { new: true }
+    );
     if (!notificationOfUser) {
       return res.status(400).json({ message: "you don't have notification document" });
     }
-    await notificationOfUser.notification.id(notificationId)?.remove();
-    await notificationOfUser.save();
     return res.status(200).json({ message: "ok" });
   },
 };

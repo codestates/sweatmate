@@ -163,6 +163,9 @@ module.exports = {
       //TODO: 유저가 게더링을 떠났다는 이벤트를 모든 참여자에게 알림 + 유저 관리 객체에 해당 유저 제거
       const userInfo = await userFindOne({ id: userId });
       const { nickname } = userInfo.dataValues;
+      const gatheringInfo = await gatheringFindOne({ id: gatheringId });
+      const { currentNum, title } = gatheringInfo.dataValues;
+
       const realTime = req.app.get("realTime");
       delete realTime[gatheringId][userId];
       const userIds = Object.keys(realTime[gatheringId]);
@@ -184,8 +187,6 @@ module.exports = {
       chat.to(gatheringId).emit("notice", noticeInfo);
       //이벤트
 
-      const gatheringInfo = await gatheringFindOne({ id: gatheringId });
-      const { currentNum } = gatheringInfo;
       await User_gatheringInfo.destroy();
       gatheringInfo.update({ currentNum: currentNum - 1 });
       const leftGatheringInfo = await findAllGathering({ id: gatheringId });

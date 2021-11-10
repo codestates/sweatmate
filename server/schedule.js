@@ -117,7 +117,7 @@ module.exports = (app) => {
       chat.to(id).emit("notice", noticeInfo);
     });
 
-    if ((time = "오후")) {
+    if (time === "오후") {
       const tomorrowGatherings = await Gathering.findAll({
         where: { date: getTomorrowDate() },
         attributes: ["id", "title"],
