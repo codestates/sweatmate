@@ -25,16 +25,14 @@ module.exports = {
       const chatsListToSend = await Promise.all(
         chatsList.map(async (el) => {
           const { chatLog: recentChat, _id: gatheringId, chatInfo, creatorId } = el;
-          const date = recentChat[0]?.date;
+          const { message, date } = recentChat[0];
           // 채팅로그가 비어있을 경우에 응답입니다.
           if (!date) {
             recentChat[0] = { message: null, nickname: null, date: null };
             return { gatheringId, chatInfo, creatorId, recentChat };
           }
-          // 유저 아이디로 MYSQL에서 user테이블의 유저 정보를 조회합니다.
-          const { message, date } = recentChat[0];
-          const recentChatInfo = { message };
-          recentChatInfo.date = date;
+
+          const recentChatInfo = { message, date };
           return { gatheringId, chatInfo, creatorId, recentChat: [recentChatInfo] };
         })
       );
