@@ -164,12 +164,12 @@ module.exports = {
     }
   },
   leaveGathering: async (req, res) => {
-    const { userId } = res.locals; //토큰에 있는 유저 아이디
+    const { userId } = res.locals; // 토큰에 있는 유저 아이디
     const { userId: targetUserId } = req.params; // 게더링 아이디와 타겟 유저 아이디
     const gatheringId = Number(req.params.gatheringId);
 
     try {
-      //해당 유저의 user_gathering 정보가 없다면 그 유저는 참여중이 아님
+      // 해당 유저의 user_gathering 정보가 없다면 그 유저는 참여중이 아님
       const User_gatheringInfo = await User_gatheringFindOne({ userId: targetUserId, gatheringId });
       if (!User_gatheringInfo) {
         return res.status(400).json({ message: "You are not in a state of participation." });
@@ -181,9 +181,9 @@ module.exports = {
       const userInfo = await userFindOne({ id: targetUserId });
       const { nickname } = userInfo.dataValues;
 
-      //토큰의 유저아이디와 해당 gathering의 creatorId가 같다면 요청한 유저는 호스트
+      // 토큰의 유저아이디와 해당 gathering의 creatorId가 같다면 요청한 유저는 호스트
       const host = userId === creatorId;
-      //호스트가 아니면서 타켓유저아이디와 토큰에 유저아이디가 다르다면 권한이 없음
+      // 호스트가 아니면서 타켓유저아이디와 토큰에 유저아이디가 다르다면 권한이 없음
       if (!host && targetUserId !== userId) {
         return res.status(400).json({ message: "You don't have permission" });
       }
@@ -209,9 +209,10 @@ module.exports = {
         message: noticeMessage,
       };
       // 채팅 시스템 알람이 없기 때문에 채팅에 참여중인 사람도 같이 알람을 받아야 함
+
       noticeModel.createNotice(userIds, noticeInfo);
       main.to(gatheringId).emit("notice", noticeInfo);
-      chat.to(gatheringId).emit("leave", userId);
+      chat.to(gatheringId).emit("leave", targetUserId);
       // 이벤트
 
       await User_gatheringInfo.destroy();

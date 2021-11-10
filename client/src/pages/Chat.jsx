@@ -74,10 +74,6 @@ const Chat = () => {
   };
 
   useEffect(() => {
-    // getMainSocketIO().on("notice", (arg) => {});
-  }, []);
-
-  useEffect(() => {
     const checkValidUser = async () => {
       try {
         const res = await authApi.me();
@@ -213,6 +209,11 @@ const Time = styled.span`
   font-size: 0.6rem;
   color: var(--color-gray);
 `;
+const Empty = styled.p`
+  ${media.greaterThan("medium")`
+    padding: 0 1rem;
+  `}
+`;
 
 const Navigation = ({ url, isChatActive, updateChatList, chatList }) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -229,8 +230,15 @@ const Navigation = ({ url, isChatActive, updateChatList, chatList }) => {
     getMainSocketIO().on("quit", () => {
       getChatList();
     });
+    getMainSocketIO().on("notice", (arg) => {
+      console.log(arg);
+      if (arg.type === "new" || arg.type === "ban") {
+        getChatList();
+      }
+    });
     return () => {
       getMainSocketIO().off("quit");
+      getMainSocketIO().off("notice");
     };
   }, []);
 
@@ -247,7 +255,6 @@ const Navigation = ({ url, isChatActive, updateChatList, chatList }) => {
         </HeaderTitle>
       </NavHeader>
       <ChatItemContainer>
-        {isLoading && <h1>로딩중입니다.</h1>}
         {!isLoading &&
           (chatList.length !== 0 ? (
             chatList.map((chat) => {
@@ -261,10 +268,14 @@ const Navigation = ({ url, isChatActive, updateChatList, chatList }) => {
                 if (hour > 12) {
                   dayOrNight = "오후";
                   chatTime = (hour - 12).toString() + ":" + minuteStr;
+                } else if (hour === 0) {
+                  dayOrNight = "오전";
+                  chatTime = "12" + ":" + minuteStr;
                 } else {
                   dayOrNight = "오전";
                   chatTime = tempChatTime.startsWith("0") ? tempChatTime.slice(1) : tempChatTime;
                 }
+
                 dateOrTime = `${dayOrNight} ${chatTime}`;
               }
 
@@ -280,7 +291,11 @@ const Navigation = ({ url, isChatActive, updateChatList, chatList }) => {
               );
             })
           ) : (
-            <h1>다가오는 일정이 없습니다. 모임에 참여해보세요.</h1>
+            <Empty>
+              다가오는 일정이 없습니다.
+              <br />
+              모임에 참여해보세요.
+            </Empty>
           ))}
       </ChatItemContainer>
     </Nav>
@@ -530,10 +545,9 @@ const LeaveBtn = styled.button`
   }
 `;
 
-const Room = ({ chatList, updateChatList }) => {
+const Room = ({ updateChatList }) => {
   const history = useHistory();
   const dispatch = useDispatch();
-  const { isConfirmModal } = useSelector(({ modalReducer }) => modalReducer);
 
   const { id } = useParams();
   const { url } = useRouteMatch();
@@ -544,6 +558,9 @@ const Room = ({ chatList, updateChatList }) => {
   const [chatLog, setChatLog] = useState([]);
   const [chatInfo, setChatInfo] = useState({});
   const [inputValue, setInputValue] = useState("");
+  const [banUserId, setBanUserId] = useState(null);
+  const [type, setType] = useState(null);
+  const { isConfirmModal } = useSelector(({ modalReducer }) => modalReducer);
   const { id: userId, nickname, image } = useSelector(({ authReducer }) => authReducer);
 
   const leaveConfirmContent = {
@@ -551,7 +568,7 @@ const Room = ({ chatList, updateChatList }) => {
     body: "채팅방에서 나가시는 경우, 해당 모임 참여도 함께 취소됩니다.",
     func: async () => {
       try {
-        await gathApi.leaveGath(id);
+        await gathApi.leaveGath(id, userId);
       } catch (err) {
         console.log(err);
       }
@@ -570,26 +587,40 @@ const Room = ({ chatList, updateChatList }) => {
     },
   };
 
+  const banishConfirmContent = {
+    title: "정말 내보내시겠습니까?",
+    body: "",
+    func: async () => {
+      try {
+        await gathApi.leaveGath(id, banUserId);
+      } catch (err) {
+        console.log(err);
+      }
+    },
+  };
+
   useEffect(() => {
-    console.log("hi");
     let isAvailable = false;
     const getChatList = async () => {
       const res = await chatApi.getChatList();
       if (res.status === 200 && !res.data.find((chat) => chat.gatheringId === Number(id))) {
         return history.push("/chat");
       }
+      const chatList = res.data;
       isAvailable = true;
       const mainSocketIO = getMainSocketIO();
       const chatSocketIO = getChatSocketIO(id);
 
       mainSocketIO.emit("leaveMainRoom", Number(id));
       chatSocketIO.on("message", (arg) => {
-        console.log(chatList);
-        // const found = chatList.find((chat) => chat.gatheringId === Number(id));
-        // updateChatList([
-        //   { ...found, recentChat: [{ date: arg.date, message: arg.message }] },
-        //   ...chatList.filter((chat) => chat.gatheringId !== Number(id)),
-        // ]);
+        updateChatList(
+          chatList.map((chat) => {
+            if (chat.gatheringId !== Number(id)) {
+              return chat;
+            }
+            return { ...chat, recentChat: [{ date: arg.date, message: arg.message }] };
+          })
+        );
         setChatLog((prev) => [...prev, arg]);
       });
       chatSocketIO.on("quit", () => {
@@ -600,6 +631,8 @@ const Room = ({ chatList, updateChatList }) => {
         if (arg === userId) {
           updateChatList(chatList.filter((chat) => chat.gatheringId !== Number(id)));
           return history.push("/chat");
+        } else {
+          setUserList((prev) => prev.filter((user) => user.id !== arg));
         }
       });
     };
@@ -618,7 +651,6 @@ const Room = ({ chatList, updateChatList }) => {
     getChatDetail();
 
     return () => {
-      console.log("unmount");
       getChatSocketIO(id).emit("leave");
       getChatSocketIO(id).off("message");
       getChatSocketIO(id).off("quit");
@@ -642,6 +674,7 @@ const Room = ({ chatList, updateChatList }) => {
     setIsDrawer(false);
   };
   const handleLeaveBtnClick = () => {
+    setType("leave");
     dispatch(confirmModalOnAction);
   };
   const handleInputChange = (event) => {
@@ -654,6 +687,11 @@ const Room = ({ chatList, updateChatList }) => {
     }
     getChatSocketIO(id).emit("message", { id: userId, nickname, image }, inputValue);
     setInputValue("");
+  };
+  const handleBanishBtnClick = (id) => {
+    setType("ban");
+    setBanUserId(id);
+    dispatch(confirmModalOnAction);
   };
 
   const isCreatorLogined = chatInfo?.creatorId === userId;
@@ -721,7 +759,11 @@ const Room = ({ chatList, updateChatList }) => {
                 .map((user) => (
                   <Member key={user.id}>
                     <UserProfile size={1.2} user={user} />
-                    {isCreatorLogined && <BanishBtn type="button">내보내기</BanishBtn>}
+                    {isCreatorLogined && (
+                      <BanishBtn type="button" onClick={() => handleBanishBtnClick(user.id)}>
+                        내보내기
+                      </BanishBtn>
+                    )}
                   </Member>
                 ))}
             </Members>
@@ -732,14 +774,21 @@ const Room = ({ chatList, updateChatList }) => {
         </DrawerContainer>
       )}
       {isConfirmModal && (
-        <ConfirmModal content={isCreatorLogined ? quitConfirmContent : leaveConfirmContent} />
+        <ConfirmModal
+          content={
+            type === "leave"
+              ? isCreatorLogined
+                ? quitConfirmContent
+                : leaveConfirmContent
+              : banishConfirmContent
+          }
+        />
       )}
     </RoomContainer>
   );
 };
 
 Room.propTypes = {
-  chatList: PropTypes.array.isRequired,
   updateChatList: PropTypes.func.isRequired,
 };
 
@@ -769,6 +818,9 @@ const ChatLogComp = memo(
           if (hour > 12) {
             dayOrNight = "오후";
             chatTime = (hour - 12).toString() + ":" + minuteStr;
+          } else if (hour === 0) {
+            dayOrNight = "오전";
+            chatTime = "12" + ":" + minuteStr;
           } else {
             dayOrNight = "오전";
             chatTime = tempChatTime.startsWith("0") ? tempChatTime.slice(1) : tempChatTime;
