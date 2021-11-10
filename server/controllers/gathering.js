@@ -153,18 +153,32 @@ module.exports = {
     }
   },
   leaveGathering: async (req, res) => {
-    const { userId } = res.locals;
-    const { gatheringId } = req.params;
+    const { userId } = res.locals; //토큰에 있는 유저 아이디
+    const { gatheringId, userId: targetUserId } = req.params; // 게더링 아이디와 타겟 유저 아이디
     try {
-      const User_gatheringInfo = await User_gatheringFindOne({ userId, gatheringId });
+      //해당 유저의 user_gathering 정보가 없다면 그 유저는 참여중이 아님
+      const User_gatheringInfo = await User_gatheringFindOne({ userId: targetUserId, gatheringId });
       if (!User_gatheringInfo) {
         return res.status(400).json({ message: "You are not in a state of participation." });
       }
-      //TODO: 유저가 게더링을 떠났다는 이벤트를 모든 참여자에게 알림 + 유저 관리 객체에 해당 유저 제거
-      const userInfo = await userFindOne({ id: userId });
-      const { nickname } = userInfo.dataValues;
+
       const gatheringInfo = await gatheringFindOne({ id: gatheringId });
-      const { currentNum, title } = gatheringInfo.dataValues;
+      const { currentNum, title, creatorId } = gatheringInfo.dataValues;
+
+      const userInfo = await userFindOne({ id: targetUserId });
+      const { nickname } = userInfo.dataValues;
+
+      //토큰의 유저아이디와 해당 gathering의 creatorId가 같다면 요청한 유저는 호스트
+      const host = userId === creatorId;
+      //호스트가 아니면서 타켓유저아이디와 토큰에 유저아이디가 다르다면 권한이 없음
+      if (!host && targetUserId !== userId) {
+        return res.status(400).json({ message: "You don't have permission" });
+      }
+
+      const noticeType = host ? "ban" : "leave";
+      const noticeMessage = host
+        ? `${nickname}님이 모임을 떠났습니다.`
+        : `${nickname}님이 모임에서 추방되었습니다.`;
 
       const realTime = req.app.get("realTime");
       delete realTime[gatheringId][userId];
@@ -175,11 +189,11 @@ module.exports = {
       const noticeInfo = {
         id: _id,
         gatheringId: gatheringId,
-        type: "leave",
+        type: noticeType,
         url: `/chat/${gatheringId}`,
-        target: userId,
+        target: targetUserId,
         title: title,
-        message: `${nickname}님이 모임을 떠났습니다.`,
+        message: noticeMessage,
       };
       // 채팅 시스템 알람이 없기 때문에 채팅에 참여중인 사람도 같이 알람을 받아야 함
       noticeModel.createNotice(userIds, noticeInfo);
