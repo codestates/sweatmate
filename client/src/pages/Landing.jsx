@@ -93,9 +93,9 @@ const CoverSubTitle = styled.h2`
   text-align: center;
   font-weight: normal;
   font-family: Interop-Regular;
-  font-size: 2rem;
+  font-size: 1.75rem;
   ${media.lessThan("small")`
-    font-size: 1.5rem;
+    font-size: 1.25rem;
   `}
 `;
 
@@ -121,13 +121,13 @@ const KeyValueContainer = styled.div`
   .large {
     flex: 3 0 2rem;
     ${media.lessThan("small")`
-      flex: 3 0 1rem;
+      flex: 3 0 2rem;
     `}
   }
   .small {
     flex: 1 0 2rem;
     ${media.lessThan("small")`
-      flex: 1 0 1rem;
+      flex: 1 0 2rem;
     `}
   }
   ${(props) =>
@@ -150,7 +150,7 @@ const ContentBox = styled.div`
     width: calc(100% - 4rem);
   `}
   ${media.lessThan("small")`
-    width: calc(100% - 2rem);
+    width: calc(100% - 4rem);
   `}
 `;
 
@@ -255,7 +255,7 @@ const ImageWrapper = styled.div`
     #sport-datalist {
       width: 10rem;
       ${media.lessThan("small")`
-        width: 7.5rem;
+        width: 100%;
       `}
     }
     #sport-input {
@@ -264,18 +264,23 @@ const ImageWrapper = styled.div`
     &.still {
       margin-top: 2rem;
       align-self: flex-start;
+      ${media.lessThan("small")`
+        width: calc((100% + 2rem) * 0.34);
+      `}
     }
     &.animation {
       align-self: center;
       margin-left: 4rem;
       ${media.lessThan("small")`
         margin-left: 2rem;
+        width: calc((100% + 2rem) * 0.66);
+        margin-right: -4rem;
       `}
     }
     .card {
       width: 20rem;
       ${media.lessThan("small")`
-        width: 15rem;
+        width: 100%;
       `}
       filter: drop-shadow(2.5px 2.5px 5px var(--color-shadow));
       margin-bottom: 1rem;
@@ -322,6 +327,9 @@ const ImageWrapper = styled.div`
     }
     &.animation {
       align-self: flex-end;
+      ${media.lessThan("small")`
+        margin-right: -4rem;
+      `}
     }
     #upcoming {
       width: 50%;
@@ -349,13 +357,7 @@ const ImageWrapper = styled.div`
     }
     .chat {
       filter: drop-shadow(2.5px 2.5px 5px var(--color-shadow));
-      margin-bottom: 2rem;
-      ${media.between("small", "large")`
-        margin-bottom: 1.5rem;
-      `}
-      ${media.lessThan("small")`
-        margin-bottom: 1rem;
-      `}
+      margin-bottom: 1.5rem;
       align-self: flex-start;
       &.one {
         width: calc(80% - 2.5rem);
@@ -560,7 +562,7 @@ const Landing = () => {
       y: -30,
       duration: 1.25,
       ease: "circ",
-      delay: 1,
+      delay: 0.75,
     });
     gsap.from(".chat.three", {
       scrollTrigger: {
@@ -574,7 +576,7 @@ const Landing = () => {
       y: -30,
       duration: 1.25,
       ease: "circ",
-      delay: 1.75,
+      delay: 1.5,
     });
   }, []);
 
