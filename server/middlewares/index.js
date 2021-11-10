@@ -110,7 +110,11 @@ module.exports = {
       return res.status(400).json({ message: "Incorrect format" });
     }
     const { userId } = res.locals;
-    const { id: sportId, sportName: sName } = TranslateFromSportNameToSportInfo(req.body.sportName);
+    const {
+      id: sportId,
+      sportName: sName,
+      sportEmoji,
+    } = TranslateFromSportNameToSportInfo(req.body.sportName);
     const areaId = TranslateFromAreaNameToAreaInfo(req.body.areaName).id;
     res.locals.setGatheringInfo = {
       title,
@@ -128,7 +132,7 @@ module.exports = {
       areaId,
     };
 
-    res.locals.sportInfo = { sportId, sName };
+    res.locals.sportInfo = { sportId, sportName: sName, sportEmoji };
     next();
   },
 };
