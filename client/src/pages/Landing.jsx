@@ -6,6 +6,7 @@ import { useHistory } from "react-router";
 import authApi from "../api/auth";
 import { signinAction, signoutAction, signupModalOnAction } from "../store/actions";
 import Btn from "../components/Btn";
+import AnimaLogo from "../components/AnimaLogo";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -74,6 +75,17 @@ const CoverContainer = styled.div`
         background-color: var(--color-maingreen--10);
       }
     }
+  }
+  #cover-anima-container {
+    position: absolute;
+    height: 20vh;
+  }
+  #cover-content-container {
+    padding-top: 20vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   }
 `;
 
@@ -440,6 +452,20 @@ const Landing = () => {
   }, []);
 
   useEffect(() => {
+    gsap.to("#cover-anima-container", {
+      y: -125,
+      duration: 1.5,
+      delay: 9,
+    });
+    gsap.from("#cover-content-container", {
+      opacity: 0,
+      y: 50,
+      duration: 1,
+      delay: 9.5,
+    });
+  }, []);
+
+  useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
     // first: cards
     gsap.from(".card.one", {
@@ -583,23 +609,28 @@ const Landing = () => {
   return (
     <LandingContainer url="../images/cover-bg-long.png">
       <CoverContainer>
-        <CoverSubTitle>운동 메이트를 만나는 간편한 방법,</CoverSubTitle>
-        <CoverTitle>스웻메이트</CoverTitle>
-        <div id="btn-container">
-          {isLogin ? (
-            <Btn className="to-home btn" onClick={() => history.push("/home")}>
-              스웻메이트 홈으로
-            </Btn>
-          ) : (
-            <>
-              <Btn className="start btn" onClick={handleStartClick}>
-                시작하기
+        <div id="cover-anima-container">
+          <AnimaLogo id="cover-anima" />
+        </div>
+        <div id="cover-content-container">
+          <CoverSubTitle className="cover-content">운동 메이트를 만나는 간편한 방법,</CoverSubTitle>
+          <CoverTitle className="cover-content">스웻메이트</CoverTitle>
+          <div id="btn-container" className="cover-content">
+            {isLogin ? (
+              <Btn className="to-home btn" onClick={() => history.push("/home")}>
+                스웻메이트 홈으로
               </Btn>
-              <Btn className="experience btn" onClick={handleExperienceClick}>
-                체험해보기
-              </Btn>
-            </>
-          )}
+            ) : (
+              <>
+                <Btn className="start btn" onClick={handleStartClick}>
+                  시작하기
+                </Btn>
+                <Btn className="experience btn" onClick={handleExperienceClick}>
+                  체험해보기
+                </Btn>
+              </>
+            )}
+          </div>
         </div>
       </CoverContainer>
       <KeyValueContainer colored align="right">
