@@ -3,17 +3,18 @@ import PropTypes from "prop-types"; // ES6
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router";
 import { Link } from "react-router-dom";
-import authApi from "../api/auth";
-import { searchGathAction, signinAction, signoutAction } from "../store/actions";
 import styled from "styled-components";
-import gathApi from "../api/gath";
-import GathCard from "../components/GathCard";
 import { IoIosArrowBack } from "react-icons/io";
 import { AiOutlineAim } from "react-icons/ai";
-import Btn from "../components/Btn";
 import { Map, MapMarker, CustomOverlayMap } from "react-kakao-maps-sdk";
 import debounce from "lodash/debounce";
 import media from "styled-media-query";
+
+import authApi from "../api/auth";
+import gathApi from "../api/gath";
+import { searchGathAction, signinAction, signoutAction } from "../store/actions";
+import GathCard from "../components/GathCard";
+import Btn from "../components/Btn";
 
 const { kakao } = window;
 
@@ -182,14 +183,14 @@ const CustomOverlayFlexContainer = styled(CustomOverlayMap)`
 const GathMap = () => {
   const dispatch = useDispatch();
   const history = useHistory();
+  const { conditions, gatherings } = useSelector(({ gathReducer }) => gathReducer);
   const [map, setMap] = useState();
   const [points, setPoints] = useState([]);
   const [hovered, setHovered] = useState(null);
   const [listView, setListView] = useState(true);
-  const [address, setAddress] = useState("");
+  const [address, setAddress] = useState(conditions.area);
   // const [isSearched, setIsSearched] = useState(false);
-  const [isLoaded, setIsLoaded] = useState(false);
-  const { conditions, gatherings } = useSelector(({ gathReducer }) => gathReducer);
+  // const [isLoaded, setIsLoaded] = useState(false);
 
   const bounds = useMemo(() => {
     const bounds = new kakao.maps.LatLngBounds();
@@ -266,18 +267,19 @@ const GathMap = () => {
   }, [address]);
 
   useEffect(() => {
-    if (isLoaded) {
-      map.setBounds(bounds);
-      const newConditions = {
-        sportName: conditions.sport,
-        areaName: conditions.area,
-        date: conditions.date,
-        time: conditions.time,
-        totalNum: conditions.totalNum,
-      };
-      dispatch(searchGathAction({ conditions: newConditions, gatherings }));
-    }
-  }, [isLoaded]);
+    // if (isLoaded) {
+    if (map) map.setBounds(bounds);
+    const newConditions = {
+      sportName: conditions.sport,
+      areaName: conditions.area,
+      date: conditions.date,
+      time: conditions.time,
+      totalNum: conditions.totalNum,
+    };
+    dispatch(searchGathAction({ conditions: newConditions, gatherings }));
+    // }
+    // }, [isLoaded]);
+  }, []);
 
   const handleDragStart = () => {
     setListView(false);
@@ -292,7 +294,7 @@ const GathMap = () => {
     const geocoder = new kakao.maps.services.Geocoder();
 
     // 현재 지도 중심좌표로 주소를 검색해서 지도 좌측 상단에 표시합니다
-    // debounce(() => searchAddrFromCoords(map.getCenter(), displayCenterInfo), 50);
+    searchAddrFromCoords(map.getCenter(), debounce(displayCenterInfo, 50));
 
     // 중심 좌표나 확대 수준이 변경됐을 때 지도 중심 좌표에 대한 주소 정보를 표시하도록 이벤트를 등록합니다
     kakao.maps.event.addListener(map, "idle", function () {
@@ -356,14 +358,13 @@ const GathMap = () => {
         level={8} // 지도의 확대 레벨
         onCreate={(e) => {
           setMap(e);
-          setIsLoaded(true);
+          // setIsLoaded(true);
         }}
         onIdle={handleCenterChange}
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >
-        {gatherings &&
-          gatherings.length > 0 &&
+        {gatherings.length > 0 &&
           gatherings.map((el, idx) => (
             <>
               <MapMarker
@@ -410,47 +411,47 @@ const GathMap = () => {
               )}
             </>
           ))}
-        <GathList id="gathlist" listView={listView}>
-          {gatherings &&
-            gatherings.length > 0 &&
-            gatherings.map((el, idx) =>
-              hovered === idx ? (
-                <StyledGathCard
-                  key={idx.toString() + "card"}
-                  gathering={el}
-                  className="hovered gathcard"
-                  onMouseEnter={(e) => {
-                    if (e.target === e.currentTarget) setHovered(idx);
-                  }}
-                  onMouseLeave={(e) => {
-                    if (e.target === e.currentTarget) setHovered(null);
-                  }}
-                />
-              ) : (
-                <StyledGathCard
-                  key={idx.toString() + "card"}
-                  gathering={el}
-                  className="gathcard"
-                  onMouseEnter={(e) => {
-                    if (e.target === e.currentTarget) setHovered(idx);
-                  }}
-                  onMouseLeave={(e) => {
-                    if (e.target === e.currentTarget) setHovered(null);
-                  }}
-                />
-              )
-            )}
-        </GathList>
-        <ButtonContainer listView={listView}>
-          <GoHomeButton to="/home">
-            <IoIosArrowBack />
-          </GoHomeButton>
-          <FilterButton>홈</FilterButton>
-        </ButtonContainer>
-        <Center>
-          <AiOutlineAim />
-        </Center>
       </Map>
+      <GathList id="gathlist" listView={listView}>
+        {gatherings &&
+          gatherings.length > 0 &&
+          gatherings.map((el, idx) =>
+            hovered === idx ? (
+              <StyledGathCard
+                key={idx.toString() + "card"}
+                gathering={el}
+                className="hovered gathcard"
+                onMouseEnter={(e) => {
+                  if (e.target === e.currentTarget) setHovered(idx);
+                }}
+                onMouseLeave={(e) => {
+                  if (e.target === e.currentTarget) setHovered(null);
+                }}
+              />
+            ) : (
+              <StyledGathCard
+                key={idx.toString() + "card"}
+                gathering={el}
+                className="gathcard"
+                onMouseEnter={(e) => {
+                  if (e.target === e.currentTarget) setHovered(idx);
+                }}
+                onMouseLeave={(e) => {
+                  if (e.target === e.currentTarget) setHovered(null);
+                }}
+              />
+            )
+          )}
+      </GathList>
+      <ButtonContainer listView={listView}>
+        <GoHomeButton to="/home">
+          <IoIosArrowBack />
+        </GoHomeButton>
+        <FilterButton>홈</FilterButton>
+      </ButtonContainer>
+      <Center>
+        <AiOutlineAim />
+      </Center>
       {conditions.sport && (
         <SearchHereButton onClick={handleSearchHere}>
           <span>{`📍 여기에서 재검색 `}</span>
