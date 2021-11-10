@@ -1,4 +1,5 @@
 import api from "./index";
+import { getMainSocketIO } from "../network/socket";
 
 const authApi = {
   checkEmail: (email) => api.get(`/auth/email/${email}`),
@@ -7,7 +8,13 @@ const authApi = {
   guestSignin: () => api.post("/auth/guest"),
   signout: () => api.get("/auth/signout"),
   signup: (info) => api.post("/auth/signup", info),
-  me: () => api.get("/auth/me"),
+  me: async () => {
+    const res = await api.get("/auth/me");
+    if (res.status === 200) {
+      getMainSocketIO();
+    }
+    return res;
+  },
   kakao: (authorizationCode) =>
     api.post(
       "/auth/kakao",

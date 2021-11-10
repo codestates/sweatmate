@@ -1,5 +1,7 @@
-import React, { useEffect, useState } from "react";
-import styled from "styled-components";
+/* eslint-disable */
+
+import React, { useEffect, useState, useRef, memo, forwardRef, Fragment } from "react";
+import styled, { css } from "styled-components";
 import media from "styled-media-query";
 import {
   IoChatbubblesOutline,
@@ -18,6 +20,9 @@ import ConfirmModal from "../components/ConfirmModal";
 import { useSelector, useDispatch } from "react-redux";
 import { confirmModalOnAction, signinAction, signoutAction } from "../store/actions";
 import authApi from "../api/auth";
+import chatApi from "../api/chat";
+import gathApi from "../api/gath";
+import { getChatSocketIO, getMainSocketIO, removeChatSocket } from "../network/socket";
 
 const Container = styled.div`
   display: flex;
@@ -29,7 +34,6 @@ const Container = styled.div`
 `;
 const Main = styled.main`
   flex: 1;
-  position: relative;
 `;
 const NoContent = styled.div`
   width: 100%;
@@ -57,108 +61,21 @@ const Logo = styled.img`
   `}
 `;
 
-// TODO: 이후에 mock을 진짜 데이터로 대체해야 함
-const mock = [
-  {
-    id: "1",
-    sportEmoji: "⚽",
-    title: "구로구에서 풋살합시다",
-    recentMessage: "잘 부탁드려요~",
-    recentMessageHour: "10월 25일",
-  },
-  {
-    id: "2",
-    sportEmoji: "👟",
-    title: "서울숲에서 조깅하실분",
-    recentMessage: "공기 넘 좋아용",
-    recentMessageHour: "어제",
-  },
-  {
-    id: "3",
-    sportEmoji: "🎾",
-    title: "용산 혼성 테니스 하실 분",
-    recentMessage: "자리있나요?",
-    recentMessageHour: "오후 12:27",
-  },
-  {
-    id: "4",
-    sportEmoji: "⚽",
-    title: "구로구에서 풋살합시다",
-    recentMessage: "잘 부탁드려요~",
-    recentMessageHour: "10월 25일",
-  },
-  {
-    id: "5",
-    sportEmoji: "👟",
-    title: "서울숲에서 조깅하실분",
-    recentMessage: "공기 넘 좋아용",
-    recentMessageHour: "어제",
-  },
-  {
-    id: "6",
-    sportEmoji: "🎾",
-    title: "용산 혼성 테니스 하실 분",
-    recentMessage: "자리있나요?",
-    recentMessageHour: "오후 12:27",
-  },
-  {
-    id: "7",
-    sportEmoji: "⚽",
-    title: "구로구에서 풋살합시다",
-    recentMessage: "잘 부탁드려요~",
-    recentMessageHour: "10월 25일",
-  },
-  {
-    id: "8",
-    sportEmoji: "👟",
-    title: "서울숲에서 조깅하실분",
-    recentMessage: "공기 넘 좋아용",
-    recentMessageHour: "어제",
-  },
-  {
-    id: "9",
-    sportEmoji: "🎾",
-    title: "용산 혼성 테니스 하실 분",
-    recentMessage: "자리있나요?",
-    recentMessageHour: "오후 12:27",
-  },
-  {
-    id: "10",
-    sportEmoji: "⚽",
-    title: "구로구에서 풋살합시다",
-    recentMessage: "잘 부탁드려요~",
-    recentMessageHour: "10월 25일",
-  },
-  {
-    id: "11",
-    sportEmoji: "👟",
-    title: "서울숲에서 조깅하실분",
-    recentMessage: "공기 넘 좋아용",
-    recentMessageHour: "어제",
-  },
-  {
-    id: "12",
-    sportEmoji: "🎾",
-    title: "용산 혼성 테니스 하실 분",
-    recentMessage: "자리있나요?",
-    recentMessageHour: "오후 12:27",
-  },
-];
-
-const confirmContent = {
-  title: "정말 채팅방에서 나가시겠습니까?",
-  body: "채팅방에서 나가시는 경우, 해당 모임 참여도 함께 취소됩니다.",
-  func: () => {
-    console.log("채팅방 나가기 완료");
-  },
-};
-
 const Chat = () => {
+  const [chatList, setChatList] = useState([]);
+
   const { path, url } = useRouteMatch();
-  const { isConfirmModal } = useSelector(({ modalReducer }) => modalReducer);
 
   const dispatch = useDispatch();
   const history = useHistory();
+
+  const updateChatList = (list) => {
+    setChatList(list);
+  };
+
+  useEffect(() => {
+    // getMainSocketIO().on("notice", (arg) => {});
+  }, []);
 
   useEffect(() => {
     const checkValidUser = async () => {
@@ -182,7 +99,7 @@ const Chat = () => {
       <Container>
         <Switch>
           <Route exact path={path}>
-            <Navigation url={url} />
+            <Navigation url={url} updateChatList={updateChatList} chatList={chatList} />
             <Main>
               <NoContent>
                 <Logo src={`${process.env.PUBLIC_URL}/assets/long-logo.png`} alt="logo" />
@@ -190,14 +107,18 @@ const Chat = () => {
             </Main>
           </Route>
           <Route path={`${path}/:id`}>
-            <Navigation url={url} isChatActive={true} />
+            <Navigation
+              url={url}
+              isChatActive={true}
+              updateChatList={updateChatList}
+              chatList={chatList}
+            />
             <Main>
-              <Room />
+              <Room chatList={chatList} updateChatList={updateChatList} />
             </Main>
           </Route>
         </Switch>
       </Container>
-      {isConfirmModal && <ConfirmModal content={confirmContent} />}
     </>
   );
 };
@@ -293,7 +214,30 @@ const Time = styled.span`
   color: var(--color-gray);
 `;
 
-const Navigation = ({ url, isChatActive }) => {
+const Navigation = ({ url, isChatActive, updateChatList, chatList }) => {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const getChatList = async () => {
+      const res = await chatApi.getChatList();
+      if (res.status === 200) {
+        updateChatList(res.data);
+        setIsLoading(false);
+      }
+    };
+    getChatList();
+    getMainSocketIO().on("quit", () => {
+      getChatList();
+    });
+    return () => {
+      getMainSocketIO().off("quit");
+    };
+  }, []);
+
+  const today = new window.Date();
+  today.setHours(today.getHours() + 9);
+  const todayDate = today.toISOString().replace("T", " ").substring(0, 10);
+
   return (
     <Nav isChatActive={isChatActive}>
       <NavHeader>
@@ -303,16 +247,41 @@ const Navigation = ({ url, isChatActive }) => {
         </HeaderTitle>
       </NavHeader>
       <ChatItemContainer>
-        {mock.map((item) => (
-          <ChatItem key={item.id} to={`${url}/${item.id}`}>
-            <Emoji>{item.sportEmoji}</Emoji>
-            <Content>
-              <Title>{item.title}</Title>
-              <RecentMsg>{item.recentMessage}</RecentMsg>
-            </Content>
-            <Time>{item.recentMessageHour}</Time>
-          </ChatItem>
-        ))}
+        {isLoading && <h1>로딩중입니다.</h1>}
+        {!isLoading &&
+          (chatList.length !== 0 ? (
+            chatList.map((chat) => {
+              let dateOrTime = chat.recentChat[0].date?.slice(0, 10);
+              if (chat.recentChat[0].date?.slice(0, 10) === todayDate) {
+                const tempChatTime = chat.recentChat[0].date.slice(11);
+                const hour = Number(tempChatTime.split(":")[0]);
+                const minuteStr = tempChatTime.split(":")[1];
+                let dayOrNight;
+                let chatTime;
+                if (hour > 12) {
+                  dayOrNight = "오후";
+                  chatTime = (hour - 12).toString() + ":" + minuteStr;
+                } else {
+                  dayOrNight = "오전";
+                  chatTime = tempChatTime.startsWith("0") ? tempChatTime.slice(1) : tempChatTime;
+                }
+                dateOrTime = `${dayOrNight} ${chatTime}`;
+              }
+
+              return (
+                <ChatItem key={chat.gatheringId} to={`${url}/${chat.gatheringId}`}>
+                  <Emoji>{chat.chatInfo.sportEmoji}</Emoji>
+                  <Content>
+                    <Title>{chat.chatInfo.title}</Title>
+                    <RecentMsg>{chat.recentChat[0].message || "아직 메시지가 없습니다."}</RecentMsg>
+                  </Content>
+                  <Time>{dateOrTime}</Time>
+                </ChatItem>
+              );
+            })
+          ) : (
+            <h1>다가오는 일정이 없습니다. 모임에 참여해보세요.</h1>
+          ))}
       </ChatItemContainer>
     </Nav>
   );
@@ -324,124 +293,8 @@ Navigation.defaultProps = {
 Navigation.propTypes = {
   url: PropTypes.string.isRequired,
   isChatActive: PropTypes.bool,
-};
-
-// TODO: 이후에 진짜 데이터로 대체해야 함
-const gatheringWithChat = {
-  title: "구로구에서 풋살합시다",
-  emoji: "⚽",
-  users: [
-    { id: "1", nickname: "영희", image: "" },
-    { id: "2", nickname: "철수", image: "" },
-  ],
-  chatLog: [
-    {
-      id: "1",
-      userId: "1",
-      nickname: "영희",
-      image: "",
-      message: "오고 계신가요?",
-    },
-    {
-      id: "2",
-      userId: "2",
-      nickname: "철수",
-      image: "",
-      message: "네",
-    },
-    {
-      id: "3",
-      userId: "1",
-      nickname: "영희",
-      image: "",
-      message:
-        "몇 시 도착 예정이실까요몇 시 도착 예정이실까요몇 시 도착 예정이실까요몇 시 도착 예정이실까요몇 시 도착 예정이실까요몇 시 도착 예정이실까요몇 시 도착 예정이실까요",
-    },
-    {
-      id: "4",
-      userId: "2",
-      nickname: "철수",
-      image: "",
-      message: "2시용",
-    },
-    {
-      id: "5",
-      userId: "7",
-      nickname: "Unuuuuu",
-      image: "",
-      message: "굳",
-    },
-    {
-      id: "6",
-      userId: "1",
-      nickname: "영희",
-      image: "",
-      message: "오고 계신가요?",
-    },
-    {
-      id: "7",
-      userId: "2",
-      nickname: "철수",
-      image: "",
-      message: "네",
-    },
-    {
-      id: "8",
-      userId: "1",
-      nickname: "영희",
-      image: "",
-      message: "몇 시 도착 예정이실까요",
-    },
-    {
-      id: "9",
-      userId: "2",
-      nickname: "철수",
-      image: "",
-      message: "2시용",
-    },
-    {
-      id: "10",
-      userId: "7",
-      nickname: "Unuuuuu",
-      image: "",
-      message: "굳",
-    },
-    {
-      id: "11",
-      userId: "1",
-      nickname: "영희",
-      image: "",
-      message: "오고 계신가요?",
-    },
-    {
-      id: "12",
-      userId: "2",
-      nickname: "철수",
-      image: "",
-      message: "네",
-    },
-    {
-      id: "13",
-      userId: "1",
-      nickname: "영희",
-      image: "",
-      message: "몇 시 도착 예정이실까요",
-    },
-    {
-      id: "14",
-      userId: "2",
-      nickname: "철수",
-      image: "",
-      message: "2시용",
-    },
-    {
-      id: "15",
-      userId: "7",
-      nickname: "Unuuuuu",
-      image: "",
-      message: "굳",
-    },
-  ],
+  updateChatList: PropTypes.func.isRequired,
+  chatList: PropTypes.array.isRequired,
 };
 
 const RoomContainer = styled.div`
@@ -484,13 +337,47 @@ const ChatLog = styled.div`
   background-size: contain;
   flex: 1 1 auto;
 `;
+const DateDividerContainer = styled.div`
+  display: flex;
+  align-items: center;
+  margin: 1rem 0;
+  :first-child {
+    margin-top: 0;
+  }
+`;
+const DateDivider = styled.div`
+  flex: 1;
+  height: 1px;
+  background-color: var(--color-lightgray);
+`;
+const DateDividerContent = styled.span`
+  color: var(--color-gray);
+  margin: 0 1rem;
+  font-size: 0.8rem;
+`;
 const ChatLogItem = styled.div`
   display: flex;
   align-items: flex-start;
   :not(:last-of-type) {
     margin-bottom: 1rem;
   }
-  align-self: ${({ isCreator }) => isCreator && "flex-end"};
+  align-self: ${({ isMine }) => isMine && "flex-end"};
+`;
+const BubbleDateContainer = styled.div`
+  display: flex;
+  align-items: flex-end;
+  flex-direction: ${({ isMine }) => isMine && "row-reverse"};
+`;
+const Date = styled.span`
+  font-size: 0.8rem;
+  color: var(--color-gray);
+  margin-left: 0.25rem;
+  ${({ isMine }) =>
+    isMine &&
+    css`
+      margin-left: 0;
+      margin-right: 0.25rem;
+    `};
 `;
 const NicknameBubbleContainer = styled.div`
   display: flex;
@@ -643,123 +530,103 @@ const LeaveBtn = styled.button`
   }
 `;
 
-const memberMockUp = [
-  {
-    id: "7",
-    nickname: "Unuuuuu",
-    image: "",
-  },
-  {
-    id: "8",
-    nickname: "Heegu",
-    image: "",
-  },
-  {
-    id: "7",
-    nickname: "Unuuuuu",
-    image: "",
-  },
-  {
-    id: "8",
-    nickname: "Heegu",
-    image: "",
-  },
-  {
-    id: "7",
-    nickname: "Unuuuuu",
-    image: "",
-  },
-  {
-    id: "8",
-    nickname: "Heegu",
-    image: "",
-  },
-  {
-    id: "7",
-    nickname: "Unuuuuu",
-    image: "",
-  },
-  {
-    id: "8",
-    nickname: "Heegu",
-    image: "",
-  },
-  {
-    id: "7",
-    nickname: "Unuuuuu",
-    image: "",
-  },
-  {
-    id: "8",
-    nickname: "Heegu",
-    image: "",
-  },
-  {
-    id: "7",
-    nickname: "Unuuuuu",
-    image: "",
-  },
-  {
-    id: "8",
-    nickname: "Heegu",
-    image: "",
-  },
-  {
-    id: "7",
-    nickname: "Unuuuuu",
-    image: "",
-  },
-  {
-    id: "8",
-    nickname: "Heegu",
-    image: "",
-  },
-  {
-    id: "7",
-    nickname: "Unuuuuu",
-    image: "",
-  },
-  {
-    id: "8",
-    nickname: "Heegu",
-    image: "",
-  },
-  {
-    id: "7",
-    nickname: "Unuuuuu",
-    image: "",
-  },
-  {
-    id: "8",
-    nickname: "Heegu",
-    image: "",
-  },
-  {
-    id: "7",
-    nickname: "Unuuuuu",
-    image: "",
-  },
-  {
-    id: "8",
-    nickname: "Heegu",
-    image: "",
-  },
-];
-
-const Room = () => {
+const Room = ({ chatList, updateChatList }) => {
   const history = useHistory();
   const dispatch = useDispatch();
+  const { isConfirmModal } = useSelector(({ modalReducer }) => modalReducer);
+
   const { id } = useParams();
   const { url } = useRouteMatch();
+  const chatLogRef = useRef(null);
 
   const [isDrawer, setIsDrawer] = useState(false);
+  const [userList, setUserList] = useState([]);
+  const [chatLog, setChatLog] = useState([]);
+  const [chatInfo, setChatInfo] = useState({});
+  const [inputValue, setInputValue] = useState("");
+  const { id: userId, nickname, image } = useSelector(({ authReducer }) => authReducer);
 
-  // TODO: 진짜 데이터와 비교하는 것으로 바꿔야 함
+  const leaveConfirmContent = {
+    title: "정말 채팅방에서 나가시겠습니까?",
+    body: "채팅방에서 나가시는 경우, 해당 모임 참여도 함께 취소됩니다.",
+    func: async () => {
+      try {
+        await gathApi.leaveGath(id);
+      } catch (err) {
+        console.log(err);
+      }
+    },
+  };
+
+  const quitConfirmContent = {
+    title: "정말 채팅방을 종료시키겠습니까?",
+    body: "채팅방을 종료시키는 경우, 해당 모임도 함께 종료됩니다.",
+    func: async () => {
+      try {
+        await gathApi.endGath(id);
+      } catch (err) {
+        console.log(err);
+      }
+    },
+  };
+
   useEffect(() => {
-    if (!mock.find((item) => item.id === id)) {
-      history.push("/chat");
-    }
-  }, []);
+    console.log("hi");
+    let isAvailable = false;
+    const getChatList = async () => {
+      const res = await chatApi.getChatList();
+      if (res.status === 200 && !res.data.find((chat) => chat.gatheringId === Number(id))) {
+        return history.push("/chat");
+      }
+      isAvailable = true;
+      const mainSocketIO = getMainSocketIO();
+      const chatSocketIO = getChatSocketIO(id);
+
+      mainSocketIO.emit("leaveMainRoom", Number(id));
+      chatSocketIO.on("message", (arg) => {
+        console.log(chatList);
+        // const found = chatList.find((chat) => chat.gatheringId === Number(id));
+        // updateChatList([
+        //   { ...found, recentChat: [{ date: arg.date, message: arg.message }] },
+        //   ...chatList.filter((chat) => chat.gatheringId !== Number(id)),
+        // ]);
+        setChatLog((prev) => [...prev, arg]);
+      });
+      chatSocketIO.on("quit", () => {
+        updateChatList(chatList.filter((chat) => chat.gatheringId !== Number(id)));
+        return history.push("/chat");
+      });
+      chatSocketIO.on("leave", (arg) => {
+        if (arg === userId) {
+          updateChatList(chatList.filter((chat) => chat.gatheringId !== Number(id)));
+          return history.push("/chat");
+        }
+      });
+    };
+    getChatList();
+
+    const getChatDetail = async () => {
+      const res = await chatApi.getChatDetail(id);
+      if (res.status === 200) {
+        const { userList, chatLog, chatInfo, creatorId } = res.data;
+        setUserList(userList);
+        setChatLog(chatLog);
+        setChatInfo({ ...chatInfo, creatorId });
+        chatLogRef?.current?.lastChild?.scrollIntoView();
+      }
+    };
+    getChatDetail();
+
+    return () => {
+      console.log("unmount");
+      getChatSocketIO(id).emit("leave");
+      getChatSocketIO(id).off("message");
+      getChatSocketIO(id).off("quit");
+      getChatSocketIO(id).off("leave");
+      removeChatSocket();
+      isAvailable && getMainSocketIO().emit("joinMainRoom", Number(id));
+    };
+  }, [id]);
 
   useEffect(() => {
     setIsDrawer(false);
@@ -777,6 +644,19 @@ const Room = () => {
   const handleLeaveBtnClick = () => {
     dispatch(confirmModalOnAction);
   };
+  const handleInputChange = (event) => {
+    setInputValue(event.target.value);
+  };
+  const handleChatSubmit = (event) => {
+    event.preventDefault();
+    if (inputValue === "") {
+      return;
+    }
+    getChatSocketIO(id).emit("message", { id: userId, nickname, image }, inputValue);
+    setInputValue("");
+  };
+
+  const isCreatorLogined = chatInfo?.creatorId === userId;
 
   return (
     <RoomContainer>
@@ -786,7 +666,7 @@ const Room = () => {
             <IoChevronBackOutline />
           </ChatBackBtn>
           <ChatHeaderTitle>
-            {gatheringWithChat.emoji} {gatheringWithChat.title}
+            {chatInfo.sportEmoji} {chatInfo.title}
           </ChatHeaderTitle>
           {!isDrawer && (
             <EllipsisBtn type="button" onClick={handleEllopsisBtnClick}>
@@ -795,30 +675,20 @@ const Room = () => {
           )}
         </ChatHeader>
         <ChatMain>
-          <ChatLog>
-            {gatheringWithChat.chatLog.map((item) => {
-              const isCreator = item.userId === "7";
-              return (
-                <ChatLogItem key={item.id} isCreator={isCreator}>
-                  {!isCreator && (
-                    <UserProfile
-                      user={{ id: item.userId, nickname: item.nickname, image: item.image }}
-                      size={1.5}
-                      hideName={true}
-                      isCreator={isCreator}
-                    />
-                  )}
-                  <NicknameBubbleContainer>
-                    {!isCreator && <Nickname>{item.nickname}</Nickname>}
-                    <Bubble isMine={isCreator}>{item.message}</Bubble>
-                  </NicknameBubbleContainer>
-                </ChatLogItem>
-              );
-            })}
-          </ChatLog>
+          <ChatLogComp
+            ref={chatLogRef}
+            chatLog={chatLog}
+            creatorId={chatInfo?.creatorId}
+            userId={userId}
+          />
           <ChatFormContainer>
-            <ChatForm>
-              <ChatInput type="text" placeholder="메시지를 입력해주세요."></ChatInput>
+            <ChatForm onSubmit={handleChatSubmit}>
+              <ChatInput
+                type="text"
+                placeholder="메시지를 입력해주세요."
+                value={inputValue}
+                onChange={handleInputChange}
+              />
               <ChatSubmitBtn type="submit">
                 <IoIosSend />
               </ChatSubmitBtn>
@@ -839,26 +709,118 @@ const Room = () => {
           </DrawerHeader>
           <DrawerMain>
             <Members>
-              {memberMockUp.map((member, idx) => {
-                const user = member;
-                const isCreator = member.id === "7";
-                return (
-                  <Member key={idx}>
-                    <UserProfile size={1.2} user={user} isCreator={isCreator} />
-                    {!isCreator && <BanishBtn type="button">내보내기</BanishBtn>}
+              {userList
+                .filter((user) => user.id === chatInfo.creatorId)
+                .map((user) => (
+                  <Member key={user.id}>
+                    <UserProfile size={1.2} user={user} isCreator={true} />
                   </Member>
-                );
-              })}
+                ))}
+              {userList
+                .filter((user) => user.id !== chatInfo.creatorId)
+                .map((user) => (
+                  <Member key={user.id}>
+                    <UserProfile size={1.2} user={user} />
+                    {isCreatorLogined && <BanishBtn type="button">내보내기</BanishBtn>}
+                  </Member>
+                ))}
             </Members>
             <LeaveBtn type="button" onClick={handleLeaveBtnClick}>
-              모임 나가기
+              {isCreatorLogined ? "모임 종료" : "모임 나가기"}
             </LeaveBtn>
-            {/* <QuitBtn></QuitBtn> */}
           </DrawerMain>
         </DrawerContainer>
       )}
+      {isConfirmModal && (
+        <ConfirmModal content={isCreatorLogined ? quitConfirmContent : leaveConfirmContent} />
+      )}
     </RoomContainer>
   );
+};
+
+Room.propTypes = {
+  chatList: PropTypes.array.isRequired,
+  updateChatList: PropTypes.func.isRequired,
+};
+
+// eslint-disable-next-line react/display-name
+const ChatLogComp = memo(
+  forwardRef(({ chatLog, creatorId, userId }, ref) => {
+    useEffect(() => {
+      ref?.current?.lastChild?.scrollIntoView({ behavior: "smooth" });
+    }, [chatLog]);
+
+    let prevDate;
+    let date;
+
+    return (
+      <ChatLog ref={ref}>
+        {chatLog.map((item) => {
+          if (prevDate !== date) {
+            prevDate = date;
+          }
+          const [chatDate, tempChatTime] = item.date.split(" ");
+          date = chatDate;
+
+          const hour = Number(tempChatTime.split(":")[0]);
+          const minuteStr = tempChatTime.split(":")[1];
+          let dayOrNight;
+          let chatTime;
+          if (hour > 12) {
+            dayOrNight = "오후";
+            chatTime = (hour - 12).toString() + ":" + minuteStr;
+          } else {
+            dayOrNight = "오전";
+            chatTime = tempChatTime.startsWith("0") ? tempChatTime.slice(1) : tempChatTime;
+          }
+
+          const isCreator = creatorId === item.id;
+          const isMine = userId === item.id;
+          return (
+            <Fragment key={item._id}>
+              {date !== prevDate && (
+                <DateDividerContainer>
+                  <DateDivider />
+                  <DateDividerContent>{date}</DateDividerContent>
+                  <DateDivider />
+                </DateDividerContainer>
+              )}
+              <ChatLogItem key={item.id} isMine={isMine}>
+                {!isMine && (
+                  <UserProfile
+                    user={{ id: item.id, nickname: item.nickname, image: item.image }}
+                    size={1.5}
+                    hideName={true}
+                    isCreator={isCreator}
+                  />
+                )}
+                <NicknameBubbleContainer>
+                  {!isMine && <Nickname>{item.nickname}</Nickname>}
+                  <BubbleDateContainer isMine={isMine}>
+                    <Bubble isMine={isMine}>{item.message}</Bubble>
+                    <Date isMine={isMine}>
+                      {dayOrNight} {chatTime}
+                    </Date>
+                  </BubbleDateContainer>
+                </NicknameBubbleContainer>
+              </ChatLogItem>
+            </Fragment>
+          );
+        })}
+      </ChatLog>
+    );
+  })
+);
+
+ChatLogComp.defaultProps = {
+  creatorId: "",
+  userId: "",
+};
+
+ChatLogComp.propTypes = {
+  chatLog: PropTypes.array.isRequired,
+  creatorId: PropTypes.string,
+  userId: PropTypes.string,
 };
 
 export default Chat;

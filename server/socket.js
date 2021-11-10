@@ -38,7 +38,7 @@ module.exports = (server, app) => {
     // 로그인 후 소켓 연결 시 소켓 객체에 유저 아이디를 저장
     socket.userId = decoded.id;
     // 유저 아이디로부터 참여중인 게더링(done=0) 아이디들을 전부 불러온 후 전부 룸으로 참여시킴.
-    const roomIds = getVaildGatheringId(decoded.id);
+    const roomIds = await getVaildGatheringId(decoded.id);
     socket.join(roomIds);
     next();
   });
@@ -53,16 +53,14 @@ module.exports = (server, app) => {
       return next(new Error("Authentication error"));
     }
     socket.userId = decoded.id;
-    //채팅방에 입장시에 소켓에 유저 아이디를 저장
-    const room = socket.handshake.query.room;
+    // 채팅방에 입장시에 소켓에 유저 아이디를 저장
+    const room = Number(socket.handshake.query.room);
     // 소켓을 해당 입장하려는 룸에 입장시킴
     // 유저 관리 객체에 해당 유저 상태를 1로 변경
     try {
       realTime[room][decoded.id] = 1;
     } catch (err) {
-      //만약 이미 없어진 방에 입장하려 한다면 연결을 끊음
-      socket.disconnectSockets();
-      return;
+      return next(err);
     }
     socket.join(room);
     socket.curRoom = room;
@@ -78,7 +76,7 @@ module.exports = (server, app) => {
       socket.leave(room);
     });
 
-    socket.on("leaveChatRoom", (room) => {
+    socket.on("joinMainRoom", (room) => {
       socket.join(room);
     });
 
@@ -91,9 +89,10 @@ module.exports = (server, app) => {
     });
   });
 
-  chat.on("connection", (socket) => {
-    console.log("🔥 /chat 새로운 클라이언트 접속!", socket.id);
-    //Client TODO: 메시지 보낼 때 emit("message", userInfo:{id, nickname,image}, message)
+  chat.on("connection", async (socket) => {
+    console.log(`🔥 /chat room: ${socket.curRoom} 새로운 클라이언트 접속!`, socket.id);
+    // Client TODO: 메시지 보낼 때 emit("message", userInfo:{id, nickname,image}, message)
+
     socket.on("message", async (userInfo, message) => {
       // 채팅창에 접속중인 유저들에 대한 이벤트
       const { id: userId, nickname, image } = userInfo;
@@ -119,14 +118,17 @@ module.exports = (server, app) => {
       };
 
       await noticeModel.createNotice(userList, noticeInfo); // userList: 유저 아이디가 담긴 배열, noticeInfo: 알림의 정보가 담긴 객체
-
-      //메인에 notice 알림, new 타입의 경우에 이미 해당 gathering의 new 타입 메시지가 있을 경우에 notification 목록에 추가 생성되지않음
-      //그래서 클라이언트에서도 이미 new 타입과 gatheringId가 같은 알림을 이미 가지고 있다면 스테이트에 추가하면 안됨.!
+      // 메인에 notice 알림, new 타입의 경우에 이미 해당 gathering의 new 타입 메시지가 있을 경우에 notification 목록에 추가 생성되지않음
+      // 그래서 클라이언트에서도 이미 new 타입과 gatheringId가 같은 알림을 이미 가지고 있다면 스테이트에 추가하면 안됨.!
       main.to(socket.curRoom).emit("notice", noticeInfo);
     });
 
-    socket.on("disconnect", (reason) => {
-      console.log("❌ /chat 클라이언트 접속 해제!", socket.id);
+    socket.on("leave", () => {
+      chat.in(socket.id).disconnectSockets();
+    });
+
+    socket.on("disconnect", () => {
+      console.log(`❌ /chat room: ${socket.curRoom} 클라이언트 접속 해제!`, socket.id);
       realTime[socket.curRoom][socket.userId] = 0;
     });
   });
