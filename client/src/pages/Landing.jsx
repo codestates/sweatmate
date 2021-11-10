@@ -310,6 +310,7 @@ const ImageWrapper = styled.div`
       display: flex;
       flex-direction: column;
       width: 100%;
+      height: 66.667%;
     }
     &.animation {
       position: absolute;
