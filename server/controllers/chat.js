@@ -25,13 +25,11 @@ module.exports = {
       const chatsListToSend = await Promise.all(
         chatsList.map(async (el) => {
           const { chatLog: recentChat, _id: gatheringId, chatInfo, creatorId } = el;
-          const { message, date } = recentChat[0];
-          // 채팅로그가 비어있을 경우에 응답입니다.
-          if (!date) {
-            recentChat[0] = { message: null, nickname: null, date: null };
+          if (recentChat.length === 0) {
+            recentChat[0] = { message: null, date: null };
             return { gatheringId, chatInfo, creatorId, recentChat };
           }
-
+          const { message, date } = recentChat[0];
           const recentChatInfo = { message, date };
           return { gatheringId, chatInfo, creatorId, recentChat: [recentChatInfo] };
         })
