@@ -9,23 +9,21 @@ import { MdOutlineKeyboardArrowLeft, MdOutlineKeyboardArrowRight } from "react-i
 import gathApi from "../api/gath";
 
 const GathCreateContainer = styled.div`
-  width: 100%;
+  width: fit-content;
   height: fit-content;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+  margin: auto;
 `;
 
 const Info = styled.div`
-  width: 100%;
+  width: 44rem;
   padding: 2rem 2rem 1.5rem;
   * {
     margin: 1.2rem 0rem;
   }
-  ${media.between("medium", "large")`
-    /* screen width is between 768px (medium) and 1170px (large) */
-    width: 40rem;
-  `}
   ${media.lessThan("medium")`
     /* screen width is between 768px (medium) and 1170px (large) */
     width: 20rem;
@@ -38,18 +36,14 @@ const MovePageButtons = styled.div`
   display: flex;
   align-items: end;
   justify-content: space-between;
-  width: 50rem;
+  width: 44rem;
   height: 12rem;
   z-index: ${(props) => props.isOnSearch && -1};
-  padding: 2rem 2rem 1.5rem;
-
-  ${media.between("medium", "large")`
-  /* screen width is between 768px (medium) and 1170px (large) */
-  width: 40rem;
-  `}
+  padding: 2rem 2rem 2rem;
   ${media.lessThan("medium")`
   /* screen width is between 768px (medium) and 1170px (large) */
-  width: 20rem;
+    width: 20rem;
+    margin-top: 2rem;
   `}
 `;
 
@@ -69,17 +63,15 @@ const Button = styled.div`
 const Container = styled.div`
   display: flex;
   justify-content: space-between;
-  width: 50rem;
-  ${media.between("medium", "large")`
-    width: 35rem;
-    `}
+  gap: 1rem;
+  width: fit-content;
+  height: 15rem;
   ${media.lessThan("medium")`
     width: 20rem;
   `}
 `;
 
 const StyledGathCard = styled(GathCard)`
-  margin: 0rem 2rem;
   ${media.lessThan("medium")`
     display: none;
   `}
@@ -158,11 +150,12 @@ const GathCreate = () => {
     if (step === 6) {
       setInputValue(2);
     }
+    console.log("selectedOptions[2]", selectedOptions[2]);
     setGathering({
       id: 12,
       title: selectedOptions[6]
         ? selectedOptions[6]
-        : selectedOptions[0] && `${selectedOptions[0].split(" ")[0]} 함께 즐겨요!`,
+        : selectedOptions[0] && `${selectedOptions[0].slice(0, -2)} 함께 즐겨요!`,
       description: selectedOptions[7] || "용산에서 즐기면서 농구하는 사람들 한 판 같이 합시다~",
       creator: {
         id: "uuid",
@@ -249,7 +242,7 @@ const GathCreate = () => {
     <GathCreateContainer>
       <Info>
         <div>{step}단계</div>
-        <div style={{ width: "auto", height: "1rem", color: "green" }}>
+        <div style={{ width: "auto", height: "1rem", color: "var(--color-maingreen--100)" }}>
           {step === 2 && selectedOptions[0] && `${selectedOptions[0]} 모임`}
           {step === 3 &&
             selectedOptions[1].length !== 0 &&
