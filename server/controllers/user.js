@@ -41,11 +41,14 @@ module.exports = {
     const { userId } = res.locals;
     const location = req.file?.location; // multer가 저장한 사진의 s3 url이 저장되어있음
     try {
-      const { nickname, areaName, age, sports, gender } = req.body;
+      let { nickname, areaName, age, sports, gender } = req.body;
       const userInfo = await userFindOne({ id: userId });
       const { image } = userInfo.dataValues;
-      const areaId = areaList.filter((el) => el.areaName === areaName)[0].id;
-      await userInfo.update({ nickname, age, areaId, image: location, gender }); // 닉네임이 중복되어 오류가 나면 s3에 저장한 사진 삭제해줘야 함
+      const areaId = areaList.filter((el) => el.areaName === areaName)[0]?.id;
+      if (age === "null") age = null;
+      if (gender === "null") gender = null;
+
+      await userInfo.update({ nickname, areaId, age, image: location, gender }); // 닉네임이 중복되어 오류가 나면 s3에 저장한 사진 삭제해줘야 함
       if (location && image) {
         console.log("기존 유저 image가 s3에서 삭제됩니다.");
         deleteImageinTable(image);
