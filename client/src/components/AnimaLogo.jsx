@@ -1,5 +1,5 @@
 import React from "react";
-import styled, { keyframes } from "styled-components";
+import styled, { css, keyframes } from "styled-components";
 import PropTypes from "prop-types";
 import media from "styled-media-query";
 
@@ -10,19 +10,29 @@ import media from "styled-media-query";
 */
 
 const LogoWrapper = styled.div`
-  position: relative;
   width: 100%;
   height: 100%;
+  position: relative;
   ${(props) =>
     props.isFullscreen &&
-    `position: fixed;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;`}
-  padding-top: 7.5%;
-  /* overflow: auto; */
+    css`
+      position: fixed;
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+    `}
+  background-color: ${(props) => props.bgColor};
   outline: 0;
+`;
+
+const Centering = keyframes`
+  0% {
+    transform: translateX(-26.5%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
 `;
 
 const LogoContainer = styled.div`
@@ -31,15 +41,12 @@ const LogoContainer = styled.div`
   height: 3rem;
   left: 50%;
   top: 50%;
-  margin: 4.5rem 0 0.75rem 0;
-  transform: translate(-50%, -50%);
+  transform: translate(-26.5%, -50%);
   ${media.between("small", "medium")`
     height: 2.625rem;
-    margin: 3.938rem 0 0.656rem 0;
   `}
   ${media.lessThan("small")`
     height: 2rem;
-    margin: 3rem 0 0.5rem 0;
   `}
   display: flex;
   flex-direction: row;
@@ -48,6 +55,7 @@ const LogoContainer = styled.div`
   > * {
     height: 100%;
   }
+  animation: ${Centering} 0.9s 6.9s normal 1 cubic-bezier(0.75, 0.1, 0.04, 0.8) forwards;
 `;
 
 const InnerDiv = styled.div`
@@ -247,9 +255,9 @@ const Shadow = styled.div`
   animation: ${ShadowBounce} 0.6s alternate 8 cubic-bezier(0.75, 0.1, 0.04, 0.8);
 `;
 
-const AnimaLogo = ({ isFullscreen }) => {
+const AnimaLogo = ({ isFullscreen, bgColor }) => {
   return (
-    <LogoWrapper isFullscreen={isFullscreen}>
+    <LogoWrapper isFullscreen={isFullscreen} bgColor={bgColor}>
       <LogoContainer>
         <Lets />
         <AnimaContainer>
@@ -265,10 +273,12 @@ const AnimaLogo = ({ isFullscreen }) => {
 
 AnimaLogo.defaultProps = {
   isFullscreen: false,
+  bgColor: "transparent",
 };
 
 AnimaLogo.propTypes = {
   isFullscreen: PropTypes.bool,
+  bgColor: PropTypes.string,
 };
 
 export default AnimaLogo;
