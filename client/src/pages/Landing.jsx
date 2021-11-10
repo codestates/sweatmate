@@ -517,7 +517,7 @@ const Landing = () => {
       },
       opacity: 0,
       y: -100,
-      duration: 0.5,
+      duration: 0.75,
       ease: "back",
       delay: 0.25,
     });
@@ -530,9 +530,9 @@ const Landing = () => {
       },
       opacity: 0,
       y: -100,
-      duration: 0.5,
+      duration: 0.75,
       ease: "back",
-      delay: 0.5,
+      delay: 0.75,
     });
     gsap.from(".pin.three", {
       scrollTrigger: {
@@ -543,9 +543,9 @@ const Landing = () => {
       },
       opacity: 0,
       y: -100,
-      duration: 0.5,
+      duration: 0.75,
       ease: "back",
-      delay: 0.75,
+      delay: 1.25,
     });
     // third: alarm
     gsap.from("#alarm", {
