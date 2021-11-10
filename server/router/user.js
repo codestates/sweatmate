@@ -23,7 +23,7 @@ const upload = multer({
   }),
 });
 
-router.get("/:userId", isAuth, checkPermission, getUerInfo);
+router.get("/:userId", isAuth, getUerInfo);
 router.put("/:userId", isAuth, checkPermission, upload.single("image"), modifyUserInfo);
 router.delete("/:userId", isAuth, checkPermission, removeUserInfo);
 

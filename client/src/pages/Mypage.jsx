@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types"; // ES6
 import { useDispatch, useSelector } from "react-redux";
-import { useHistory } from "react-router";
+import { useHistory, useParams } from "react-router-dom";
 import styled from "styled-components";
 import media from "styled-media-query";
 import { TiPencil } from "react-icons/ti";
@@ -28,6 +28,8 @@ import ConfirmModal from "../components/ConfirmModal";
 const Container = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
   height: 100%;
   width: 100%;
   max-width: 48rem;
@@ -39,12 +41,12 @@ const Container = styled.div`
 `;
 
 const ProfileContainer = styled.form`
-  margin: 4rem 0rem 2rem 0rem;
+  margin: ${(props) => (props.isMyPage ? "4rem 0rem 2rem 0rem" : "4rem 0rem 4rem 0rem")};
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  width: 100%;
+  width: 80%;
   height: auto;
   ${media.lessThan("medium")`
     flex-direction: column;
@@ -52,21 +54,23 @@ const ProfileContainer = styled.form`
 `;
 
 const ProfileImage = styled.img`
-  width: 18rem;
+  width: 15rem;
   border-radius: 100%;
   aspect-ratio: 1;
-  margin: auto 3.5rem auto 2.5rem;
+  margin: auto 0.5rem auto 2.5rem;
   ${media.lessThan("medium")`
     margin: auto 2.5rem 2rem 2.5rem;
   `};
+  border: 1px solid var(--color-gray);
 `;
 
 const StyledDefaultProfile = styled(DefaultProfile)`
-  width: 18rem;
-  height: 18rem;
+  width: 15rem;
+  height: 15rem;
+  border: 1px solid var(--color-gray);
   border-radius: 100%;
   aspect-ratio: 1;
-  margin: auto 3.5rem auto 2.5rem;
+  margin: auto 0rem auto 2.5rem;
   ${media.lessThan("medium")`
     margin: auto 2.5rem 2rem 2.5rem;
   `};
@@ -78,15 +82,15 @@ const InfoContainer = styled.div`
   justify-content: start;
   gap: 1rem;
   width: 18rem;
-  font-size: 1.2rem;
+  font-size: 1rem;
 `;
 
 const EditDetails = styled.details`
   position: absolute;
   width: 6.3rem;
   height: 7rem;
-  margin-top: 19rem;
-  margin-left: 5rem;
+  margin-top: 17rem;
+  margin-left: 3.5rem;
   ${media.lessThan("medium")`
     margin-top: 15rem;
     margin-left: -9rem;
@@ -106,7 +110,7 @@ const EditSummary = styled.summary`
   background-color: var(--color-darkwhite);
   list-style: none;
   cursor: pointer;
-  border: 2px solid var(--color-maingreen--100);
+  border: 1px solid var(--color-maingreen--100);
   border-radius: 0.5rem;
   margin-bottom: -0.5rem;
 `;
@@ -117,7 +121,7 @@ const ImageEditInputs = styled.div`
   padding: 0rem 0.5rem;
   flex-direction: column;
   background-color: var(--color-darkwhite);
-  border: 2px solid var(--color-maingreen--100);
+  border: 1px solid var(--color-maingreen--100);
   border-radius: 0.5rem;
   label {
     display: flex;
@@ -140,7 +144,7 @@ const EditTooltip = styled.div`
   margin-bottom: -0.2rem;
   div {
     position: absolute;
-    margin: -0.3rem auto auto -0.45rem;
+    margin: -0.3rem auto auto -0.48rem;
     border: 0.45rem solid transparent;
     border-bottom-color: var(--color-darkwhite);
     width: 0.8rem;
@@ -155,7 +159,7 @@ const ProfileInfo = styled.div`
   align-items: center;
   justify-content: space-around;
   gap: 1rem;
-  min-width: 22rem;
+  min-width: 16rem;
   height: auto;
   ${media.lessThan("medium")`
     margin-left: -2rem;
@@ -214,7 +218,7 @@ const ButtonContainer = styled.div`
 `;
 
 const Button = styled(Btn)`
-  border: 2px solid var(--color-maingreen--100);
+  border: 1px solid var(--color-maingreen--100);
   width: calc((100% - 1rem) / 2);
   width: 36rem;
   ${media.lessThan("medium")`
@@ -223,9 +227,9 @@ const Button = styled(Btn)`
 `;
 
 const EditModeButton = styled(Button)`
-  border: 2px solid var(--color-maingreen--100);
-  margin-bottom: 5rem;
-  width: 36rem;
+  border: 1px solid var(--color-maingreen--100);
+  margin-bottom: 3rem;
+  width: 35rem;
   ${media.lessThan("medium")`
     flex-direction: column;
     width: 17rem;
@@ -233,12 +237,12 @@ const EditModeButton = styled(Button)`
 `;
 
 const DeleteButton = styled(EditModeButton)`
-  border: 2px solid var(--color-red);
+  border: 1px solid var(--color-red);
 `;
 
 const CancelButton = styled(Button)`
   width: 17rem;
-  border: 2px solid var(--color-red);
+  border: 1px solid var(--color-gray);
   ${media.lessThan("medium")`
     width: 8rem;
   `};
@@ -256,6 +260,8 @@ const SaveButton = styled.label`
     opacity: 0.5;
     cursor: not-allowed;
   }
+  cursor: pointer;
+  width: 17rem;
   font-size: 1.2rem;
   min-width: fit-content;
   padding: 1rem 1.5rem;
@@ -269,16 +275,12 @@ const SaveButton = styled.label`
     font-size: 1rem;
     padding: 0.75rem 1rem;
   `};
-  color: var(--color-maingreen--100);
-  border: 2px solid var(--color-maingreen--100);
-  cursor: pointer;
-  width: 17rem;
   ${media.lessThan("medium")`
     width: 8rem;
   `};
 `;
 
-const EditButton = ({ setUserInfo, setPhoto }) => {
+const EditButton = ({ setUserInfo, setPhoto, image }) => {
   const handlePhotoChange = (e) => {
     const fileInfo = e.target.files[0];
     const imageUrl = URL.createObjectURL(fileInfo);
@@ -330,10 +332,11 @@ const EditButton = ({ setUserInfo, setPhoto }) => {
 const Mypage = () => {
   const dispatch = useDispatch();
   const history = useHistory();
+  const { id: param } = useParams();
   const { id, nickname, image, area, gender, age } = useSelector(({ authReducer }) => authReducer);
   const { isConfirmModal } = useSelector(({ modalReducer }) => modalReducer);
   const [isEditMode, setIsEditMode] = useState(false);
-  const [photo, setPhoto] = useState("");
+  const [isMyPage, setIsMyPage] = useState(false);
   const [userInfo, setUserInfo] = useState({
     image: image,
     nickname: nickname,
@@ -355,6 +358,7 @@ const Mypage = () => {
     { id: 5, name: "50" },
     { id: 6, name: "60" },
   ];
+  const [photo, setPhoto] = useState("");
 
   const content = {
     title: "정말로 계정을 삭제하시나요 ❓",
@@ -365,24 +369,11 @@ const Mypage = () => {
   };
 
   useEffect(() => {
-    const checkUserInfo = async (id) => {
-      const res = await userApi.getUserInfo(id);
-      setUserInfo({
-        age: res.data.age,
-        area: res.data.areaName,
-        email: res.data.email,
-        gender: res.data.gender,
-        image: res.data.image,
-        nickname: res.data.nickname,
-      });
-    };
-
     const checkValidUser = async () => {
       try {
         const res = await authApi.me();
         if (res.status === 200) {
           dispatch(signinAction(res.data));
-          checkUserInfo(res.data.id);
         }
       } catch (error) {
         if (error.response.status === 403) {
@@ -392,7 +383,21 @@ const Mypage = () => {
       }
     };
     checkValidUser();
-  }, []);
+
+    const checkMyPage = async () => {
+      const res = await userApi.getUserInfo(param);
+      setUserInfo({
+        age: res.data.age,
+        area: res.data.areaName,
+        email: res.data.email,
+        gender: res.data.gender,
+        image: res.data.image.slice(5),
+        nickname: res.data.nickname,
+      });
+      setIsMyPage(id === param);
+    };
+    checkMyPage();
+  }, [param]);
 
   useEffect(() => {
     const getAreaList = async () => {
@@ -412,9 +417,7 @@ const Mypage = () => {
     e.preventDefault();
     const formData = new FormData();
     formData.append("image", photo);
-    console.log(photo);
     formData.append("nickname", userInfo.nickname);
-    console.log(userInfo);
     formData.append("areaName", userInfo.area);
     formData.append("gender", userInfo.gender);
     formData.append("age", userInfo.age);
@@ -436,11 +439,16 @@ const Mypage = () => {
     }
   };
 
+  const handleCancelClick = (prev) => ({
+    ...prev,
+    image: image,
+  });
+
   return (
     <Container>
       <ProfileContainer onSubmit={handleSubmit}>
         {userInfo.image ? <ProfileImage src={userInfo.image} /> : <StyledDefaultProfile />}
-        {isEditMode && <EditButton setUserInfo={setUserInfo} setPhoto={setPhoto} />}
+        {isEditMode && <EditButton setUserInfo={setUserInfo} setPhoto={setPhoto} image={image} />}
         <ProfileInfo>
           {!isEditMode ? (
             <>
@@ -465,7 +473,7 @@ const Mypage = () => {
                 <Info>{userInfo.gender || "❓"}</Info>
               </InfoContainer>
               <InfoContainer>
-                {/* <RiLeafLine style={{ display: "inline" }} /> */}⏰
+                {/* <RiLeafLine style={{ display: "inline" }} /> */}⏱
                 <Info>{userInfo.age || "❓"}</Info>
               </InfoContainer>
             </>
@@ -517,41 +525,52 @@ const Mypage = () => {
         <SkillInfo></SkillInfo>
         <AddSkill>+</AddSkill>
       </MySkillContainer> */}
-      {isEditMode ? (
-        <>
+      {isMyPage &&
+        (isEditMode ? (
+          <>
+            <ButtonContainer>
+              <CancelButton
+                color={"var(--color-gray)"}
+                onClick={() => {
+                  setUserInfo(handleCancelClick);
+                  setIsEditMode(false);
+                }}
+              >
+                취소
+              </CancelButton>
+              <SaveButton
+                htmlFor="submitdata"
+                type="submit"
+                color={"var(--color-white)"}
+                bgColor={"var(--color-maingreen--75)"}
+              >
+                저장
+              </SaveButton>
+            </ButtonContainer>
+            <ButtonContainer>
+              <DeleteButton
+                type="button"
+                className="edit"
+                color={"var(--color-red)"}
+                onClick={() => dispatch(confirmModalOnAction)}
+              >
+                계정 삭제
+              </DeleteButton>
+            </ButtonContainer>
+          </>
+        ) : (
           <ButtonContainer>
-            <CancelButton color={"var(--color-red)"} onClick={() => setIsEditMode(false)}>
-              취소
-            </CancelButton>
-            <SaveButton htmlFor="submitdata" type="submit" color={"var(--color-maingreen--100)"}>
-              저장
-            </SaveButton>
-          </ButtonContainer>
-          <ButtonContainer>
-            <DeleteButton
+            <EditModeButton
               type="button"
               className="edit"
-              color={"var(--color-white)"}
-              bgColor={"var(--color-red)"}
-              onClick={() => dispatch(confirmModalOnAction)}
+              color={"var(--color-maingreen--100)"}
+              bgColor={"var(--color-white)"}
+              onClick={handleEditClick}
             >
-              계정 삭제
-            </DeleteButton>
+              프로필 수정
+            </EditModeButton>
           </ButtonContainer>
-        </>
-      ) : (
-        <ButtonContainer>
-          <EditModeButton
-            type="button"
-            className="edit"
-            color={"var(--color-maingreen--100)"}
-            bgColor={"var(--color-white)"}
-            onClick={handleEditClick}
-          >
-            프로필 수정
-          </EditModeButton>
-        </ButtonContainer>
-      )}
+        ))}
       {isConfirmModal && <ConfirmModal content={content} />}
     </Container>
   );
@@ -562,4 +581,5 @@ export default Mypage;
 EditButton.propTypes = {
   setUserInfo: PropTypes.func,
   setPhoto: PropTypes.func,
+  image: PropTypes.string,
 };

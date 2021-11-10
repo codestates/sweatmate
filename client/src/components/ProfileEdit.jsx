@@ -14,13 +14,13 @@ const InfoContainer = styled.div`
   align-items: center;
   justify-content: start;
   gap: 1rem;
-  width: 19rem;
-  font-size: 1.2rem;
+  width: 18rem;
+  font-size: 1rem;
 `;
 
 const InfoEdit = styled.input`
   width: 100%;
-  height: 2.2rem;
+  height: 2rem;
   border: 2px solid var(--color-lightgray);
   border-radius: 0.5rem;
   padding: 0.25rem;
@@ -31,8 +31,8 @@ const SelectContainer = styled(InfoContainer)`
     padding-top: 0.3rem;
     padding-left: 0.3rem;
     width: 100%;
-    height: 2.2rem;
-    border: 2px solid var(--color-lightgray);
+    height: 2rem;
+    border: 1px solid var(--color-lightgray);
     border-radius: 0.5rem;
     caret-color: transparent;
     * {
@@ -112,13 +112,7 @@ const ProfileEdit = ({ type, nickname, email, values, setUserInfo }) => {
           <>
             {/* <GrMail style={{ display: "inline" }} /> */}
             ✉️
-            <InfoEdit
-              name={type}
-              value={email}
-              placeholder="이메일"
-              onChange={handleInputChange}
-              disabled
-            />
+            <InfoEdit name={type} value={email} placeholder="이메일" onChange={handleInputChange} />
           </>
         );
       case "nickname":
@@ -169,7 +163,7 @@ const ProfileEdit = ({ type, nickname, email, values, setUserInfo }) => {
         return (
           <SelectContainer>
             {/* <RiLeafLine style={{ display: "inline" }} /> */}
-            ⏰
+            ⏱
             <InfoSelect
               placeholder="나이"
               items={items}
