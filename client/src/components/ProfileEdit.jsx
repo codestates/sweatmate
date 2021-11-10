@@ -34,6 +34,10 @@ const SelectContainer = styled(InfoContainer)`
     height: 2.2rem;
     border: 2px solid var(--color-lightgray);
     border-radius: 0.5rem;
+    caret-color: transparent;
+    * {
+      cursor: pointer;
+    }
   }
   .datalist-items {
     width: 17rem;
@@ -69,9 +73,8 @@ const SelectContainer = styled(InfoContainer)`
 `;
 const InfoSelect = styled(DataListInput)``;
 
-const ProfileEdit = ({ type, email, values, setUserInfo }) => {
+const ProfileEdit = ({ type, nickname, email, values, setUserInfo }) => {
   const onSelect = useCallback((selectedItem) => {
-    console.log("selectedItem", selectedItem);
     if (selectedItem.label.includes("구")) {
       setUserInfo((prevState) => ({ ...prevState, area: selectedItem.label }));
     } else if (selectedItem.label === "남" || selectedItem.label === "여") {
@@ -124,7 +127,12 @@ const ProfileEdit = ({ type, email, values, setUserInfo }) => {
           <>
             {/* <FaUserCircle style={{ display: "inline" }} /> */}
             👤
-            <InfoEdit name={type} placeholder="닉네임" onChange={handleInputChange} />
+            <InfoEdit
+              name={type}
+              value={nickname}
+              placeholder="닉네임"
+              onInput={handleInputChange}
+            />
           </>
         );
       case "area":
@@ -181,6 +189,7 @@ export default ProfileEdit;
 
 ProfileEdit.propTypes = {
   type: PropTypes.string.isRequired,
+  nickname: PropTypes.string,
   email: PropTypes.string,
   values: PropTypes.arrayOf(PropTypes.any),
   setUserInfo: PropTypes.func,
