@@ -11,7 +11,7 @@ const sportsList = require("../resource/sportList");
 
 module.exports = {
   getUerInfo: async (req, res) => {
-    const { userId } = res.locals;
+    const { userId } = req.params;
     try {
       const userInfo = await userFindOne({ id: userId }, [
         "id",
@@ -53,7 +53,7 @@ module.exports = {
         console.log("기존 유저 image가 s3에서 삭제됩니다.");
         deleteImageinTable(image);
       }
-      //TODO: 스포츠 레벨 표기
+      // TODO: 스포츠 레벨 표기
       // const getUserSportsList = JSON.parse(sports).map((userSport) => {
       //   const sportInfo = sportsList.filter((sportList) => {
       //     return userSport.sportName === sportList.sportName;
