@@ -48,7 +48,7 @@ module.exports = {
       sendGmail({
         toEmail: email,
         subject: "안녕하세요 Sweatmate입니다.",
-        html: emailForm(authKey), // TODO: html 수정 필요!
+        html: emailForm(authKey, nickname), // TODO: html 수정 필요!
       });
 
       return res.status(201).json({ message: "1시간 이내에 이메일 인증을 진행해주세요" });
