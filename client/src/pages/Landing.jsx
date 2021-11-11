@@ -307,14 +307,21 @@ const ImageWrapper = styled.div`
   }
   .second {
     &.still {
-      display: flex;
-      flex-direction: column;
+      position: relative;
       width: 100%;
-      height: 66.667%;
+      height: 0;
+      padding-top: 66.667%;
     }
     &.animation {
       position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+    #map-bg {
+      position: absolute;
       inset: 0;
+      width: 100%;
+      height: 100%;
     }
     .pin {
       width: 10%;
