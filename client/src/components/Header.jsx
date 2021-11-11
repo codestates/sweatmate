@@ -9,8 +9,6 @@ import {
   IoHomeOutline,
   IoCalendarNumberOutline,
   IoPowerOutline,
-  IoChevronForward,
-  IoClose,
 } from "react-icons/io5";
 import { HiMenu } from "react-icons/hi";
 import { BsPerson } from "react-icons/bs";
@@ -25,6 +23,7 @@ import {
 import authApi from "../api/auth";
 import notiApi from "../api/noti";
 import { getMainSocketIO } from "../network/socket";
+import Notification from "./Notification";
 
 const StyledHeader = styled.header`
   background-color: var(--color-white);
@@ -320,62 +319,17 @@ const NotificationWrapper = styled.div`
   top: 3rem;
   right: 0;
   border: 1px solid var(--color-lightgray);
-  border-radius: 0.5rem;
+  border-radius: 0.6rem;
+  background-color: var(--color-white);
+  filter: drop-shadow(0px 3px 5px var(--color-shadow));
+  overflow: auto;
   display: flex;
   flex-direction: column;
 
   ${media.lessThan("medium")`
     top: 2.25rem;
+    right: -2rem;
   `};
-`;
-
-const NotificationItem = styled.div`
-  background-color: var(--color-white);
-  padding: 0.5rem 0.5rem 0.5rem 1rem;
-  font-size: 0.9rem;
-  width: 20rem;
-  display: flex;
-  align-items: center;
-
-  :not(:last-child) {
-    border-bottom: 1px solid var(--color-lightgray);
-  }
-
-  :first-child {
-    border-radius: 0.5rem 0.5rem 0 0;
-  }
-
-  :last-child {
-    border-radius: 0 0 0.5rem 0.5rem;
-  }
-
-  :first-child:last-child {
-    border-radius: 0.5rem;
-  }
-
-  ${media.lessThan("medium")`
-    width: 16rem;
-  `};
-`;
-
-const Message = styled.p`
-  word-break: keep-all;
-  flex: 1;
-`;
-const notiBtn = css`
-  padding: 0.5rem;
-  border-radius: 0.25rem;
-  display: flex;
-  :hover {
-    background-color: var(--color-darkwhite);
-  }
-`;
-const GoLink = styled(Link)`
-  ${notiBtn}
-`;
-const DeleteBtn = styled.button`
-  ${notiBtn}
-  color: red;
 `;
 
 const Header = () => {
@@ -541,33 +495,17 @@ const Header = () => {
             </NotificationBtn>
             {isNotiBtnClicked && (
               <NotificationWrapper>
-                {notificationList.length === 0 && (
-                  <NotificationItem>
-                    <Message>메시지가 없습니다.</Message>
-                  </NotificationItem>
-                )}
+                {notificationList.length === 0 && <Notification isEmpty />}
                 {notificationList.map((item) => (
-                  <NotificationItem key={item.id}>
-                    <Message>
-                      {item.title}
-                      <br />
-                      {item.message}
-                    </Message>
-                    {item.url && (
-                      <GoLink
-                        to={item.url}
-                        onClick={() => {
-                          closeAll();
-                          handleNotiBtnClick(item.id);
-                        }}
-                      >
-                        <IoChevronForward />
-                      </GoLink>
-                    )}
-                    <DeleteBtn type="button" onClick={() => handleNotiBtnClick(item.id)}>
-                      <IoClose />
-                    </DeleteBtn>
-                  </NotificationItem>
+                  <Notification
+                    key={item.id}
+                    item={item}
+                    handleNotiClick={() => {
+                      closeAll();
+                      handleNotiBtnClick(item.id);
+                    }}
+                    handleDeleteClick={() => handleNotiBtnClick(item.id)}
+                  />
                 ))}
               </NotificationWrapper>
             )}
