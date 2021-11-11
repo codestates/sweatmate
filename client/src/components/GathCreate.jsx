@@ -7,6 +7,7 @@ import GathCard from "./GathCard";
 import media from "styled-media-query";
 import { MdOutlineKeyboardArrowLeft, MdOutlineKeyboardArrowRight } from "react-icons/md";
 import gathApi from "../api/gath";
+import Btn from "./Btn";
 
 const GathCreateContainer = styled.div`
   width: fit-content;
@@ -75,6 +76,13 @@ const StyledGathCard = styled(GathCard)`
   ${media.lessThan("medium")`
     display: none;
   `}
+`;
+
+const StyledBtn = styled(Btn)`
+  width: 5rem;
+  font-size: 1rem;
+  padding: 0.5rem;
+  border-radius: 0.4rem;
 `;
 
 const GathCreate = () => {
@@ -216,7 +224,7 @@ const GathCreate = () => {
     try {
       const payload = {
         title: gathering.title,
-        description: gathering.description,
+        description: inputValue,
         placeName: gathering.placeName,
         latitude: gathering.latitude,
         longitude: gathering.longitude,
@@ -242,7 +250,7 @@ const GathCreate = () => {
     <GathCreateContainer>
       <Info>
         <div>{step}단계</div>
-        <div style={{ width: "auto", height: "1rem", color: "var(--color-maingreen--100)" }}>
+        <div style={{ width: "auto", height: "1rem", color: "var(--color-darkgray)" }}>
           {step === 2 && selectedOptions[0] && `${selectedOptions[0]} 모임`}
           {step === 3 &&
             selectedOptions[1].length !== 0 &&
@@ -294,7 +302,13 @@ const GathCreate = () => {
             </>
           ) : (
             <>
-              <div onClick={handleSave}>등록하기</div>
+              <StyledBtn
+                color="var(--color-white)"
+                bgColor="var(--color-maingreen--75)"
+                onClick={handleSave}
+              >
+                등록하기
+              </StyledBtn>
             </>
           )}
         </Button>
