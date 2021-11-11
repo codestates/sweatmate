@@ -148,6 +148,7 @@ const ErrorMessage = styled.div`
 `;
 
 const VerificationNotice = styled.div`
+  margin: 2rem;
   display: flex;
   flex-direction: column;
   align-items: center;
