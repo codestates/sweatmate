@@ -18,7 +18,7 @@ Sweatmate(스웻메이트)는 함께 운동할 사람을 찾고 싶지만 동호
 
 ### 배포 링크
 
-* 링크
+* [스웻메이트](https://sweatmate.club/)
 
 # Final App View
 
