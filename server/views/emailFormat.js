@@ -7,7 +7,7 @@ module.exports = (authKey, nickname) => {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-      body {
+      #background {
         background-image: url("https://sweatmate.s3.ap-northeast-2.amazonaws.com/cover-bg-2.png");
         font-size: 1rem;
       }
@@ -40,6 +40,7 @@ module.exports = (authKey, nickname) => {
   </head>
   
   <body>
+  <div id="background">
     <img src="https://sweatmate.s3.ap-northeast-2.amazonaws.com/logo-transparent3x.png" width="400">
     <h2>안녕하세요 ${nickname}님! </h2>
     <h2><span class="sweatmate">SweatMate</span> 메일인증 입니다.</h2>
@@ -49,7 +50,7 @@ module.exports = (authKey, nickname) => {
     <a href=${process.env.SERVER_URL}/auth/certification/${authKey} target="_blank">
       <button class="button">SweatMate 시작하기!</button>
     </a>
-  
+  <div>
   </body>
   
   </html>
