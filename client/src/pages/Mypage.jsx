@@ -391,7 +391,7 @@ const Mypage = () => {
         area: res.data.areaName,
         email: res.data.email,
         gender: res.data.gender,
-        image: res.data.image.slice(5),
+        image: res.data.image ? res.data.image.slice(5) : null,
         nickname: res.data.nickname,
       });
       setIsMyPage(id === param);
