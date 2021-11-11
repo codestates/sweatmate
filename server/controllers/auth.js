@@ -159,13 +159,14 @@ module.exports = {
   googleSignin: async (req, res) => {
     const { authorizationCode } = req.body;
     const { googleClientId, googleClientSecret } = google;
+    console.log("authorizationCode 변수", authorizationCode);
     try {
       const params = {
         grant_type: "authorization_code",
         client_id: googleClientId,
         client_secret: googleClientSecret,
         code: authorizationCode,
-        redirect_uri: "http://localhost:3000",
+        redirect_uri: process.env.CLIENT_URL,
       };
 
       const axiosRes = await axios({
