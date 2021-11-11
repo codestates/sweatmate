@@ -11,7 +11,7 @@ const MapContainer = styled.div`
   height: 100%;
 `;
 
-const MapPreview = ({ sportEngName, place, latitude, longitude }) => {
+const MapPreview = ({ sportEngName, place, latitude, longitude, ...rest }) => {
   useEffect(() => {
     axios
       .get(`https://dapi.kakao.com/v2/local/search/keyword.json?query=${place}`, {
@@ -65,7 +65,7 @@ const MapPreview = ({ sportEngName, place, latitude, longitude }) => {
 
   return (
     <>
-      <MapContainer id="map"></MapContainer>
+      <MapContainer id="map" {...rest}></MapContainer>
     </>
   );
 };
