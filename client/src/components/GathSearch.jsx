@@ -427,7 +427,10 @@ const GathSearch = ({
       {isSelected && step === 2 && (
         <MapContainer>
           <MapPreview
-            sportName={selectedOptions[0].split(" ")[0]}
+            sportEngName={
+              sports.filter((el) => el.sportName === selectedOptions[0].split(" ")[0])[0]
+                .sportEngName
+            }
             place={selectedOptions[selectedOptions.length - 1].place_name}
             latitude={selectedOptions[selectedOptions.length - 1].y}
             longitude={selectedOptions[selectedOptions.length - 1].x}
