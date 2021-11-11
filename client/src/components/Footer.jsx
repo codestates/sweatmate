@@ -24,6 +24,10 @@ const Container = styled.div`
   `}
 `;
 
+const DescWrapper = styled.div`
+  flex: 2;
+`;
+
 const Wrapper = styled.div`
   flex: 1;
 `;
@@ -68,14 +72,14 @@ const Footer = () => {
   return (
     <StyledFooter>
       <Container>
-        <Wrapper>
+        <DescWrapper>
           <Heading>소개</Heading>
           <Paragraph>
             Sweatmate(스웻메이트)는 함께 운동할 사람을 찾고 싶지만 동호회에 가입하기는 부담스러운
             사람들을 위한 매칭 플랫폼입니다. 운동 종류, 지역, 운동, 날짜와 시간대에 따라 함께 운동할
             사람을 간편하게 찾을 수 있습니다.
           </Paragraph>
-        </Wrapper>
+        </DescWrapper>
         <Wrapper>
           <Heading>자료</Heading>
           <Items>
