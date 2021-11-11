@@ -21,7 +21,7 @@ const InfoContainer = styled.div`
 const InfoEdit = styled.input`
   width: 100%;
   height: 2rem;
-  border: 2px solid var(--color-lightgray);
+  border: 1px solid var(--color-lightgray);
   border-radius: 0.5rem;
   padding: 0.25rem;
 `;
