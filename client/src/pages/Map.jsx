@@ -24,46 +24,47 @@ const MapContainer = styled.div`
   filter: drop-shadow(2px 2px 6px var(--color-shadow));
   text-align: center;
   ${media.lessThan("medium")`
-  height: calc(100vh - 57px);
+    height: calc(100vh - 57px);
   `};
 `;
 
 const GathList = styled.div`
   box-sizing: content-box;
-  border-radius: 1rem;
   display: flex;
   gap: 0.5rem;
-  max-height: 97%;
   z-index: 10;
   overflow: scroll;
   transition: margin 0.7s ease-in-out;
   -moz-transition: margin 0.7s ease-in-out;
   -webkit-transition: margin 0.7s ease-in-out;
-  * {
-    max-height: 13rem;
-  }
   ::-webkit-scrollbar {
     display: none;
   }
   ${media.greaterThan("medium")`
-  flex-direction: column;
-  position: absolute;
-  top: 0.8rem;
-  right: 1rem;
-  width: 24rem;
-  margin: ${(props) => (props.listView ? "0rem 0rem" : "0rem -23.8rem")};
+    flex-direction: column;
+    position: absolute;
+    top: 0rem;
+    right: 1rem;
+    width: 21rem;
+    height: 100%;
+    margin: ${(props) => (props.listView ? "0rem 0rem" : "0rem -21rem")};
+    > div:first-child {
+    margin-top: 0.8rem;
+    }
   `};
-
   ${media.lessThan("medium")`
-  flex-direction: row;
-  position: absolute;
-  left: 1rem;
-  bottom: 0.5rem;  
-  width: 95%;
-  margin: ${(props) => (props.listView ? "0rem 0rem" : "-18rem 0rem")};
-  > * {
-    margin-right: 1rem;
-  }
+    flex-direction: row;
+    position: absolute;
+    left: 0rem;
+    bottom: ${(props) => (props.conditions ? "5.5rem" : "0.5rem")}; 
+    width: 100%;
+    margin: ${(props) => (props.listView ? "0rem 0rem" : "-18rem 0rem")};
+    > * {
+      margin: 0rem 0.3rem;
+    }
+    > div:first-child {
+      margin-left: 0.8rem;
+    }
   `};
 `;
 
@@ -106,6 +107,7 @@ const FilterButton = styled.button`
   width: 4rem;
   border-top-right-radius: 0.8rem;
   border-bottom-right-radius: 0.8rem;
+  cursor: unset;
 `;
 
 const SearchHereButton = styled(Btn)`
@@ -123,7 +125,10 @@ const SearchHereButton = styled(Btn)`
     margin-right: 0.5rem;
   }
   ${media.lessThan("medium")`
-    bottom: 15.5rem;
+    left: 2%;
+    width: 96%;  
+    border-radius: 1rem;
+    bottom: 0.7rem;
   `};
 `;
 
@@ -412,7 +417,7 @@ const GathMap = () => {
             </>
           ))}
       </Map>
-      <GathList id="gathlist" listView={listView}>
+      <GathList id="gathlist" listView={listView} conditions={conditions.sport}>
         {gatherings &&
           gatherings.length > 0 &&
           gatherings.map((el, idx) =>
