@@ -35,6 +35,7 @@ const App = () => {
       <Route path="/home" component={Footer} />
       <Route path="/schedule" component={Footer} />
       <Route path="/users/:id" component={Footer} />
+      <Route path="/" component={MoveTopBtn} />
       <Route path="/home" component={MoveTopBtn} />
       <Route path="/schedule" component={MoveTopBtn} />
       <Route path="/users/:id" component={MoveTopBtn} />

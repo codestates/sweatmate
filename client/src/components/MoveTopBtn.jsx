@@ -40,7 +40,6 @@ const MoveTopBtn = ({ parent }) => {
     } else if (scrollY < window.innerHeight) {
       setshowGoTop(false);
     }
-    return () => {};
   }, [scrollY]);
 
   const handleScrollUp = () => {
