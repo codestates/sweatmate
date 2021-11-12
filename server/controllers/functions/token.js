@@ -30,7 +30,6 @@ module.exports = {
       sameSite: "none",
       httpOnly: true,
       domain: "sweatmate.club",
-      path: "/",
     });
   },
 
@@ -40,7 +39,6 @@ module.exports = {
       sameSite: "none",
       httpOnly: true,
       domain: "sweatmate.club",
-      path: "/",
     });
   },
 };
