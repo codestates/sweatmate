@@ -29,7 +29,6 @@ module.exports = {
       secure: true,
       sameSite: "none",
       httpOnly: true,
-      domain: "sweatmate.club",
     });
   },
 
@@ -38,7 +37,6 @@ module.exports = {
       secure: true,
       sameSite: "none",
       httpOnly: true,
-      domain: "sweatmate.club",
     });
   },
 };
