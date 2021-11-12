@@ -3,14 +3,12 @@ import debounce from "lodash/debounce";
 
 export function useScroll() {
   const [scrollY, setScrollY] = useState(0);
-  const listener = () => {
+  const listener = debounce(() => {
     setScrollY(window.pageYOffset);
-  };
-
-  const delay = 15;
+  }, 15);
 
   useEffect(() => {
-    window.addEventListener("scroll", debounce(listener, delay));
+    window.addEventListener("scroll", listener);
     return () => window.removeEventListener("scroll", listener);
   });
 
