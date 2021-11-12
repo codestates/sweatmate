@@ -24,7 +24,7 @@ module.exports = (app) => {
   const chat = app.get("chat");
 
   schedule.scheduleJob("0 0 0 * * *", async function () {
-    const gatheringIdAndTitles = await finishGatherings({ date: getYesterdayDate() });
+    const gatheringIdAndTitles = await finishGatherings(getYesterdayDate());
     const _id = mongoose.Types.ObjectId();
     gatheringIdAndTitles.forEach((el) => {
       const { id, title } = el;
