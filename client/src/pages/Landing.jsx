@@ -469,9 +469,12 @@ const Landing = () => {
   }, []);
 
   useEffect(() => {
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       setBtnClickable(true);
     }, 10500);
+    return () => {
+      clearTimeout(timer);
+    };
   }, []);
 
   useEffect(() => {
