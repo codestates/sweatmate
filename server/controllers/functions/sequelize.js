@@ -1,5 +1,5 @@
 const { User, Gathering, Sport, User_sport, User_gathering } = require("../../models");
-
+const { Op } = require("sequelize");
 module.exports = {
   userFindOne: async (queries, attributes = []) => {
     return await User.findOne({
@@ -134,16 +134,16 @@ module.exports = {
     });
     return gatheringIds.map((el) => ({ id: el.dataValues.id, title: el.dataValues.title }));
   },
-  finishGatherings: async (query) => {
+  finishGatherings: async (date) => {
     // const gatheringIds = await Gathering.update({ done: 0 }, { where: { ...query } });
     // return gatheringIds;
     const doneGatheringsIds = await Gathering.findAll({
-      where: { ...query },
+      where: { date: { [Op.lte]: date }, done: 0 },
       attributes: ["id", "title"],
     });
     await Promise.all(
       doneGatheringsIds.map(async (el) => {
-        return await el.update({ done: 0 });
+        return await el.update({ done: 1 });
       })
     );
     return doneGatheringsIds.map((el) => {
