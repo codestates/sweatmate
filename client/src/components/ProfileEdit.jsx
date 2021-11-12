@@ -2,7 +2,7 @@ import React, { useCallback, useMemo } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import DataListInput from "react-plain-datalist-input";
-// import media from "styled-media-query";
+import media from "styled-media-query";
 // import { FaUserCircle } from "react-icons/fa";
 // import { GrMail } from "react-icons/gr";
 // import { IoLocationSharp } from "react-icons/io5";
@@ -19,18 +19,21 @@ const InfoContainer = styled.div`
 `;
 
 const InfoEdit = styled.input`
-  width: 100%;
+  width: 14rem;
   height: 2rem;
   border: 1px solid var(--color-lightgray);
   border-radius: 0.5rem;
   padding: 0.25rem;
+  ${media.lessThan("medium")`
+    width: 17rem;
+  `};
 `;
 
 const SelectContainer = styled(InfoContainer)`
   .datalist-input {
     padding-top: 0.3rem;
     padding-left: 0.3rem;
-    width: 100%;
+    width: 14rem;
     height: 2rem;
     border: 1px solid var(--color-lightgray);
     border-radius: 0.5rem;
@@ -38,9 +41,12 @@ const SelectContainer = styled(InfoContainer)`
     * {
       cursor: pointer;
     }
+    ${media.lessThan("medium")`
+      width: 17rem;
+    `};
   }
   .datalist-items {
-    width: 17rem;
+    width: 14rem;
     margin-top: 1rem;
     position: absolute;
     max-height: 11rem;
@@ -48,7 +54,7 @@ const SelectContainer = styled(InfoContainer)`
     border: 2px solid var(--color-lightgray);
     border-radius: 0.5rem;
     background-color: var(--color-darkwhite);
-    margin-left: -0.5rem;
+    margin-left: -0.4rem;
     div.datalist-active-item.datalist-active-item-default {
       padding-left: 0.3rem;
       background-color: var(--color-darkwhite);
@@ -69,6 +75,9 @@ const SelectContainer = styled(InfoContainer)`
         background-color: var(--color-maingreen--25);
       }
     }
+    ${media.lessThan("medium")`
+      width: 16rem;
+    `};
   }
 `;
 const InfoSelect = styled(DataListInput)``;

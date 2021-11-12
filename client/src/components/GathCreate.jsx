@@ -158,7 +158,6 @@ const GathCreate = () => {
     if (step === 6) {
       setInputValue(2);
     }
-    console.log("selectedOptions[2]", selectedOptions[2]);
     setGathering({
       id: 12,
       title: selectedOptions[6]
@@ -236,7 +235,6 @@ const GathCreate = () => {
         sportName: gathering.sportName,
       };
       const res = await gathApi.createGath(payload);
-      console.log(res.data);
       if (res.status === 200) {
         dispatch(modalOffAction);
         dispatch(gathDetailModalOnAction(res.data));
