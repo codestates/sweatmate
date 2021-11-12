@@ -92,8 +92,8 @@ const EditDetails = styled.details`
   margin-top: 17rem;
   margin-left: 3.5rem;
   ${media.lessThan("medium")`
-    margin-top: 15rem;
-    margin-left: -9rem;
+    margin-top: 12rem;
+    margin-left: -7rem;
   `};
 `;
 
