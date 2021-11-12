@@ -73,7 +73,7 @@ const SelectContainer = styled(InfoContainer)`
 `;
 const InfoSelect = styled(DataListInput)``;
 
-const ProfileEdit = ({ type, nickname, email, values, setUserInfo }) => {
+const ProfileEdit = ({ type, nickname, email, area, gender, age, values, setUserInfo }) => {
   const onSelect = useCallback((selectedItem) => {
     if (selectedItem.label.includes("구")) {
       setUserInfo((prevState) => ({ ...prevState, area: selectedItem.label }));
@@ -138,8 +138,10 @@ const ProfileEdit = ({ type, nickname, email, values, setUserInfo }) => {
             <InfoSelect
               id="area"
               placeholder="지역"
+              value={area}
               items={items}
               onSelect={onSelect}
+              clearInputOnClick={true}
               suppressReselect={true}
             />
           </SelectContainer>
@@ -153,7 +155,9 @@ const ProfileEdit = ({ type, nickname, email, values, setUserInfo }) => {
             <InfoSelect
               placeholder="성별"
               items={items}
+              value={gender}
               onSelect={onSelect}
+              clearInputOnClick={true}
               suppressReselect={true}
             />
           </SelectContainer>
@@ -167,7 +171,9 @@ const ProfileEdit = ({ type, nickname, email, values, setUserInfo }) => {
             <InfoSelect
               placeholder="나이"
               items={items}
+              value={age}
               onSelect={onSelect}
+              clearInputOnClick={true}
               suppressReselect={true}
             />
           </SelectContainer>
@@ -185,6 +191,9 @@ ProfileEdit.propTypes = {
   type: PropTypes.string.isRequired,
   nickname: PropTypes.string,
   email: PropTypes.string,
+  area: PropTypes.string,
+  gender: PropTypes.string,
+  age: PropTypes.number,
   values: PropTypes.arrayOf(PropTypes.any),
   setUserInfo: PropTypes.func,
 };

@@ -484,8 +484,8 @@ const Mypage = () => {
                 name="nickname"
                 type="nickname"
                 values={[]}
-                setUserInfo={setUserInfo}
                 nickname={userInfo.nickname}
+                setUserInfo={setUserInfo}
               />
               <ProfileEdit
                 id="email"
@@ -499,6 +499,7 @@ const Mypage = () => {
                 name="area"
                 type="area"
                 values={areaList}
+                area={userInfo.area}
                 setUserInfo={setUserInfo}
               />
               <ProfileEdit
@@ -506,6 +507,7 @@ const Mypage = () => {
                 name="gender"
                 type="gender"
                 values={genderList}
+                gender={userInfo.gender}
                 setUserInfo={setUserInfo}
               />
               <ProfileEdit
@@ -513,6 +515,7 @@ const Mypage = () => {
                 name="age"
                 type="age"
                 values={ageList}
+                age={userInfo.age}
                 setUserInfo={setUserInfo}
               />
             </>
