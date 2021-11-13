@@ -47,11 +47,9 @@ module.exports = (app) => {
       delete realTime[id];
     });
   });
-
-  schedule.scheduleJob("0 0 0 * * *", async function () {
+  schedule.scheduleJob("0 0,30 * * * *", async function () {
     const date = new Date();
-    date.setHours(date.getHours() - 1);
-    //이메일 인증 안한 유저 서버가 꺼져 셋타임이 초기화 됐을 때
+    date.setHours(date.getHours() - 15);
     const unidentifiedUsers = await User.findAll({
       where: { type: "local", authStatus: 0, createdAt: { [Op.lte]: date } },
       attributes: ["id"],
@@ -59,9 +57,8 @@ module.exports = (app) => {
     unidentifiedUsers.forEach((el) => {
       el.destroy();
     });
-
     // 게스트 유저 정보 삭제
-    date.setHours(date.getHours() - 11);
+    date.setHours(date.getHours() + 12);
     const guestUsers = await User.findAll({
       where: { type: "guest", createdAt: { [Op.lte]: date } },
       attributes: ["id", "image"],

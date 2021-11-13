@@ -37,14 +37,6 @@ module.exports = {
         authKey,
       });
 
-      setTimeout(async () => {
-        const userInfo = await userFindOne({ authKey });
-        if (!userInfo.dataValues.authStatus) {
-          await userInfo.destroy();
-          console.log(userInfo.dataValues, "유저 정보가 삭제되었습니다.");
-        }
-      }, 60 * 60 * 1000);
-
       sendGmail({
         toEmail: email,
         subject: "안녕하세요 Sweatmate입니다.",
