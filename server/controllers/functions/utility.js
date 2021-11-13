@@ -43,7 +43,30 @@ module.exports = {
     return today.toISOString().replace("T", " ").substring(0, 16);
   },
   modifyGatheringFormat: (gatheringList) => {
-    return gatheringList.map((el) => {
+    gatheringList.push(1);
+    let temporary = [];
+    const sortedGatheringList = gatheringList.reduce((acc, cur) => {
+      if (temporary[0]?.date !== cur?.date && temporary.length && cur !== 1) {
+        acc.push(...temporary);
+        temporary = [];
+      }
+      if (cur === 1) {
+        if (!temporary.length) {
+          return acc;
+        }
+        acc.push(...temporary);
+        return acc;
+      }
+      if (cur?.currentNum >= cur?.totalNum) {
+        temporary.push(cur);
+        return acc;
+      }
+      acc.push(cur);
+      return acc;
+    }, []);
+
+    console.log(sortedGatheringList.length);
+    return sortedGatheringList.map((el) => {
       el.areaName = areaListById[el.areaId];
       delete el.areaId;
       const { sportName, sportEmoji, sportEngName } = sportListById[el.sportId];

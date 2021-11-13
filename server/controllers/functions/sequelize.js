@@ -1,5 +1,5 @@
 const { User, Gathering, Sport, User_sport, User_gathering } = require("../../models");
-const { Op } = require("sequelize");
+const { Op, literal } = require("sequelize");
 module.exports = {
   userFindOne: async (queries, attributes = []) => {
     return await User.findOne({
@@ -33,13 +33,14 @@ module.exports = {
       where: { ...queries },
       include: [
         { model: User, as: "creator", attributes: ["id", "nickname", "image"] },
+
         {
           model: User_gathering,
           include: { model: User, attributes: ["id", "nickname", "image"] },
           attributes: { exclude: ["userId", "gatheringId"] },
         },
       ],
-      order: ["date"],
+      order: [["date"], [literal("currentNum / totalNum desc")]],
       attributes: { exclude: ["creatorId", "createdAt"] },
     });
     return Promise.all(
