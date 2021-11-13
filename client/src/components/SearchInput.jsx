@@ -76,13 +76,11 @@ const SearchInput = ({ name, children, hideDivider }) => {
         box.current.style.cssText = css`
           border: 1px solid var(--color-maingreen--50);
         `;
-        console.log("focused");
       }}
       onBlur={() => {
         box.current.style.cssText = css`
           border: 1px solid var(--color-lightgray);
         `;
-        console.log("blured");
       }}
       sort={name}
     >

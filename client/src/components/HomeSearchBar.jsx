@@ -170,7 +170,7 @@ const HomeSearchBar = () => {
         const areaList = await gathApi.getAreaList();
         setList({ ...list, sport: sportList.data, area: areaList.data });
       } catch (err) {
-        // console.error(err);
+        console.error(err);
       }
     };
     getList();
