@@ -43,27 +43,40 @@ module.exports = {
     return today.toISOString().replace("T", " ").substring(0, 16);
   },
   modifyGatheringFormat: (gatheringList) => {
-    gatheringList.push(1);
-    let temporary = [];
-    const sortedGatheringList = gatheringList.reduce((acc, cur) => {
-      if (temporary[0]?.date !== cur?.date && temporary.length && cur !== 1) {
-        acc.push(...temporary);
-        temporary = [];
-      }
-      if (cur === 1) {
-        if (!temporary.length) {
+    // gatheringList.push(1);
+    // let temporary = [];
+    // const sortedGatheringList = gatheringList.reduce((acc, cur) => {
+    //   if (temporary[0]?.date !== cur?.date && temporary.length && cur !== 1) {
+    //     acc.push(...temporary);
+    //     temporary = [];
+    //   }
+    //   if (cur === 1) {
+    //     if (!temporary.length) {
+    //       return acc;
+    //     }
+    //     acc.push(...temporary);
+    //     return acc;
+    //   }
+    //   if (cur?.currentNum >= cur?.totalNum) {
+    //     temporary.push(cur);
+    //     return acc;
+    //   }
+    //   acc.push(cur);
+    //   return acc;
+    // }, []);
+    const sortedGatheringList = gatheringList
+      .reduce(
+        (acc, cur) => {
+          if (cur.currentNum >= cur.totalNum) {
+            acc[1].push(cur);
+            return acc;
+          }
+          acc[0].push(cur);
           return acc;
-        }
-        acc.push(...temporary);
-        return acc;
-      }
-      if (cur?.currentNum >= cur?.totalNum) {
-        temporary.push(cur);
-        return acc;
-      }
-      acc.push(cur);
-      return acc;
-    }, []);
+        },
+        [[], []]
+      )
+      .flat();
     return sortedGatheringList.map((el) => {
       el.areaName = areaListById[el.areaId];
       delete el.areaId;
