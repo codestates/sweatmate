@@ -94,6 +94,7 @@ const GathCreate = () => {
   const [isSelected, setIsSelected] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState([]);
   const user = useSelector(({ authReducer }) => authReducer);
+  console.log(user);
   const dispatch = useDispatch();
 
   const [gathering, setGathering] = useState({
@@ -167,7 +168,7 @@ const GathCreate = () => {
       creator: {
         id: "uuid",
         nickname: user.nickname,
-        image: "",
+        image: user.image,
       },
       areaName: (selectedOptions[1] && selectedOptions[1].address_name.split(" ")[1]) || "OO구",
       placeName: (selectedOptions[1] && selectedOptions[1].place_name) || "이촌한강공원 농구대",
