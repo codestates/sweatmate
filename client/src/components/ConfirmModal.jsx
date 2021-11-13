@@ -38,7 +38,15 @@ const ModalOverlay = styled.div`
   right: 0;
   bottom: 0;
   background-color: var(--color-modalbg);
-  display: ${(props) => (props.isTransparent ? "none" : "block")};
+  ${(props) => {
+    props.isTransparent
+      ? css`
+          display: none;
+        `
+      : css`
+          display: block;
+        `;
+  }};
   z-index: 999;
 `;
 
@@ -128,7 +136,7 @@ const ConfirmModal = ({ isTransparent, content }) => {
     }
   };
   useEffect(() => {
-    document.body.style.cssText = css`
+    document.body.style.cssText = `
       position: fixed;
       top: -${window.scrollY}px;
       left: 0;
@@ -136,11 +144,11 @@ const ConfirmModal = ({ isTransparent, content }) => {
     `;
     return () => {
       const scrollY = document.body.style.top;
-      document.body.style.cssText = css`
-        position: "";
-        top: "";
-        left: "";
-        right: "";
+      document.body.style.cssText = `
+        position: static;
+        top: unset;
+        left: unset;
+        right: unset;
       `;
       window.scrollTo(0, parseInt(scrollY || "0") * -1);
     };
