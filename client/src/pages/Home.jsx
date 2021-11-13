@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import GathCard from "../components/GathCard";
 import media from "styled-media-query";
@@ -9,6 +9,7 @@ import { useHistory } from "react-router";
 import authApi from "../api/auth";
 import { gathCreateModalOnAction, signinAction, signoutAction } from "../store/actions";
 import HomeSearchBar from "../components/HomeSearchBar";
+import Loading from "../components/Loading";
 
 const HomeContainer = styled.div`
   width: 100%;
@@ -125,7 +126,25 @@ const Gatherings = styled.div`
   grid-template-columns: repeat(auto-fill, minmax(20rem, auto));
 `;
 
+const ListLoadingContainer = styled.div`
+  width: 100%;
+  height: 20rem;
+`;
+
+const EmptyContainer = styled.div`
+  height: 20rem;
+  background-image: url("/schedule_assets/empty-bg.svg");
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0.4;
+`;
+
 const Home = () => {
+  const [isListLoading, setIsListLoading] = useState(true);
   const { conditions, gatherings } = useSelector(({ gathReducer }) => gathReducer);
   const dispatch = useDispatch();
   const history = useHistory();
@@ -147,13 +166,16 @@ const Home = () => {
     checkValidUser();
   }, [dispatch, history]);
 
-  const handleOnMapClick = () => {
-    // TODO: 검색 실행 여부에 따른 별도의 조건으로 검색 및 지도에 표시 요청
-  };
-
   const handleCreateGath = () => {
     dispatch(gathCreateModalOnAction);
   };
+
+  useEffect(() => {
+    setIsListLoading(true);
+    setTimeout(() => {
+      setIsListLoading(false);
+    }, 1000);
+  }, [conditions, gatherings]);
 
   return (
     <HomeContainer>
@@ -183,13 +205,20 @@ const Home = () => {
           ) : (
             <ListTitle>이런 운동 모임들이 있어요!</ListTitle>
           )}
-          <OnMapBtn id="onMapBtn" onClick={handleOnMapClick} />
+          <OnMapBtn id="onMapBtn" />
         </ListHeader>
-        <Gatherings>
-          {gatherings &&
-            gatherings.length > 0 &&
-            gatherings.map((gath, idx) => <GathCard key={idx} gathering={gath} />)}
-        </Gatherings>
+        {isListLoading ? (
+          <ListLoadingContainer>
+            <Loading isTransparent />
+          </ListLoadingContainer>
+        ) : gatherings.length ? (
+          <Gatherings>
+            {(gatherings && gatherings.length) > 0 &&
+              gatherings.map((gath, idx) => <GathCard key={idx} gathering={gath} />)}
+          </Gatherings>
+        ) : (
+          <EmptyContainer>모임이 없어요</EmptyContainer>
+        )}
       </ListContainer>
     </HomeContainer>
   );

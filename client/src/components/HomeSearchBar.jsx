@@ -188,11 +188,7 @@ const HomeSearchBar = () => {
   }, []);
 
   useEffect(() => {
-    if (sportInput && areaInput) {
-      setSearchable(true);
-    } else {
-      setSearchable(false);
-    }
+    setSearchable(sportInput || areaInput);
   }, [sportInput, areaInput]);
 
   useEffect(() => {
