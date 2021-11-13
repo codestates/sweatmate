@@ -374,7 +374,6 @@ const Header = () => {
     const res = await authApi.signout();
     dispatch(signoutAction);
     if (res.status === 200) {
-      getMainSocketIO().emit("signout");
       history.push("/");
     }
   };
@@ -412,28 +411,29 @@ const Header = () => {
     };
     getNotificationList();
 
-    getMainSocketIO().on("notice", (arg, userId) => {
-      if (userId === id) {
-        return;
-      }
-      setNotificationList((prev) => {
-        if (
-          arg.type === "new" &&
-          prev.find((item) => item.type === "new" && item.gatheringId === arg.gatheringId)
-        ) {
-          return [...prev];
+    isLogin &&
+      getMainSocketIO().on("notice", (arg, userId) => {
+        if (userId === id) {
+          return;
         }
-        return [...prev, arg];
-      });
+        setNotificationList((prev) => {
+          if (
+            arg.type === "new" &&
+            prev.find((item) => item.type === "new" && item.gatheringId === arg.gatheringId)
+          ) {
+            return [...prev];
+          }
+          return [...prev, arg];
+        });
 
-      setIsUserBtnClicked(false);
-      setIsNotiBtnClicked(true);
-      setIsHamburgerBtnClicked(false);
-    });
+        setIsUserBtnClicked(false);
+        setIsNotiBtnClicked(true);
+        setIsHamburgerBtnClicked(false);
+      });
     return () => {
       getMainSocketIO().off("notice");
     };
-  }, [id]);
+  }, [id, isLogin]);
 
   return (
     <StyledHeader>
