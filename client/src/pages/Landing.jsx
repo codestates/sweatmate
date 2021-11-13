@@ -649,14 +649,14 @@ const Landing = () => {
             ) : (
               <>
                 <Btn className="start btn" onClick={handleStartClick} disabled={!btnClickable}>
-                  시작하기
+                  시작할래요
                 </Btn>
                 <Btn
                   className="experience btn"
                   onClick={handleExperienceClick}
                   disabled={!btnClickable}
                 >
-                  체험해보기
+                  일단 한 번 써볼래요
                 </Btn>
               </>
             )}

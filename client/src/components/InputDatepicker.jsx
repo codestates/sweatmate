@@ -112,6 +112,12 @@ const Container = styled.div`
         background-color: var(--color-maingreen--10);
       }
     }
+    .react-datepicker__day--disabled {
+      opacity: 0.4;
+      :hover {
+        background-color: transparent;
+      }
+    }
     .react-datepicker__day--selected {
       color: var(--color-white);
       background-color: var(--color-maingreen--75);
@@ -200,6 +206,7 @@ const HomeDatepicker = ({ placeholder, selectedDate, setSelectedDate }) => {
         placeholderText={placeholder}
         disabledKeyboardNavigation
         isClearable
+        showDisabledMonthNavigation
         renderCustomHeader={({
           date,
           decreaseMonth,

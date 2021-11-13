@@ -37,7 +37,13 @@ const ModalContainer = styled.div`
   height: fit-content;
   border-radius: 1rem;
   color: var(--color-darkgray);
-  background-color: ${(props) => (props.bgColor ? props.bgColor : "var(--color-white)")};
+  background-color: var(--color-white);
+  ${(props) => {
+    props.bgColor &&
+      css`
+        background-color: ${props.bgColor};
+      `;
+  }};
   ${media.lessThan("medium")`
     position: fixed;
     top: 0;
@@ -87,7 +93,7 @@ const Modal = ({ children, bgColor }) => {
     dispatch(modalOffAction);
   };
   useEffect(() => {
-    document.body.style.cssText = css`
+    document.body.style.cssText = `
       position: fixed;
       top: -${window.scrollY}px;
       left: 0;
@@ -95,11 +101,11 @@ const Modal = ({ children, bgColor }) => {
     `;
     return () => {
       const scrollY = document.body.style.top;
-      document.body.style.cssText = css`
-        position: "";
-        top: "";
-        left: "";
-        right: "";
+      document.body.style.cssText = `
+        position: static;
+        top: unset;
+        left: unset;
+        right: unset;
       `;
       window.scrollTo(0, parseInt(scrollY || "0") * -1);
     };
@@ -117,10 +123,6 @@ const Modal = ({ children, bgColor }) => {
       </ModalWrapper>
     </Portal>
   );
-};
-
-Modal.defaultProps = {
-  bgColor: "",
 };
 
 Modal.propTypes = {

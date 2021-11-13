@@ -195,6 +195,42 @@ const HomeSearchBar = () => {
     }
   }, [sportInput, areaInput]);
 
+  useEffect(() => {
+    window.addEventListener("resize", (event) => {
+      if (event.target.innerWidth > 768) {
+        setPopupShown(false);
+      }
+    });
+    return () => {
+      window.removeEventListener("resize", (event) => {
+        if (event.target.innerWidth > 768) {
+          setPopupShown(false);
+        }
+      });
+    };
+  }, []);
+
+  useEffect(() => {
+    if (popupShown) {
+      document.body.style.cssText = `
+        position: fixed;
+        top: -${window.scrollY}px;
+        left: 0;
+        right: 0;
+      `;
+      return () => {
+        const scrollY = document.body.style.top;
+        document.body.style.cssText = `
+          position: static;
+          top: unset;
+          left: unset;
+          right: unset;
+        `;
+        window.scrollTo(0, parseInt(scrollY || "0") * -1);
+      };
+    }
+  }, [popupShown]);
+
   const showPopup = () => {
     setPopupShown(true);
   };
@@ -305,7 +341,7 @@ const HomeSearchBar = () => {
         <p id="placeholder-text">어떤 운동하세요?</p>
       </Placeholder>
       {popupShown && (
-        <PopupContainer className="mobile">
+        <PopupContainer id="popup-container" className="mobile">
           <PopupHeader>
             <BackwardBtn onClick={hidePopup}>
               <IoIosArrowBack />
