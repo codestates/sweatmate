@@ -100,9 +100,13 @@ const GathCard = ({ gathering, ...rest }) => {
           <div>{gathering.time}</div>
         </div>
         <div>
-          <div>{`${gathering.currentNum}명 모집 중`}</div>
+          <div>
+            {gathering.totalNum > gathering.currentNum
+              ? `지금 ${gathering.currentNum}명`
+              : "다 찼어요"}
+          </div>
           <div className="divider">|</div>
-          <div>{`총 ${gathering.totalNum}명`}</div>
+          <div>{`전체 ${gathering.totalNum}명`}</div>
         </div>
       </InfoHeader>
       <InfoBody>
