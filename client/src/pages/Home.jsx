@@ -166,10 +166,6 @@ const Home = () => {
     checkValidUser();
   }, [dispatch, history]);
 
-  const handleOnMapClick = () => {
-    // TODO: 검색 실행 여부에 따른 별도의 조건으로 검색 및 지도에 표시 요청
-  };
-
   const handleCreateGath = () => {
     dispatch(gathCreateModalOnAction);
   };
@@ -209,7 +205,7 @@ const Home = () => {
           ) : (
             <ListTitle>이런 운동 모임들이 있어요!</ListTitle>
           )}
-          <OnMapBtn id="onMapBtn" onClick={handleOnMapClick} />
+          <OnMapBtn id="onMapBtn" />
         </ListHeader>
         {isListLoading ? (
           <ListLoadingContainer>
