@@ -64,8 +64,6 @@ module.exports = {
       acc.push(cur);
       return acc;
     }, []);
-
-    console.log(sortedGatheringList.length);
     return sortedGatheringList.map((el) => {
       el.areaName = areaListById[el.areaId];
       delete el.areaId;
