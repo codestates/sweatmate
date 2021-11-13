@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import styled, { keyframes } from "styled-components";
+import styled, { css, keyframes } from "styled-components";
 import PropTypes from "prop-types";
 import media from "styled-media-query";
 import Portal from "../Portal";
@@ -19,12 +19,14 @@ const LoadingWrapper = styled.div`
   overflow: hidden;
   ${(props) =>
     props.isFullscreen &&
-    `position: fixed;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  overflow: auto;`}
+    css`
+      position: fixed;
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      overflow: auto;
+    `}
   padding-top: 7.5%;
   outline: 0;
   z-index: 1000;
@@ -36,11 +38,13 @@ const LoadingOverlay = styled.div`
   height: 100%;
   ${(props) =>
     props.isFullscreen &&
-    `position: fixed;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;`}
+    css`
+      position: fixed;
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+    `}
   background-color: var(--color-modalbg);
   display: ${(props) => (props.isTransparent ? "none" : "block")};
   z-index: 999;
@@ -140,10 +144,20 @@ const Shadow = styled.div`
 const Loading = ({ isTransparent, isFullscreen }) => {
   useEffect(() => {
     if (isFullscreen) {
-      document.body.style.cssText = `position: fixed; top: -${window.scrollY}px`;
+      document.body.style.cssText = `
+        position: fixed;
+        top: -${window.scrollY}px;
+        left: 0;
+        right: 0;
+      `;
       return () => {
         const scrollY = document.body.style.top;
-        document.body.style.cssText = `position: ""; top: "";`;
+        document.body.style.cssText = `
+          position: static;
+          top: unset;
+          left: unset;
+          right: unset;
+        `;
         window.scrollTo(0, parseInt(scrollY || "0") * -1);
       };
     }
