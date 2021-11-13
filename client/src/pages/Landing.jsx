@@ -294,12 +294,11 @@ const ImageWrapper = styled.div`
       `}
     }
     .card {
-      width: 20rem;
+      width: calc(20rem + 0.5rem);
       ${media.lessThan("small")`
-        width: 100%;
+        width: calc(100% + 0.5rem);
       `}
-      filter: drop-shadow(2.5px 2.5px 5px var(--color-shadow));
-      margin-bottom: 1rem;
+      margin-bottom: 0.5rem;
       &.three {
         margin-bottom: 0;
       }
@@ -324,20 +323,19 @@ const ImageWrapper = styled.div`
       height: 100%;
     }
     .pin {
-      width: 10%;
+      width: calc(10% + 0.5rem);
       position: absolute;
-      filter: drop-shadow(2.5px 2.5px 5px var(--color-shadow));
       &.one {
-        top: 7.5%;
-        left: 70%;
+        top: calc(7.5% - 0.5rem);
+        left: calc(70% + 0.25rem);
       }
       &.two {
-        top: 30%;
-        left: 16.7%;
+        top: calc(30% - 0.5rem);
+        left: calc(16.7% + 0.25rem);
       }
       &.three {
-        top: 70%;
-        left: 50%;
+        top: calc(70% - 0.5rem);
+        left: calc(50% + 0.25rem);
       }
     }
   }
@@ -360,15 +358,13 @@ const ImageWrapper = styled.div`
       margin-bottom: 1rem;
     }
     #upcoming-card {
-      width: 100%;
-      filter: drop-shadow(2.5px 2.5px 5px var(--color-shadow));
+      width: calc(100% + 0.5rem);
     }
     #alarm {
-      width: 100%;
-      filter: drop-shadow(2.5px 2.5px 5px var(--color-shadow));
-      margin-bottom: -2rem;
+      width: calc(100% + 0.5rem);
+      margin-bottom: calc(-2rem - 0.5rem);
       ${media.lessThan("medium")`
-        margin-bottom: 1rem;
+        margin-bottom: calc(1rem - 0.5rem);
       `}
     }
   }
@@ -380,20 +376,20 @@ const ImageWrapper = styled.div`
       width: 100%;
     }
     .chat {
-      filter: drop-shadow(2.5px 2.5px 5px var(--color-shadow));
-      margin-bottom: 1.5rem;
+      margin-bottom: calc(1.5rem - 0.5rem);
       align-self: flex-start;
       &.one {
-        width: calc(80% - 2.5rem);
+        width: calc(80% - 2.5rem + 0.5rem);
         max-width: 272px;
       }
       &.two {
-        width: calc(99.4% - 2.5rem);
+        width: calc(99.4% - 2.5rem + 0.5rem);
         max-width: 338px;
         align-self: flex-end;
+        margin-right: -0.5rem;
       }
       &.three {
-        width: calc(100% - 2.5rem);
+        width: calc(100% - 2.5rem + 0.5rem);
         max-width: 340px;
         margin-bottom: 0;
       }
@@ -690,9 +686,9 @@ const Landing = () => {
               <img id="sport-datalist" src="../images/sport-datalist.png" />
             </div>
             <div className="first animation">
-              <img className="card one" src="../images/card-1-1.png" />
-              <img className="card two" src="../images/card-1-2.png" />
-              <img className="card three" src="../images/card-1-3.png" />
+              <img className="card one" src="../images/card-1-1-shadow.png" />
+              <img className="card two" src="../images/card-1-2-shadow.png" />
+              <img className="card three" src="../images/card-1-3-shadow.png" />
             </div>
           </ImageWrapper>
         </ContentBox>
@@ -719,9 +715,9 @@ const Landing = () => {
               <img id="map-bg" src="../images/map-bg.png" />
             </div>
             <div className="second animation">
-              <img className="pin one" src="../images/map-pin-1.png" />
-              <img className="pin two" src="../images/map-pin-2.png" />
-              <img className="pin three" src="../images/map-pin-3.png" />
+              <img className="pin one" src="../images/map-pin-1-shadow.png" />
+              <img className="pin two" src="../images/map-pin-2-shadow.png" />
+              <img className="pin three" src="../images/map-pin-3-shadow.png" />
             </div>
           </ImageWrapper>
         </ContentBox>
@@ -743,10 +739,10 @@ const Landing = () => {
           <ImageWrapper id="third-container">
             <div className="third still">
               <img id="upcoming" src="../images/upcoming.png" />
-              <img id="upcoming-card" src="../images/card-3.png" />
+              <img id="upcoming-card" src="../images/card-3-shadow.png" />
             </div>
             <div className="third animation">
-              <img id="alarm" src="../images/alarm.png" />
+              <img id="alarm" src="../images/alarm-shadow.png" />
             </div>
           </ImageWrapper>
         </ContentBox>
@@ -767,9 +763,9 @@ const Landing = () => {
           </DescrWrapper>
           <ImageWrapper id="fourth-container">
             <div className="fourth animation">
-              <img className="chat one" src="../images/chat-1-colored.png" />
-              <img className="chat two" src="../images/chat-2-colored.png" />
-              <img className="chat three" src="../images/chat-3-colored.png" />
+              <img className="chat one" src="../images/chat-1-shadow.png" />
+              <img className="chat two" src="../images/chat-2-shadow.png" />
+              <img className="chat three" src="../images/chat-3-shadow.png" />
             </div>
           </ImageWrapper>
         </ContentBox>
