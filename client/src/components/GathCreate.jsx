@@ -135,7 +135,7 @@ const GathCreate = () => {
         setQuestion("어디서 하세요?");
         break;
       case 3:
-        setQuestion("몇일에 하시나요?");
+        setQuestion("며칠에 하시나요?");
         break;
       case 4:
         setQuestion("언제 하시나요?");
