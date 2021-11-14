@@ -1,5 +1,5 @@
 const { User, Gathering, Sport, User_sport, User_gathering } = require("../../models");
-const { Op, literal } = require("sequelize");
+const { Op, literal, fn, col } = require("sequelize");
 module.exports = {
   userFindOne: async (queries, attributes = []) => {
     return await User.findOne({
@@ -95,18 +95,6 @@ module.exports = {
     });
     return gatheringIds;
   },
-  decrementGatheringsOfUser: async (userId) => {
-    // 회원탈퇴 전 유저가 참여중인 게더링에 현인원 - 1
-    const User_gatheringlist = await User_gathering.findAll({
-      where: { userId },
-      include: { model: Gathering },
-    });
-
-    await Promise.all(
-      User_gatheringlist.map(async (el) => await el.Gathering.decrement("currentNum", { by: 1 }))
-    );
-    return;
-  },
   realTimeUserStatus: async () => {
     // 일정이 끝나지 않은 게더링과 그 게더링에 참여중인 유저 아이디들을 불러옴
     const gatheringList = await Gathering.findAll({
@@ -149,6 +137,28 @@ module.exports = {
     );
     return doneGatheringsIds.map((el) => {
       return { id: el.dataValues.id, title: el.dataValues.title };
+    });
+  },
+  getGatheringIdsByUser: async (userId) => {
+    const User_gatheringlist = await User_gathering.findAll({
+      where: { userId },
+      attributes: ["gatheringId"],
+    });
+    return User_gatheringlist.map((el) => el.dataValues.gatheringId);
+  },
+  ModifyTheCurrentNumOfGathering: async (gatheringIds) => {
+    const gatheringList = await Gathering.findAll({
+      where: { id: gatheringIds },
+      include: {
+        model: User_gathering,
+        attributes: [[fn("COUNT", col("*")), "Number"]],
+      },
+      attributes: ["id"],
+      group: "id",
+    });
+    gatheringList.forEach((el) => {
+      const currentNum = el.dataValues.User_gatherings[0].dataValues.Number;
+      el.update({ currentNum });
     });
   },
 };

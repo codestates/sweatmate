@@ -3,7 +3,7 @@ const s3 = new AWS.S3();
 const mongoose = require("mongoose");
 const chatModel = require("../../schemas/chat");
 const noticeModel = require("../../schemas/notification");
-const { getGatheringIdsOfUser, decrementGatheringsOfUser } = require("./sequelize");
+const { getGatheringIdsOfUser } = require("./sequelize");
 const areaList = require("../../resource/areaList");
 const sportsList = require("../../resource/sportList");
 const areaListById = require("../../resource/areaListById");
@@ -92,8 +92,7 @@ module.exports = {
     //유저의 몽고디비 도큐멘트 삭제
     await noticeModel.removeUser(userId);
     await chatModel.removeChatOfUser(userId);
-    //유저가 참여중인 모든 게더링 참여 중 인원 -1
-    await decrementGatheringsOfUser(userId);
+
     const gatheringIdAndTitles = await getGatheringIdsOfUser(userId);
     const realTime = req.app.get("realTime");
     const main = req.app.get("main");
