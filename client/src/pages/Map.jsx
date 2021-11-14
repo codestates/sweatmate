@@ -21,10 +21,12 @@ const { kakao } = window;
 const MapContainer = styled.div`
   width: 100vw;
   height: calc(100vh - 73px);
+  height: calc(var(--vh, 1vh) * 100 - 73px);
   filter: drop-shadow(2px 2px 6px var(--color-shadow));
   text-align: center;
   ${media.lessThan("medium")`
     height: calc(100vh - 57px);
+    height: calc(var(--vh, 1vh) * 100 - 57px);
   `};
 `;
 
@@ -139,7 +141,9 @@ const Center = styled.button`
   left: calc((100vw - 2rem) * 0.5);
   right: calc((100vw - 2rem) * 0.5);
   top: calc((100vh - 5rem) * 0.5);
+  top: calc((var(--vh, 1vh) * 100 - 5rem) * 0.5);
   bottom: calc((100vh - 5rem) * 0.5);
+  bottom: calc((var(--vh, 1vh) * 100 - 5rem) * 0.5);
   color: var(--color-red);
   border-radius: 100%;
   z-index: 10;

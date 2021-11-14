@@ -86,6 +86,7 @@ const Nav = styled.nav`
     height: 0;
     width: 100vw;
     height: 100vh;
+    height: calc(var(--vh, 1vh) * 100);
     padding: 1rem;
     background-color: var(--color-white);
     border-top: 1px solid var(--color-lightgray);

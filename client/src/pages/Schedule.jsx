@@ -12,6 +12,7 @@ import Loading from "../components/Loading";
 
 const Container = styled.div`
   min-height: calc(100vh - 73px - 343.72px);
+  min-height: calc(var(--vh, 1vh) * 100 - 73px - 343.72px);
   width: 100%;
   max-width: 48rem;
   margin: auto;
