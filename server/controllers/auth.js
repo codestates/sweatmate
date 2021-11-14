@@ -1,7 +1,13 @@
 const bcrypt = require("bcrypt");
 const { v4: uuid } = require("uuid");
 const axios = require("axios");
-const { userFindOne, createUser, getUniqueNickname } = require("./functions/sequelize");
+const {
+  userFindOne,
+  createUser,
+  getUniqueNickname,
+  getGatheringIdsByUser,
+  ModifyTheCurrentNumOfGathering,
+} = require("./functions/sequelize");
 const noticeModel = require("../schemas/notification");
 const { sendGmail } = require("./functions/mail");
 const { DBERROR, deleteImageinTable, dropUser } = require("./functions/utility");
@@ -103,11 +109,15 @@ module.exports = {
         guestTable[userId] = setTimeout(async () => {
           //TODO: 해당 유저의 Mongo notification도 같이 삭제
           //TODO: 이 유저가 만든 게더링이 모두 삭제되기 때문에 삭제 알림 이벤트 추가
-          dropUser(userId, req);
+          await dropUser(userId, req);
           //s3탈퇴한 유저의 image 삭제
           deleteImageinTable(image);
           delete guestTable[userId];
-          userInfo.destroy();
+          const gatheringIds = await getGatheringIdsByUser(userId);
+          await userInfo.destroy();
+          await ModifyTheCurrentNumOfGathering(gatheringIds);
+
+          //회원정보가 삭제된 후에 관련된 모임들 인원수 다시 체크
         }, 7200000);
       }
       return res.status(200).json({ id, image, nickname });
@@ -131,17 +141,19 @@ module.exports = {
     });
     const token = generateAccessToken(guestUser.dataValues.id, guestUser.dataValues.type);
     setCookie(res, token);
-    const { id, nickname } = guestUser.dataValues;
+    const { id: userId, nickname } = guestUser.dataValues;
     //몽고디비 notifications 컬렉션에 아이디 추가
-    noticeModel.signup(id);
+    noticeModel.signup(userId);
 
     guestTable[guestUUID] = setTimeout(async () => {
       //TODO: 해당 유저의 Mongo notification도 같이 삭제
       //TODO: 이 유저가 만든 게더링이 모두 삭제되기 때문에 삭제 알림 이벤트 추가
-      dropUser(id, req);
+      await dropUser(userId, req);
       deleteImageinTable(userInfo.dataValues.image);
-      delete guestTable[guestUUID];
-      guestUser.destroy();
+      delete guestTable[userId];
+      const gatheringIds = await getGatheringIdsByUser(userId);
+      await guestUser.destroy();
+      await ModifyTheCurrentNumOfGathering(gatheringIds);
     }, 7200000);
     //TODO: Mongo notification 생성 + 초기 알림으로 환영메시지 등록
 

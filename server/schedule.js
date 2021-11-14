@@ -14,7 +14,11 @@ const {
   deleteImageinTable,
   getCurrentTime,
 } = require("./controllers/functions/utility");
-const { finishGatherings } = require("./controllers/functions/sequelize");
+const {
+  finishGatherings,
+  getGatheringIdsByUser,
+  ModifyTheCurrentNumOfGathering,
+} = require("./controllers/functions/sequelize");
 const { User, Gathering } = require("./models");
 const { Op } = require("sequelize");
 
@@ -63,11 +67,13 @@ module.exports = (app) => {
       where: { type: "guest", createdAt: { [Op.lte]: date } },
       attributes: ["id", "image"],
     });
-    guestUsers.forEach((el) => {
-      const { id, image } = el.dataValues;
-      dropUser(id, { app });
+    guestUsers.forEach(async (el) => {
+      const { id: userId, image } = el.dataValues;
+      await dropUser(userId, { app });
       deleteImageinTable(image);
-      el.destroy();
+      const gatheringIds = await getGatheringIdsByUser(userId);
+      await el.destroy();
+      await ModifyTheCurrentNumOfGathering(gatheringIds);
     });
   });
 
