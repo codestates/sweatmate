@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
 import Header from "./components/Header";
 import Home from "./pages/Home";
@@ -16,9 +16,39 @@ import Signing from "./components/Signing";
 import GathDetail from "./components/GathDetail";
 
 const App = () => {
+  const [currentHeight, setCurrentHeight] = useState(window.innerHeight);
   const { isGathCreateModal, isGathDetailModal, isSignupModal, isSigninModal, currentGathInfo } =
     useSelector(({ modalReducer }) => modalReducer);
   const isModal = isGathCreateModal || isGathDetailModal || isSignupModal || isSigninModal;
+
+  useEffect(() => {
+    let timer;
+    window.addEventListener("resize", (event) => {
+      if (timer) {
+        clearTimeout(timer);
+      }
+      timer = setTimeout(() => {
+        setCurrentHeight(event.target.innerHeight);
+      }, 200);
+    });
+    return () => {
+      if (timer) {
+        clearTimeout(timer);
+      }
+      window.removeEventListener("resize", (event) => {
+        setCurrentHeight(event.target.innerHeight);
+      });
+    };
+  }, []);
+
+  useEffect(() => {
+    const vh = currentHeight * 0.01;
+    document.documentElement.style.setProperty("--vh", `${vh}px`);
+    return () => {
+      document.documentElement.style.removeProperty("--vh", `${vh}px`);
+    };
+  }, [currentHeight]);
+
   return (
     <BrowserRouter>
       <Header />
