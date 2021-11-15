@@ -40,8 +40,10 @@ Sweatmate(스웻메이트)는 함께 운동할 사람을 찾고 싶지만 동호
 <summary>홈</summary>
 <div markdown="1">       
 <br>
-    <img src="https://user-images.githubusercontent.com/13115713/141731518-e72af060-d964-4261-9773-eff75405dd08.gif" width="600">
-    <img src="https://user-images.githubusercontent.com/13115713/141731492-32ff563b-2696-4755-b4a9-16169a9a842a.gif" width="230">
+    <img src="https://user-images.githubusercontent.com/13115713/141755121-25ca5ab0-58db-4d9e-bf34-12b32c92f653.gif" width="600">
+    <img src="https://user-images.githubusercontent.com/13115713/141755058-57daec03-79ea-452d-b2b4-9d485eb9c39f.gif" width="250">
+    <img src="https://user-images.githubusercontent.com/13115713/141755112-6f539bf1-b56d-4f93-87cd-7b7d89511cfd.gif" width="600">
+    <img src="https://user-images.githubusercontent.com/13115713/141755089-8b9ec52e-8ef7-49cb-8d90-78bd7d9ce75a.gif" width="250">
 </div>
 </details>
 
