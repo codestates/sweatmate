@@ -144,10 +144,11 @@ module.exports = {
     const { id: userId, nickname } = guestUser.dataValues;
     //몽고디비 notifications 컬렉션에 아이디 추가
     noticeModel.signup(userId);
-
-    guestTable[guestUUID] = setTimeout(async () => {
+    guestTable[userId] = setTimeout(async () => {
       //TODO: 해당 유저의 Mongo notification도 같이 삭제
       //TODO: 이 유저가 만든 게더링이 모두 삭제되기 때문에 삭제 알림 이벤트 추가
+
+      const userInfo = await userFindOne({ id: userId });
       await dropUser(userId, req);
       deleteImageinTable(userInfo.dataValues.image);
       delete guestTable[userId];
@@ -158,7 +159,7 @@ module.exports = {
     //TODO: Mongo notification 생성 + 초기 알림으로 환영메시지 등록
 
     // 게스트로그인에 nickname는 UUID 의 첫 번째, 이미지는 미설정시 null 이기 때문에 null을 추가로 넣어줌
-    return res.status(200).json({ id, image: null, nickname });
+    return res.status(200).json({ id: userId, image: null, nickname });
   },
   googleSignin: async (req, res) => {
     const { authorizationCode } = req.body;

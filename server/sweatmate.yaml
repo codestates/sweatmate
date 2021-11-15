@@ -564,15 +564,20 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/permissionError"
+  /gathering/{gathering}/{userId}:
     delete:
       tags:
         - "gathering"
-      summary: participate at gathering
+      summary: participate cancellation at gathering
       description: 게더링 참가 취소를 위한 요청 (로그인/ 게스트)
       parameters:
         - name: gathering
           in: path
-
+          required: true
+          schema:
+            type: string
+        - name: userId
+          in: path
           required: true
           schema:
             type: string
@@ -860,7 +865,7 @@ paths:
                     target:
                       type: string
                     title:
-                      type: strin
+                      type: string
                     message:
                       type: string
                   example:
