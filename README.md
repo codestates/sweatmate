@@ -1,7 +1,6 @@
-# Welcome to 
+# 📒 서비스 소개
 <br>
 <img src="https://sweatmate.s3.ap-northeast-2.amazonaws.com/logo-transparent3x.png" width="500">
-<br>
 <br>
 <br>
 
@@ -17,15 +16,19 @@ Sweatmate(스웻메이트)는 함께 운동할 사람을 찾고 싶지만 동호
 - 지도 API를 활용해 운동 모임들을 지도 위에 표시해주므로, 다양한 운동 모임들을 위치에 따라 한 눈에 편하게 볼 수 있습니다.
 - 랜딩 페이지, 로고, 로딩 컴포넌트 등 다양한 컴포넌트에 애니메이션(동적 UI)을 적극 활용하여 다채로운 유저 경험을 제공합니다.
 
-### 배포 링크
+### 👉 [스웻메이트 사용해보기](https://sweatmate.club/) 👈
 
-* [스웻메이트](https://sweatmate.club/)
+<br>
+<br>
 
-### Web App Architecture
+# ⚒ Tech Stack
 
 <img alt="architecture" src ="https://user-images.githubusercontent.com/42885087/141322644-da9e9dab-e426-4850-9c0d-4c9449bdf24a.png"/>
 
-### Final App View
+<br>
+<br>
+
+# 🔥 Final App View
 
 <details>
 <summary>랜딩 페이지</summary>
@@ -114,3 +117,31 @@ Sweatmate(스웻메이트)는 함께 운동할 사람을 찾고 싶지만 동호
     <img src="https://user-images.githubusercontent.com/13115713/141735412-678fa93d-efd0-4892-908b-8e6932ded271.gif" width="230">
 </div></details>
 </details>
+
+<br>
+<br>
+
+# 🧑 Team (Let's)
+
+렛츠(Let’s)는 아이디어가 가득한 사람들이 모여 만들어진 팀입니다.
+
+생각하고 만들어낸 무언가를 통해 긍정적인 이끌림(Let's)을 전하고자 합니다.
+
+| 역할 | 이름   | 포지션    | Github                                    |
+| ---- | ------ | --------- | ----------------------------------------- |
+| 팀장 | 김수민 | FRONT-END | [ssumniee](https://github.com/ssumniee)   |
+| 팀원 | 윤정길 | BACK-END  | [Yun-KC](https://github.com/Yun-KC)       |
+| 팀원 | 윤희구 | FRONT-END | [heegu0311](https://github.com/heegu0311) |
+| 팀원 | 지윤우 | FRONT-END | [Unuuuuu](https://github.com/Unuuuuu)     |
+
+<br>
+<br>
+
+# 🎈 More Info
+
+🚀 [배포 사이트](https://sweatmate.club)
+
+🍀 [프로젝트 소개 문서](https://www.notion.so/9-Let-s-Sweatmate-89fc72c3899a425caebdf0eb02695514)
+
+📖 [위키](https://github.com/codestates/sweatmate/wiki)
+
