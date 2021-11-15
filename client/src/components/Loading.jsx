@@ -21,10 +21,7 @@ const LoadingWrapper = styled.div`
     props.isFullscreen &&
     css`
       position: fixed;
-      left: 0;
-      top: 0;
-      right: 0;
-      bottom: 0;
+      inset: 0;
       overflow: auto;
     `}
   padding-top: 7.5%;
@@ -40,13 +37,14 @@ const LoadingOverlay = styled.div`
     props.isFullscreen &&
     css`
       position: fixed;
-      left: 0;
-      top: 0;
-      right: 0;
-      bottom: 0;
+      inset: 0;
     `}
   background-color: var(--color-modalbg);
-  display: ${(props) => (props.isTransparent ? "none" : "block")};
+  ${(props) =>
+    props.isTransparent &&
+    css`
+      display: none;
+    `};
   z-index: 999;
 `;
 
