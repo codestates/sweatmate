@@ -43,22 +43,70 @@ Sweatmate(스웻메이트)는 함께 운동할 사람을 찾고 싶지만 동호
 <summary>홈</summary>
 <div markdown="1">       
 <br>
-    <img src="https://user-images.githubusercontent.com/13115713/141755121-25ca5ab0-58db-4d9e-bf34-12b32c92f653.gif" width="600">
-    <img src="https://user-images.githubusercontent.com/13115713/141755058-57daec03-79ea-452d-b2b4-9d485eb9c39f.gif" width="250">
-    <img src="https://user-images.githubusercontent.com/13115713/141755112-6f539bf1-b56d-4f93-87cd-7b7d89511cfd.gif" width="600">
-    <img src="https://user-images.githubusercontent.com/13115713/141755089-8b9ec52e-8ef7-49cb-8d90-78bd7d9ce75a.gif" width="250">
+    <ul>
+        🏡 홈 - 리스트 뷰
+        <br>
+        <img src="https://user-images.githubusercontent.com/13115713/141755121-25ca5ab0-58db-4d9e-bf34-12b32c92f653.gif" width="600">
+        <img src="https://user-images.githubusercontent.com/13115713/141755058-57daec03-79ea-452d-b2b4-9d485eb9c39f.gif" width="250">
+        <br>
+        <br>
+        🏡 홈 - 검색 기능
+        <br>
+        <img src="https://user-images.githubusercontent.com/13115713/141755112-6f539bf1-b56d-4f93-87cd-7b7d89511cfd.gif" width="600">
+        <img src="https://user-images.githubusercontent.com/13115713/141755089-8b9ec52e-8ef7-49cb-8d90-78bd7d9ce75a.gif" width="250">
+    </ul>
 </div>
+
+    
 </details>
 
 <details>
 <summary>지도로 보기</summary>
 <div markdown="1">       
 <br>
-    <img src="https://user-images.githubusercontent.com/13115713/141733528-b28dd490-e3ea-477e-858c-1be4091b1b08.gif" width="600">
-    <img src="https://user-images.githubusercontent.com/13115713/141733505-ebf17a39-38be-4025-b03e-8d3d61d0021a.gif" width="230">
-    <img src="https://user-images.githubusercontent.com/13115713/141734200-0f46c213-60b5-490c-99e6-715cd36ca375.gif" width="600">
-    <img src="https://user-images.githubusercontent.com/13115713/141733542-34f75ec6-fab8-461f-ad1a-98e5f313aa5b.gif" width="230">
+    <ul>
+        🗺 전체 리스트 뷰
+        <br>
+        <img src="https://user-images.githubusercontent.com/13115713/141733528-b28dd490-e3ea-477e-858c-1be4091b1b08.gif" width="600">
+        <img src="https://user-images.githubusercontent.com/13115713/141733505-ebf17a39-38be-4025-b03e-8d3d61d0021a.gif" width="230">
+        <br>
+        <br>
+        🗺 검색 리스트 뷰
+        <br>
+        <img src="https://user-images.githubusercontent.com/13115713/141734200-0f46c213-60b5-490c-99e6-715cd36ca375.gif" width="600">
+        <img src="https://user-images.githubusercontent.com/13115713/141733542-34f75ec6-fab8-461f-ad1a-98e5f313aa5b.gif" width="230">
+        <br>
+    </ul>
 </div>
+</details>
+
+<details>
+<summary>모임(실시간 채팅)</summary>
+<div markdown="1">       
+<br>
+    <ul>
+        💬 실시간 채팅
+        <br>
+        <img src="https://user-images.githubusercontent.com/13115713/141734779-1184b0ca-f8d1-4e40-ada4-b89aadb1b54d.gif" width="600">
+        <img src="https://user-images.githubusercontent.com/13115713/141734757-083d46fc-138f-482b-81d9-4ae7fe8ba4ef.gif" width="230">
+        <br>
+        <br>
+        🔚 호스트의 유저 내보내기 & 모임 종료 기능
+        <br>
+        <img src="https://user-images.githubusercontent.com/13115713/141734782-79481487-b30a-4557-b66f-318e705f6cc4.gif" width="600">
+        <img src="https://user-images.githubusercontent.com/13115713/141734780-2e32d2f9-930c-4b99-8c4b-3c7c2c9ebd0f.gif" width="230">
+        <br>
+    </ul>
+</div></details>
+</details>
+
+<details>
+<summary>실시간 알림</summary>
+<div markdown="1">       
+<br>
+    <img src="https://user-images.githubusercontent.com/13115713/141803210-fe66859b-a7ac-4135-8989-498db5c1e74d.gif" width="600">
+    <img src="https://user-images.githubusercontent.com/13115713/141803161-3dede968-a7a3-47cd-ab85-22b10ab77d19.gif" width="230">
+</div></details>
 </details>
 
 <details>
@@ -80,17 +128,6 @@ Sweatmate(스웻메이트)는 함께 운동할 사람을 찾고 싶지만 동호
 </details>
 
 <details>
-<summary>모임(채팅)</summary>
-<div markdown="1">       
-<br>
-    <img src="https://user-images.githubusercontent.com/13115713/141734779-1184b0ca-f8d1-4e40-ada4-b89aadb1b54d.gif" width="600">
-    <img src="https://user-images.githubusercontent.com/13115713/141734757-083d46fc-138f-482b-81d9-4ae7fe8ba4ef.gif" width="230">
-    <img src="https://user-images.githubusercontent.com/13115713/141734782-79481487-b30a-4557-b66f-318e705f6cc4.gif" width="600">
-    <img src="https://user-images.githubusercontent.com/13115713/141734780-2e32d2f9-930c-4b99-8c4b-3c7c2c9ebd0f.gif" width="230">
-</div></details>
-</details>
-
-<details>
 <summary>일정</summary>
 <div markdown="1">       
 <br>
@@ -99,12 +136,24 @@ Sweatmate(스웻메이트)는 함께 운동할 사람을 찾고 싶지만 동호
 </div>
 </details>
 
+
 <details>
 <summary>마이페이지</summary>
 <div markdown="1">       
 <br>
-    <img src="https://user-images.githubusercontent.com/13115713/141735217-b8d59d37-88a9-4728-a1a3-71ea520dbd68.gif" width="600">
-    <img src="https://user-images.githubusercontent.com/13115713/141735200-484bced7-5199-4109-a33f-9164435558aa.gif" width="230">
+    <ul>
+        ✍🏻 전체 리스트 뷰
+        <br>
+        <img src="https://user-images.githubusercontent.com/13115713/141735217-b8d59d37-88a9-4728-a1a3-71ea520dbd68.gif" width="600">
+        <img src="https://user-images.githubusercontent.com/13115713/141735200-484bced7-5199-4109-a33f-9164435558aa.gif" width="230">
+        <br>
+        <br>
+        ❌ 유저 계정 삭제
+        <br>
+        <img src="https://user-images.githubusercontent.com/13115713/141804165-81779861-944e-47c1-a159-3dc2ed593d9f.gif" width="600">
+        <img src="https://user-images.githubusercontent.com/13115713/141804140-1a366f12-aa5c-447d-a6c4-01b4fb929541.gif" width="230">
+        <br>
+    </ul>
 </div>
 </details>
 
@@ -112,9 +161,22 @@ Sweatmate(스웻메이트)는 함께 운동할 사람을 찾고 싶지만 동호
 <summary>로그인 & 회원가입</summary>
 <div markdown="1">       
 <br>
-    <img src="https://user-images.githubusercontent.com/13115713/141735414-ece62801-dae1-4af4-897e-c1dc261ed3ef.gif" width="230">
-    <img src="https://user-images.githubusercontent.com/13115713/141735396-b8ceb00d-db8d-4a5b-ac37-feade828e4d5.gif" width="230">
-    <img src="https://user-images.githubusercontent.com/13115713/141735412-678fa93d-efd0-4892-908b-8e6932ded271.gif" width="230">
+    <ul>
+        회원가입
+        <br>
+        <img src="https://user-images.githubusercontent.com/13115713/141735414-ece62801-dae1-4af4-897e-c1dc261ed3ef.gif" width="230">
+        <br>
+        <br>
+        로그인
+        <br>
+        <img src="https://user-images.githubusercontent.com/13115713/141735396-b8ceb00d-db8d-4a5b-ac37-feade828e4d5.gif" width="230">
+        <br>
+        <br>
+        소셜 로그인
+        <br>
+        <img src="https://user-images.githubusercontent.com/13115713/141735412-678fa93d-efd0-4892-908b-8e6932ded271.gif" width="230">
+        <br>
+    </ul>
 </div></details>
 </details>
 
