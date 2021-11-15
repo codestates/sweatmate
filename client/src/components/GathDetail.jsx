@@ -14,11 +14,13 @@ import gathApi from "../api/gath";
 const DetailContainer = styled.div`
   width: calc(100vw - 6rem);
   height: calc(100vh - 8rem);
+  height: calc(var(--vh, 1vh) * 100 - 8rem);
   max-width: 50rem;
   max-height: 60rem;
   ${media.lessThan("medium")`
     width: 100vw;
     height: 100vh;
+    height: calc(var(--vh, 1vh) * 100);
   `};
   color: var(--color-black);
   display: flex;

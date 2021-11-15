@@ -27,9 +27,11 @@ import { getChatSocketIO, getMainSocketIO, removeChatSocket } from "../network/s
 const Container = styled.div`
   display: flex;
   height: calc(100vh - 73px);
+  height: calc(var(--vh, 1vh) * 100 - 73px);
 
   ${media.lessThan("medium")`
     height: calc(100vh - 57px);
+    height: calc(var(--vh, 1vh) * 100 - 57px);
   `}
 `;
 const Main = styled.main`

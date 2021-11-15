@@ -33,6 +33,7 @@ const LandingContainer = styled.div`
 
 const CoverContainer = styled.div`
   height: 80vh;
+  height: calc(var(--vh, 1vh) * 80);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -83,9 +84,11 @@ const CoverContainer = styled.div`
   #cover-anima-container {
     position: absolute;
     height: 20vh;
+    height: calc(var(--vh, 1vh) * 20);
   }
   #cover-content-container {
     padding-top: 20vh;
+    padding-top: calc(var(--vh, 1vh) * 20);
     display: flex;
     flex-direction: column;
     justify-content: center;
