@@ -220,6 +220,9 @@ const NonUserBtn = styled.button`
 const UserBtns = styled.div`
   display: flex;
   position: relative;
+  .mobile-header-btn {
+    color: var(--color-black);
+  }
 `;
 
 const NotificationBtn = styled.button`
@@ -490,7 +493,7 @@ const Header = () => {
       {isLogin && (
         <UserBtns>
           <NotificationContainer>
-            <NotificationBtn onClick={HandleNotiClick}>
+            <NotificationBtn className="mobile-header-btn" onClick={HandleNotiClick}>
               <IoNotificationsOutline />
             </NotificationBtn>
             {isNotiBtnClicked && (
@@ -513,7 +516,7 @@ const Header = () => {
           <UserBtn onClick={HandleUserInfoClick}>
             <UserProfile size={1} user={{ id, nickname, image }} isDisabled />
           </UserBtn>
-          <MobileHamburgerBtn onClick={handleHamburgerClick}>
+          <MobileHamburgerBtn className="mobile-header-btn" onClick={handleHamburgerClick}>
             <HiMenu />
           </MobileHamburgerBtn>
           {isUserBtnClicked && (
