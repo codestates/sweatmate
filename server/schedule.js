@@ -79,7 +79,7 @@ module.exports = (app) => {
 
   schedule.scheduleJob("0 0 7,12,17 * * *", async function () {
     const curruntDate = getCurrentTime();
-    const curruntHour = new Date(curruntDate).getHours;
+    const curruntHour = new Date(curruntDate).getHours();
     const curruntDay = curruntDate.split(" ")[0];
     let time;
 
