@@ -188,19 +188,34 @@ const Home = () => {
         </Btn>
       </SearchContainer>
       <ListContainer>
-        {conditions.sport && conditions.area ? (
+        {conditions.sport || conditions.area ? (
           <ListSubTitle>검색 결과</ListSubTitle>
         ) : (
           <ListSubTitle>스웻메이트에는 지금</ListSubTitle>
         )}
         <ListHeader>
-          {conditions.sport && conditions.area ? (
+          {conditions.sport || conditions.area ? (
             <ListTitle>
-              {conditions.date && `${conditions.formatedDate} `}
-              {conditions.time && `${conditions.time} `}
-              {`${conditions.area}의 `}
+              {conditions.area ? (
+                <>
+                  {conditions.date && `${conditions.formatedDate} `}
+                  {conditions.time && `${conditions.time} `}
+                  {`${conditions.area}의 `}
+                </>
+              ) : (
+                <>
+                  {conditions.time ? (
+                    <>
+                      {conditions.date && `${conditions.formatedDate} `}
+                      {`${conditions.time}의 `}
+                    </>
+                  ) : (
+                    <>{conditions.date && `${conditions.formatedDate}의 `}</>
+                  )}
+                </>
+              )}
               {conditions.totalNum && `${conditions.totalNum}인 `}
-              {`${conditions.formatedSport} 모임`}
+              {conditions.sport ? `${conditions.formatedSport} 모임` : `운동 모임`}
             </ListTitle>
           ) : (
             <ListTitle>이런 운동 모임들이 있어요!</ListTitle>
