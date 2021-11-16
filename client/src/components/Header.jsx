@@ -186,7 +186,11 @@ const MobileNavBtn = styled.button`
   `}
 `;
 
-const NonUserBtns = styled.div``;
+const NonUserBtns = styled.div`
+  .header-btn {
+    color: var(--color-black);
+  }
+`;
 
 const NonUserBtn = styled.button`
   font-size: 1rem;
@@ -221,7 +225,7 @@ const NonUserBtn = styled.button`
 const UserBtns = styled.div`
   display: flex;
   position: relative;
-  .mobile-header-btn {
+  .header-btn {
     color: var(--color-black);
   }
 `;
@@ -484,8 +488,12 @@ const Header = () => {
       )}
       {!isLogin && (
         <NonUserBtns>
-          <NonUserBtn onClick={handleGuestSignin}>게스트 로그인</NonUserBtn>
-          <NonUserBtn onClick={() => dispatch(signinModalOnAction)}>로그인</NonUserBtn>
+          <NonUserBtn className="header-btn" onClick={handleGuestSignin}>
+            게스트 로그인
+          </NonUserBtn>
+          <NonUserBtn className="header-btn" onClick={() => dispatch(signinModalOnAction)}>
+            로그인
+          </NonUserBtn>
           <NonUserBtn main onClick={() => dispatch(signupModalOnAction)}>
             회원가입
           </NonUserBtn>
@@ -494,7 +502,7 @@ const Header = () => {
       {isLogin && (
         <UserBtns>
           <NotificationContainer>
-            <NotificationBtn className="mobile-header-btn" onClick={HandleNotiClick}>
+            <NotificationBtn className="header-btn" onClick={HandleNotiClick}>
               <IoNotificationsOutline />
             </NotificationBtn>
             {isNotiBtnClicked && (
@@ -517,7 +525,7 @@ const Header = () => {
           <UserBtn onClick={HandleUserInfoClick}>
             <UserProfile size={1} user={{ id, nickname, image }} isDisabled />
           </UserBtn>
-          <MobileHamburgerBtn className="mobile-header-btn" onClick={handleHamburgerClick}>
+          <MobileHamburgerBtn className="header-btn" onClick={handleHamburgerClick}>
             <HiMenu />
           </MobileHamburgerBtn>
           {isUserBtnClicked && (
