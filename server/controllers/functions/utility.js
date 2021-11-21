@@ -100,6 +100,7 @@ module.exports = {
     const _id = mongoose.Types.ObjectId();
     gatheringIdAndTitles.forEach((el) => {
       const { id, title } = el;
+      if (!realTime[id]) return;
       const noticeInfo = {
         id: _id,
         gatheringId: id,
