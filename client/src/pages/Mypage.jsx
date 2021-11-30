@@ -499,7 +499,7 @@ const Mypage = () => {
                 name="area"
                 type="area"
                 values={areaList}
-                area={userInfo.area}
+                area={userInfo.area || "❓"}
                 setUserInfo={setUserInfo}
               />
               <ProfileEdit
@@ -507,7 +507,7 @@ const Mypage = () => {
                 name="gender"
                 type="gender"
                 values={genderList}
-                gender={userInfo.gender}
+                gender={userInfo.gender || "❓"}
                 setUserInfo={setUserInfo}
               />
               <ProfileEdit
@@ -515,7 +515,7 @@ const Mypage = () => {
                 name="age"
                 type="age"
                 values={ageList}
-                age={userInfo.age}
+                age={userInfo.age || "❓"}
                 setUserInfo={setUserInfo}
               />
             </>
