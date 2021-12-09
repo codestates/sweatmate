@@ -14,7 +14,7 @@ import authApi from "../api/auth";
 import gathApi from "../api/gath";
 import { searchGathAction, signinAction, signoutAction } from "../store/actions";
 import GathCard from "../components/GathCard";
-import Btn from "../components/Btn";
+import { useQuery } from "../hooks/useQuery";
 
 const { kakao } = window;
 
@@ -48,7 +48,6 @@ const GathList = styled.div`
     top: 0rem;
     right: 1rem;
     width: 21rem;
-    height: 100%;
     margin: ${(props) => (props.listView ? "0rem 0rem" : "0rem -21rem")};
     > div:first-child {
     margin-top: 0.8rem;
@@ -112,8 +111,11 @@ const FilterButton = styled.button`
   cursor: unset;
 `;
 
-const SearchHereButton = styled(Btn)`
+const SearchHereButton = styled(Link)`
   position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   bottom: 1rem;
   left: calc((100vw - 15rem) * 0.5);
   right: calc((100vw - 15rem) * 0.5);
@@ -193,13 +195,12 @@ const GathMap = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const { conditions, gatherings } = useSelector(({ gathReducer }) => gathReducer);
-  const [map, setMap] = useState();
+  const [map, setMap] = useState(null);
   const [points, setPoints] = useState([]);
   const [hovered, setHovered] = useState(null);
   const [listView, setListView] = useState(true);
   const [address, setAddress] = useState(conditions.area);
-  // const [isSearched, setIsSearched] = useState(false);
-  // const [isLoaded, setIsLoaded] = useState(false);
+  const query = useQuery();
 
   const bounds = useMemo(() => {
     const bounds = new kakao.maps.LatLngBounds();
@@ -227,28 +228,20 @@ const GathMap = () => {
       }
     };
     checkValidUser();
-    if (Object.values(conditions).every((el) => Boolean(el) === false)) {
-      const findGath = async () => {
-        const { data } = await gathApi.getAllGath();
-        dispatch(searchGathAction({ conditions: data.conditions, gatherings: data.gatherings }));
-      };
-      findGath();
-    } else {
-      const findGath = async () => {
-        const { data } = await gathApi.findGath(conditions);
-        const newConditions = {
-          sportName: conditions.sport,
-          areaName: conditions.area,
-          date: conditions.date,
-          time: conditions.time,
-          totalNum: conditions.totalNum,
-        };
 
-        dispatch(searchGathAction({ conditions: newConditions, gatherings: data.gatherings }));
-      };
-      findGath();
-    }
-  }, []);
+    const findGath = async () => {
+      const { data } = await gathApi.findGath({
+        sport: query.get("sport"),
+        area: query.get("area"),
+        date: conditions.date,
+        time: conditions.time,
+        totalNum: conditions.totalNum,
+      });
+      if (!data.gatherings.length) history.push("/map");
+      else dispatch(searchGathAction({ conditions, gatherings: data.gatherings }));
+    };
+    findGath();
+  }, [query]);
 
   useEffect(() => {
     const collectPoints = () => {
@@ -262,7 +255,7 @@ const GathMap = () => {
       setPoints(newPoints);
     };
     collectPoints();
-  }, []);
+  }, [gatherings]);
 
   useEffect(() => {
     const newConditions = {
@@ -276,19 +269,8 @@ const GathMap = () => {
   }, [address]);
 
   useEffect(() => {
-    // if (isLoaded) {
     if (map) map.setBounds(bounds);
-    const newConditions = {
-      sportName: conditions.sport,
-      areaName: conditions.area,
-      date: conditions.date,
-      time: conditions.time,
-      totalNum: conditions.totalNum,
-    };
-    dispatch(searchGathAction({ conditions: newConditions, gatherings }));
-    // }
-    // }, [isLoaded]);
-  }, []);
+  }, [points]);
 
   const handleDragStart = () => {
     setListView(false);
@@ -323,38 +305,6 @@ const GathMap = () => {
       }
     }
   }, 50);
-
-  const handleSearchHere = async () => {
-    const findGath = async () => {
-      const { data: wholeData } = await gathApi.getAllGath();
-      if (conditions.sport || conditions.area) {
-        const newConditions = {
-          sportName: conditions.sport,
-          areaName: address,
-          date: conditions.date,
-          time: conditions.time,
-          totalNum: conditions.totalNum,
-        };
-        const { data } = await gathApi.findGath(conditions);
-        const newGatherings =
-          data.gatherings && data.gatherings.length > 0 ? [...data.gatherings] : wholeData;
-        if (data.gatherings.length === 0)
-          dispatch(searchGathAction({ conditions: newConditions, gatherings: newGatherings }));
-        else dispatch(searchGathAction({ conditions: newConditions, gatherings: newGatherings }));
-      } else {
-        const newConditions = {
-          sportName: conditions.sport,
-          areaName: conditions.area,
-          date: conditions.date,
-          time: conditions.time,
-          totalNum: conditions.totalNum,
-        };
-        const newGatherings = [...wholeData.gatherings];
-        dispatch(searchGathAction({ conditions: newConditions, gatherings: newGatherings }));
-      }
-    };
-    findGath();
-  };
 
   return (
     <MapContainer id={"marker"}>
@@ -421,7 +371,11 @@ const GathMap = () => {
             </>
           ))}
       </Map>
-      <GathList id="gathlist" listView={listView} conditions={conditions.sport}>
+      <GathList
+        id="gathlist"
+        listView={listView}
+        conditions={query.get("sport") || query.get("area")}
+      >
         {gatherings &&
           gatherings.length > 0 &&
           gatherings.map((el, idx) =>
@@ -461,8 +415,16 @@ const GathMap = () => {
       <Center>
         <AiOutlineAim />
       </Center>
-      {conditions.sport && (
-        <SearchHereButton onClick={handleSearchHere}>
+      {(query.get("sport") || query.get("area")) && (
+        <SearchHereButton
+          to={
+            gatherings.length
+              ? `/map?sport=${conditions.sport || query.get("sport")}&area=${
+                  conditions.area || query.get("area")
+                }`
+              : "/map"
+          }
+        >
           <span>{`📍 여기에서 재검색 `}</span>
         </SearchHereButton>
       )}
