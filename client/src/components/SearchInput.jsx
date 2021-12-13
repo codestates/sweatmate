@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import media from "styled-media-query";
 
 const InputWrapper = styled.label`
-  height: 100%;
+  height: ${(props) => (props.isInModal ? "4rem" : "100%")};
   ${media.greaterThan("medium")`
     min-width: ${(props) => {
       if (props.sort === "운동") return "9rem";
@@ -18,8 +18,14 @@ const InputWrapper = styled.label`
       if (props.sort === "시간") return "8rem";
       return "10rem";
     }};
+    ${(props) =>
+      props.isInModal &&
+      css`
+        max-width: 18.5rem;
+      `}
   `};
   border-radius: 1rem;
+  border: ${(props) => (props.isInModal ? "1px solid var(--color-lightgray)" : "")};
   display: flex;
   :hover {
     ${media.greaterThan("medium")`
@@ -35,6 +41,7 @@ const InputWrapper = styled.label`
     height: 4rem;
     border: 1px solid var(--color-lightgray);
     border-radius: 1rem;
+    z-index: -1;
     ${media.greaterThan("medium")`
       display: none;
     `};
@@ -68,7 +75,7 @@ const Divider = styled.div`
   margin: 0.75rem 0;
 `;
 
-const SearchInput = ({ name, children, hideDivider }) => {
+const SearchInput = ({ name, children, hideDivider, ...rest }) => {
   const box = useRef(null);
   return (
     <InputWrapper
@@ -83,6 +90,7 @@ const SearchInput = ({ name, children, hideDivider }) => {
         `;
       }}
       sort={name}
+      {...rest}
     >
       <div className="bg" ref={box} />
       <InputArea>
