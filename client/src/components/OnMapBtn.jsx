@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import media from "styled-media-query";
+import { useSelector } from "react-redux";
 
 const ButtonContainer = styled(Link)`
   min-width: 10.8rem;
@@ -36,8 +37,15 @@ const Text = styled.div`
   font-size: 1rem;
 `;
 const OnMapBtn = () => {
+  const { conditions } = useSelector(({ gathReducer }) => gathReducer);
   return (
-    <ButtonContainer to="/map">
+    <ButtonContainer
+      to={
+        conditions.sport || conditions.area
+          ? `/map?sport=${conditions.sport}&area=${conditions.area}`
+          : "/map"
+      }
+    >
       <Icon>🗺</Icon>
       <Text>지도로 전체 보기</Text>
     </ButtonContainer>
