@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { gathDetailModalOnAction, modalOffAction } from "../store/actions";
+import media from "styled-media-query";
 import { useDispatch, useSelector } from "react-redux";
+import { MdOutlineKeyboardArrowLeft, MdOutlineKeyboardArrowRight } from "react-icons/md";
+import { getMonth, getDate } from "date-fns";
+
+import { gathDetailModalOnAction, modalOffAction } from "../store/actions";
 import GathSearch from "./GathSearch";
 import GathCard from "./GathCard";
-import media from "styled-media-query";
-import { MdOutlineKeyboardArrowLeft, MdOutlineKeyboardArrowRight } from "react-icons/md";
 import gathApi from "../api/gath";
 import Btn from "./Btn";
 
@@ -17,6 +19,9 @@ const GathCreateContainer = styled.div`
   align-items: center;
   justify-content: center;
   margin: auto;
+  background-color: var(--color-white);
+  border-radius: 1rem;
+  color: var(--color-darkgray);
 `;
 
 const Info = styled.div`
@@ -65,11 +70,12 @@ const Container = styled.div`
   display: flex;
   justify-content: space-between;
   gap: 1rem;
-  width: fit-content;
+  width: calc(100% - 4rem);
   height: 15rem;
+  z-index: 5;
   ${media.lessThan("medium")`
     width: 20rem;
-  `}
+  `};
 `;
 
 const StyledGathCard = styled(GathCard)`
@@ -94,29 +100,28 @@ const GathCreate = () => {
   const [isSelected, setIsSelected] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState([]);
   const user = useSelector(({ authReducer }) => authReducer);
-  console.log(user);
   const dispatch = useDispatch();
 
   const [gathering, setGathering] = useState({
     id: 12,
-    title: "농구 함 때려볼 용산러들~!",
-    description: "용산에서 즐기면서 농구하는 사람들 한 판 같이 합시다~",
+    title: "OO 함께 즐겨요!!",
+    description: "용산에서 즐기면서 OO하는 사람들 한 판 같이 합시다~",
     creator: {
       id: "uuid",
-      nickname: "농구에 미친 사람",
-      image: "",
+      nickname: user.nickname,
+      image: user.image,
     },
-    areaName: "용산구",
-    placeName: "이촌한강공원 농구대",
+    areaName: "OO구",
+    placeName: "❓",
     latitude: "33.450701",
     longitude: "126.570667",
-    date: "2021-10-27",
-    time: "evening",
+    date: "2021-00-00",
+    time: "저녁",
     timeDescription: "19시",
     totalNum: 4,
-    currentNum: 2,
-    sportName: "농구",
-    sportEmoji: "🏀",
+    currentNum: 1,
+    sportName: "OO",
+    sportEmoji: "❓",
     done: false,
     users: [
       {
@@ -159,38 +164,7 @@ const GathCreate = () => {
     if (step === 6) {
       setInputValue(2);
     }
-    setGathering({
-      id: 12,
-      title: selectedOptions[6]
-        ? selectedOptions[6]
-        : selectedOptions[0] && `${selectedOptions[0].slice(0, -2)} 함께 즐겨요!`,
-      description: selectedOptions[7] || "용산에서 즐기면서 농구하는 사람들 한 판 같이 합시다~",
-      creator: {
-        id: "uuid",
-        nickname: user.nickname,
-        image: user.image,
-      },
-      areaName: (selectedOptions[1] && selectedOptions[1].address_name.split(" ")[1]) || "OO구",
-      placeName: (selectedOptions[1] && selectedOptions[1].place_name) || "이촌한강공원 농구대",
-      latitude: (selectedOptions[1] && selectedOptions[1].y) || "33.450701",
-      longitude: (selectedOptions[1] && selectedOptions[1].x) || "126.570667",
-      date: selectedOptions[2] || "2021-00-00",
-      time: selectedOptions[3] || "저녁",
-      timeDescription: selectedOptions[4] || "19시",
-      totalNum: selectedOptions[5] || 0,
-      currentNum: selectedOptions[5] - 1 || 0,
-      sportName: selectedOptions[0] ? selectedOptions[0].split(" ")[0] : "농구",
-      sportEmoji: selectedOptions[0] ? selectedOptions[0].split(" ")[1] : "❓",
-      done: false,
-      users: [
-        {
-          id: "uuid",
-          nickname: "농구킹",
-          image: "imageUrl",
-        },
-      ],
-    });
-  }, [step, selectedOptions]);
+  }, [step]);
 
   const handlePrevClick = () => {
     setOnSearch(false);
@@ -210,7 +184,12 @@ const GathCreate = () => {
       setIsSelected(false);
       setStep(step + 1);
     } else {
-      if (selectedOptions.length === step) {
+      if (
+        (step === 1 && gathering.sportEmoji !== "❓") ||
+        (step === 2 && gathering.placeName !== "❓") ||
+        (step === 3 && gathering.date !== "2021-00-00") ||
+        (step === 4 && gathering.time !== "OO")
+      ) {
         setOnSearch(false);
         setInputValue("");
         setList([]);
@@ -250,21 +229,18 @@ const GathCreate = () => {
       <Info>
         <div>{step}단계</div>
         <div style={{ width: "auto", height: "1rem", color: "var(--color-darkgray)" }}>
-          {step === 2 && selectedOptions[0] && `${selectedOptions[0]} 모임`}
+          {step === 2 && `${gathering.sportName} 모임`}
           {step === 3 &&
-            selectedOptions[1].length !== 0 &&
-            `${selectedOptions[1].place_name}에서 
-             ${selectedOptions[0]} 모임`}
+            `${gathering.placeName}에서 
+             ${gathering.sportName} 모임`}
           {(step === 4 || step === 5 || step === 6) &&
-            selectedOptions[2] &&
-            `${selectedOptions[2].split("-")[1]}월 ${selectedOptions[2].split("-")[2]}일 
-            '${selectedOptions[1].place_name}'에서 
-             ${selectedOptions[0]} 모임`}
+            `${getMonth(gathering.date) + 1}월 ${getDate(gathering.date)}일 
+             ${gathering.placeName}에서 
+             ${gathering.sportName} 모임`}
           {(step === 7 || step === 8) &&
-            selectedOptions[2] &&
-            `${selectedOptions[2].split("-")[1]}월 ${selectedOptions[2].split("-")[2]}일 
-            '${selectedOptions[1].place_name}'에서 
-             ${selectedOptions[5]}인 ${selectedOptions[0]} 모임`}
+            `${getMonth(gathering.date) + 1}월 ${getDate(gathering.date)}일 
+            ${gathering.placeName}에서 
+            ${gathering.totalNum}인 ${gathering.sportName} 모임`}
         </div>
         <h2>{question}</h2>
       </Info>
@@ -279,8 +255,8 @@ const GathCreate = () => {
           setList={setList}
           isSelected={isSelected}
           setIsSelected={setIsSelected}
-          selectedOptions={selectedOptions}
-          setSelectedOptions={setSelectedOptions}
+          gathering={gathering}
+          setGathering={setGathering}
         />
         <StyledGathCard gathering={gathering} disabled={true} />
       </Container>

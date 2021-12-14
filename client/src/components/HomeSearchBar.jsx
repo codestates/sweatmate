@@ -11,6 +11,7 @@ import Btn from "./Btn";
 import { useDispatch } from "react-redux";
 import gathApi from "../api/gath";
 import { searchGathAction } from "../store/actions";
+import { useList } from "../hooks/useList";
 
 const InputContainer = styled.form`
   margin-bottom: 2rem;
@@ -151,29 +152,11 @@ const HomeSearchBar = () => {
   const [timeInput, setTimeInput] = useState("");
   const [totalNumInput, setTotalNumInput] = useState(null);
   const [searchable, setSearchable] = useState(false);
-  const [list, setList] = useState({
-    sport: [],
-    area: [],
-    time: [
-      { id: 1, timeName: "오전" },
-      { id: 2, timeName: "오후" },
-      { id: 3, timeName: "저녁" },
-    ],
-  });
+
   const [popupShown, setPopupShown] = useState(false);
 
+  const list = useList();
   useEffect(() => {
-    // 운동, 지역 리스트 받아오기
-    const getList = async () => {
-      try {
-        const sportList = await gathApi.getSportList();
-        const areaList = await gathApi.getAreaList();
-        setList({ ...list, sport: sportList.data, area: areaList.data });
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    getList();
     // 모임 전체 리스트 받아오기
     const getAllGathering = async () => {
       try {
@@ -278,7 +261,7 @@ const HomeSearchBar = () => {
   return (
     <InputContainer onSubmit={handleSubmit}>
       <InputList className="pc">
-        <SearchInput isSport name="운동" for="sport">
+        <SearchInput isSport name="운동" htmlFor="sport">
           <InputDatalist
             id="sport"
             values={list.sport}
@@ -287,7 +270,7 @@ const HomeSearchBar = () => {
             setItem={setSportInput}
           />
         </SearchInput>
-        <SearchInput name="지역" for="area">
+        <SearchInput name="지역" htmlFor="area">
           <InputDatalist
             id="area"
             values={list.area}
@@ -296,7 +279,7 @@ const HomeSearchBar = () => {
             setItem={setAreaInput}
           />
         </SearchInput>
-        <SearchInput isDate name="날짜" for="date">
+        <SearchInput isDate name="날짜" htmlFor="date">
           <InputDatepicker
             id="date"
             placeholder="날짜 입력"
@@ -304,7 +287,7 @@ const HomeSearchBar = () => {
             setSelectedDate={setDateInput}
           />
         </SearchInput>
-        <SearchInput isTime name="시간" for="time">
+        <SearchInput isTime name="시간" htmlFor="time">
           <InputDatalist
             id="time"
             values={list.time}
@@ -313,7 +296,7 @@ const HomeSearchBar = () => {
             setItem={setTimeInput}
           />
         </SearchInput>
-        <SearchInput name="인원" for="totalNum" hideDivider>
+        <SearchInput name="인원" htmlFor="totalNum" hideDivider>
           <InputTotalNum
             inputId="totalNum"
             placeholder="인원 입력"
@@ -348,7 +331,7 @@ const HomeSearchBar = () => {
           </PopupHeader>
           <PopupBody>
             <div>
-              <SearchInput isSport name="운동" for="sport" hideDivider>
+              <SearchInput isSport name="운동" htmlFor="sport" hideDivider popupShown>
                 <InputDatalist
                   id="sport"
                   values={list.sport}
@@ -359,7 +342,7 @@ const HomeSearchBar = () => {
               </SearchInput>
             </div>
             <div>
-              <SearchInput name="지역" for="area" hideDivider>
+              <SearchInput name="지역" htmlFor="area" hideDivider popupShown>
                 <InputDatalist
                   id="area"
                   values={list.area}
@@ -370,7 +353,7 @@ const HomeSearchBar = () => {
               </SearchInput>
             </div>
             <div>
-              <SearchInput isDate name="날짜" for="date" hideDivider>
+              <SearchInput isDate name="날짜" htmlFor="date" hideDivider popupShown>
                 <InputDatepicker
                   id="date"
                   placeholder="날짜 입력"
@@ -380,7 +363,7 @@ const HomeSearchBar = () => {
               </SearchInput>
             </div>
             <div>
-              <SearchInput isTime name="시간" for="time" hideDivider>
+              <SearchInput isTime name="시간" htmlFor="time" hideDivider popupShown>
                 <InputDatalist
                   id="time"
                   values={list.time}
@@ -391,7 +374,7 @@ const HomeSearchBar = () => {
               </SearchInput>
             </div>
             <div>
-              <SearchInput name="인원" for="totalNum" hideDivider>
+              <SearchInput name="인원" htmlFor="totalNum" hideDivider popupShown>
                 <InputTotalNum
                   inputId="totalNum"
                   placeholder="인원 입력"

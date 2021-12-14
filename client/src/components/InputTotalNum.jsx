@@ -24,7 +24,7 @@ const Input = styled.input`
 const Popper = styled.div`
   position: absolute;
   margin-top: 1.75rem;
-  width: calc(100% + 4rem);
+  width: calc(100%);
   padding: 1rem;
   background-color: var(--color-white);
   font-size: 1.125rem;
@@ -145,6 +145,7 @@ function InputTotalNum({ inputId, placeholder, total, setTotal }) {
       onBlur={() => {
         hidePopper();
       }}
+      onClick={(e) => e.preventDefault()}
     >
       <Input value={total ? `총 ${total}명` : ""} placeholder={placeholder} readOnly />
       <Popper ref={popper}>
