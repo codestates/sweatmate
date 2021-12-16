@@ -70,10 +70,6 @@ const MapContainer = styled.div`
   width: 18.5rem;
   height: 12rem;
   margin-top: 1rem;
-  ${media.lessThan("medium")`
-    /* screen width is between 768px (medium) and 1170px (large) */
-    width: 20rem;
-  `}
 `;
 
 const GathSearch = ({
@@ -102,7 +98,7 @@ const GathSearch = ({
       ...gathering,
       sportName: (sport && sport.match(regExp).join("")) || "OO",
       sportEmoji: sport.replace(regExp, "") || "❓",
-      date: date || "2021-00-00",
+      date: date || new Date(),
       time: time || "언제",
       totalNum: totalNum || 0,
     });
@@ -155,15 +151,6 @@ const GathSearch = ({
         latitude: el.y,
         longitude: el.x,
       });
-    }
-    if (step === 3) {
-      const selectedDate =
-        el.getFullYear() +
-        "-" +
-        (String(el.getMonth() + 1).length === 1 ? "0" + (el.getMonth() + 1) : el.getMonth() + 1) +
-        "-" +
-        (String(el.getDate() + 1).length === 1 ? "0" + el.getDate() : el.getDate());
-      setGathering({ ...gathering, date: selectedDate });
     }
     if (step === 4) {
       setInputValue(el);

@@ -115,7 +115,7 @@ const GathCreate = () => {
     placeName: "❓",
     latitude: "33.450701",
     longitude: "126.570667",
-    date: "2021-00-00",
+    date: new Date(),
     time: "저녁",
     timeDescription: "19시",
     totalNum: 4,
