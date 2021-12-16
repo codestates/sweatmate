@@ -5,6 +5,7 @@ import UserProfile from "./UserProfile";
 import { FaMapMarkerAlt } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { gathDetailModalOnAction } from "../store/actions";
+import { getMonth, getDate } from "date-fns";
 
 const CardContainer = styled.div`
   border-radius: 1rem;
@@ -95,7 +96,9 @@ const GathCard = ({ gathering, ...rest }) => {
     <CardContainer onClick={handleGathDetailModalOn} {...rest}>
       <InfoHeader>
         <div>
-          <div>{`${gathering.date.split("-")[1]}월 ${gathering.date.split("-")[2]}일`}</div>
+          <div>{`${getMonth(new Date(gathering.date)) + 1 || "00"}월 ${
+            getDate(new Date(gathering.date)) || "00"
+          }일`}</div>
           <div className="divider">|</div>
           <div>{gathering.time}</div>
         </div>
@@ -134,7 +137,7 @@ GathCard.propTypes = {
     placeName: PropTypes.string,
     latitude: PropTypes.string,
     longitude: PropTypes.string,
-    date: PropTypes.string,
+    date: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
     time: PropTypes.string,
     timeDescription: PropTypes.string,
     totalNum: PropTypes.number,

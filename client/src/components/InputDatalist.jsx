@@ -19,8 +19,8 @@ const Container = styled.div`
     font-size: 1rem;
   }
   .datalist-items {
-    min-width: calc(100% + 4rem);
-    max-height: 15rem;
+    min-width: calc(100%);
+    max-height: 18.5rem;
     margin-top: 1.75rem;
     font-size: 1.125rem;
     background-color: var(--color-white);
