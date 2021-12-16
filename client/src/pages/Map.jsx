@@ -19,6 +19,7 @@ import { useQuery } from "../hooks/useQuery";
 const { kakao } = window;
 
 const MapContainer = styled.div`
+  position: relative;
   width: 100vw;
   height: calc(100vh - 73px);
   height: calc(var(--vh, 1vh) * 100 - 73px);
@@ -204,7 +205,6 @@ const GathMap = () => {
 
   const bounds = useMemo(() => {
     const bounds = new kakao.maps.LatLngBounds();
-
     points &&
       points.length > 0 &&
       points.forEach((point) => {
