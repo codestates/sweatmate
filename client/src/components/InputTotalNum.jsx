@@ -34,7 +34,7 @@ const Popper = styled.div`
   filter: drop-shadow(0px 6px 10px var(--color-shadow));
   display: none;
   ${media.lessThan("medium")`
-    width: calc(100vw - 2rem);
+    width: 100%;
     margin-top: 1.25rem;
     margin-bottom: -0.75rem;
     filter: none;
