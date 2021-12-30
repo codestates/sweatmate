@@ -200,6 +200,7 @@ const GathCreate = () => {
   };
 
   const handleSave = async () => {
+    dispatch(modalOffAction);
     try {
       const payload = {
         title: gathering.title,
@@ -216,7 +217,6 @@ const GathCreate = () => {
       };
       const res = await gathApi.createGath(payload);
       if (res.status === 200) {
-        dispatch(modalOffAction);
         dispatch(gathDetailModalOnAction(res.data));
       }
     } catch (error) {
