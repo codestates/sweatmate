@@ -91,7 +91,7 @@ module.exports = (app) => {
         time = "오후";
         break;
       case 17:
-        tiem = "저녁";
+        time = "저녁";
         break;
       default:
         return;
