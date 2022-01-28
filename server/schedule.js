@@ -84,14 +84,14 @@ module.exports = (app) => {
     let time;
 
     switch (curruntHour) {
-      case "7":
+      case 7:
         time = "오전";
         break;
-      case "12":
+      case 12:
         time = "오후";
         break;
-      case "17":
-        tiem = "저녁";
+      case 17:
+        time = "저녁";
         break;
       default:
         return;
